@@ -47,3 +47,12 @@ vendor/bundle
 ChatGPT.txt
 *.key
 *.pem
+
+# GitHub Copilot Chat and VS Code
+.vscode/
+.copilot/
+copilot_chat_history.json
+.copilot_chat_history.json
+*copilot_chat*
+.vscode-test/
+*.vsix
