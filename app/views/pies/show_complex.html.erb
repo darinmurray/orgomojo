@@ -1,0 +1,69 @@
+<!-- app/views/pies/show.html.erb -->
+<h1><%= @pie.name %></h1>
+
+<!-- Flex container for pie chart and legend -->
+<div style="display: flex; gap: 40px; align-items: flex-start; margin: 40px 0;">
+  <!-- Pie Chart Section (Left) -->
+  <div id="pie-section" style="flex-shrink: 0;">
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center;">
+        <%= radial_pie_chart(@pie, size: 300, pinwheel: true) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend Section (Right) -->
+  <div class="pie-legend" style="flex: 1; min-width: 0;">
+
+    <div style="list-style: none; padding: 0;">
+      <% @pie.slices.each do |slice| %>
+        <div style="margin-bottom: 25px; border: 1px solid #ddd; border-radius: 0px; overflow: hidden;" data-slice-id="<%= slice.id %>">
+          <!-- Slice Header -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 0px; background: #f8f9fa;">
+            <div style="display: flex; align-items: center;">
+              <div style="width: 20px; height: 30px; background-color: <%= slice.color %>; margin-right: 15px; border-radius: 0px;"></div>
+              <div>
+                <strong><%= link_to slice.name, [@pie, slice], style: "text-decoration: none; color: #333; font-size: 18px;" %></strong>
+                <div id="slice-<%= slice.id %>-stats">
+                  <div style="font-size: 14px; color: #666; margin-top: 2px;" class="completion-count">
+                    <%= slice.elements.where(completed: true).count %>/<%= slice.elements.count %> elements fulfilled
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="slice-<%= slice.id %>-percentage">
+              <div style="font-size: 24px; font-weight: bold; color: #007cba;" class="percentage">
+                <%= slice.percentage %>%
+              </div>
+            </div>
+          </div>
+          
+          <!-- Elements List -->
+          <div style="padding: 15px; background: white;">
+            <div id="slice-<%= slice.id %>-elements-list" class="elements-list">
+              <% if slice.elements.any? %>
+                <% slice.elements.order(:name).each do |element| %>
+                  <%= render 'element_row', pie: @pie, slice: slice, element: element %>
+                <% end %>
+              <% else %>
+                <div id="slice-<%= slice.id %>-no-elements" class="no-elements" style="color: #666; font-style: italic; text-align: center; padding: 20px;">
+                  No elements yet.
+                </div>
+              <% end %>
+            </div>
+      
+            <!-- Add element form -->
+            <div id="slice-<%= slice.id %>-form">
+              <%= render 'add_element_form', pie: @pie, slice: slice, element: Element.new %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 30px;">
+  <%= link_to "Edit Pie", edit_pie_path(@pie), style: "background: #007cba; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-right: 10px;" %>
+  <%= link_to "← Back to all pies", pies_path, style: "color: #666; text-decoration: none;" %>
+</div>

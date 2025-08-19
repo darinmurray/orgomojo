@@ -1,0 +1,37 @@
+<!-- app/views/elements/destroy.turbo_stream.erb -->
+<!-- Remove the element from the DOM -->
+<%= turbo_stream.remove "element-#{@element.id}" %>
+
+<!-- Update slice stats -->
+<%= turbo_stream.update "slice-#{@slice.id}-stats" do %>
+  <div style="font-size: 14px; color: #666; margin-top: 2px;" class="completion-count">
+    <%= @slice.elements.where(completed: true).count %>/<%= @slice.elements.count %> elements completed
+  </div>
+<% end %>
+
+<!-- Update percentage -->
+<%= turbo_stream.update "slice-#{@slice.id}-percentage" do %>
+  <div style="font-size: 24px; font-weight: bold; color: #007cba;" class="percentage">
+    <%= @slice.percentage %>%
+  </div>
+<% end %>
+
+<!-- Force complete page section reload for pie chart -->
+<%= turbo_stream.replace "pie-section" do %>
+  <div id="pie-section">
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center; margin: 40px 0;">
+        <%= radial_pie_chart(@pie, size: 500, pinwheel: true) %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- If no elements left, show "no elements" message -->
+<% if @slice.elements.empty? %>
+  <%= turbo_stream.append "slice-#{@slice.id}-elements" do %>
+    <div id="slice-<%= @slice.id %>-no-elements" class="no-elements" style="color: #666; font-style: italic; text-align: center; padding: 20px;">
+      No elements yet.
+    </div>
+  <% end %>
+<% end %>

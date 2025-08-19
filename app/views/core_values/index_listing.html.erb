@@ -1,0 +1,115 @@
+<% content_for :title, "Core Values" %>
+
+<div class="page-container">
+  <div class="page-header">
+    <h1>Core Values</h1>
+    <p class="page-description">
+      Define and explore the fundamental principles that guide your decisions and actions.
+    </p>
+    <%= link_to "Add New Core Value", new_core_value_path, 
+        class: "btn btn-primary",
+        style: "background: #007cba; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; margin-top: 16px;" %>
+  </div>
+
+  <div class="core-values-grid" style="margin-top: 32px;">
+    <% if @core_values.any? %>
+      <% @core_values.each do |core_value| %>
+        <div class="core-value-card" style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e0e7ef;">
+          <div class="core-value-header" style="display: flex; justify-content: between; align-items: flex-start; margin-bottom: 16px;">
+            <h3 style="margin: 0; color: #007cba; font-size: 1.5em;"><%= core_value.name %></h3>
+            <div class="core-value-actions" style="margin-left: auto; display: flex; gap: 8px;">
+              <%= link_to core_value_path(core_value), style: "text-decoration: none;" do %>
+                <span class="material-symbols-outlined" style="color: #666; cursor: pointer;" title="View">visibility</span>
+              <% end %>
+              <%= link_to edit_core_value_path(core_value), style: "text-decoration: none;" do %>
+                <span class="material-symbols-outlined" style="color: #666; cursor: pointer;" title="Edit">edit</span>
+              <% end %>
+              <%= link_to core_value_path(core_value), method: :delete, 
+                  confirm: "Are you sure you want to delete this core value?",
+                  style: "text-decoration: none;" do %>
+                <span class="material-symbols-outlined" style="color: #dc3545; cursor: pointer;" title="Delete">delete</span>
+              <% end %>
+            </div>
+          </div>
+          
+          <% if core_value.description.present? %>
+            <p style="color: #666; margin-bottom: 16px; line-height: 1.5;"><%= core_value.description %></p>
+          <% end %>
+          
+          <% if core_value.examples.any? %>
+            <div class="examples-section">
+              <h4 style="margin: 0 0 8px 0; color: #444; font-size: 1em;">Examples:</h4>
+              <ul style="margin: 0; padding-left: 20px; color: #666;">
+                <% core_value.examples.each do |example| %>
+                  <li style="margin-bottom: 4px;"><%= example %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="empty-state" style="text-align: center; padding: 60px 20px; color: #666;">
+        <span class="material-symbols-outlined" style="font-size: 64px; color: #ccc; margin-bottom: 16px;">sentiment_satisfied</span>
+        <h3 style="margin-bottom: 12px; color: #666;">No Core Values Yet</h3>
+        <p style="margin-bottom: 24px;">Start by defining the fundamental principles that guide your life.</p>
+        <%= link_to "Add Your First Core Value", new_core_value_path, 
+            class: "btn btn-primary",
+            style: "background: #007cba; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .page-header h1 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 2.5em;
+  }
+  
+  .page-description {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s;
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,124,186,0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 16px;
+    }
+    
+    .core-value-card {
+      padding: 20px !important;
+    }
+    
+    .core-value-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    
+    .core-value-actions {
+      margin-left: 0 !important;
+      margin-top: 12px;
+    }
+  }
+</style>

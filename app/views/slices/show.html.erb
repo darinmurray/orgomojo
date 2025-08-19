@@ -1,0 +1,2291 @@
+<!-- app/views/slices/show.html.erb -->
+<%
+# Hard-coded variable to control time display in deadlines
+show_time_in_deadlines = false
+%>
+
+<style>
+
+  :root {
+    --slice-color: <%= @slice.color %>;
+
+    --framed-item-box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+
+  }
+
+
+
+
+
+
+  #slice-page-container {
+    padding-top: 0px;
+    padding: 0px 20px;
+    border-radius: 8px;
+  }
+  .slice-header {
+    display: flex;
+    background: #ffffffff;
+    padding-top: 20px;
+    padding-left: 0px;
+    padding-right: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+  }
+
+#slice-body-container {
+    padding: 0 40px;
+    /* background: #f8f9fa; */
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+
+  .slice-title-row {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .slice-title {
+    margin: 0;
+  }
+
+  .slice-percentage {
+    margin-left: auto;
+    font-size: 32px;
+    font-weight: bold;
+    color: #007cba;
+  }
+
+  .slice-objective {
+    margin-left: 0px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: normal;
+    color: color: var(--darkgray);;
+  }
+
+  .progress-bar-container {
+    background:  var(--lightergray);
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .element-item {
+    /* border-radius: 8px; */
+    margin-bottom: 30px;
+    /* cursor: move; */
+    padding-top:16px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--lightergray);
+    border-radius: 10px;
+    box-shadow: var(--framed-item-box-shadow);
+  }
+
+  .element-item.completed {
+    /* nice green #f8fff8; */
+    border: 0px solid #ddd;
+box-shadow: none;
+  }
+
+  .element-item.incomplete {
+    /* background: var(--hilighteryellow); */
+    background: none;
+  }
+
+  .element-item.editing {
+    background: #f0f8ff;
+    border: 2px solid #007cba;
+  }
+
+  .element-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .element-item.drag-over-top {
+    border-top: 3px solid var(--slice-color);
+  }
+
+  .element-item.drag-over-bottom {
+    border-bottom: 3px solid var(--slice-color);
+  }
+
+  .drag-handle {
+    color: var(--lightergray);
+    cursor: grab;
+    margin-right: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .drag-handle:hover {
+    background: var(--lightergray);
+    color: var(--darkgray);
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .element-top-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .element-form {
+    margin: 0;
+  }
+
+  .element-checkbox {
+    margin-right: 15px;
+    transform: scale(1.5);
+  }
+
+  .element-name {
+    /* color: var(--darkestgray); */
+    font-size: 20px;
+    flex: 1;
+    padding: 4px;
+    border-radius: var(--text-input-border-radius);
+    cursor: text;
+    border: 1px solid transparent;
+  }
+
+  .element-name:hover {
+        border: 1px solid var(--focus);
+    /* background: #f8f9fa; */
+  }
+
+  .element-name.editing {
+    background: white;
+    border: 1px solid var(--editing-border);
+    border-radius: var(--text-input-border-radius) !important; /* Force border-radius to apply */
+    outline: none;
+  }
+
+    .element-name.completed {
+      /* text-decoration: line-through; */
+      color: var(--darkestgray);
+      font-weight: none;
+    }
+  .element-name.incomplete {
+    /* text-decoration: line-through; */
+    color: var(darkestgray);
+    font-weight: bold;
+  }
+
+  .element-objective {
+    margin-left: 35px;
+    color: color: var(--lightgray);;
+    font-size: 14px;
+    font-style: italic;
+    padding: 4px;
+    border-radius: var(--text-input-border-radius);
+    cursor: text;
+    min-height: 20px;
+    border: 1px solid transparent;
+  }
+
+  .element-objective:hover {
+        border: 1px solid var(--focus);
+    /* background: #f8f9fa; */
+  }
+
+  .element-objective.editing {
+    border-radius: var(--text-input-border-radius);
+    border: 1px solid var(--editing-border);
+    outline: none;
+    font-style: normal;
+    border-radius: inherit;
+  }
+
+  .element-objective.empty {
+    color: #999;
+  }
+
+
+
+.objective-timeline {
+    margin-left: 0px;
+    padding: 4px 0;
+    font-size: 14px;
+    color: var(--lightgray);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+.objective-timeline.completed {
+display: none
+  }
+
+
+
+  .editable-time-needed, .editable-time-scale, .editable-cadence, .editable-deadline {
+    border: 1px solid transparent;
+  }
+
+  .editable-time-needed:hover,
+  .editable-deadline:hover {
+    border: 1px solid var(--focus);
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .editable-time-scale:hover,
+  .editable-cadence:hover {
+    border: 1px solid var(--focus);
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .editable-time-needed.editing,
+  .editable-deadline.editing {
+    border: 1px solid var(--editing-border);
+    background: white;
+    outline: none;
+  }
+
+  .add-element-form {
+    margin: 40px 0;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+
+  .element-input {
+    flex: 1;
+    margin-left:30px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: var(--text-input-border-radius);
+    min-width: 120px;
+  }
+
+  .element-input:first-child {
+    margin-left: 30px;
+    flex: 2;
+    min-width: 200px;
+  }
+
+  #new-element-name:hover {
+    border: 1px solid var(--focus);
+  }
+
+  .add-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--button-border-radius);
+    cursor: pointer;
+        margin-bottom: 3px;
+  }
+
+  .bottom-actions {
+  margin-top: 30px;
+  padding-top: 40px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end; /* or space-between/center, as needed */
+  gap: 32px;  /* Add spacing between the links/buttons */
+  border-top: 1px solid #ddd;
+  }
+
+/* for the trash cans and edit icons */
+.delete-link,
+.edit-link {
+  color: var(--lightgray);
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  }
+  
+    .delete-link.completed,
+.edit-link.completed {
+  color: var(--lightergray);
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  }
+  
+  .delete-slice-link,
+  .delete-slice-link:visited {
+    color: var(--lightgray);
+    text-decoration: none;
+    cursor: pointer;
+
+  }
+  .delete-slice-link:hover {
+   color: #dc3545;
+    text-decoration: underline;
+  }
+
+  .edit-link:hover {
+    color: #007cba;
+  }
+
+  .delete-link:hover {
+    color: #dc3545;
+  }
+
+
+
+  .back-link,
+  .back-to-wheel-link {
+    flex: 1;
+    color: var(--darkgray);
+    text-decoration: none;
+    margin-left: 10px;
+  }
+
+
+
+
+
+  .hidden {
+    display: none;
+  }
+
+
+  #pie-chart {
+display: flex;
+  }
+
+  #slice-info {
+    flex: 1;
+  }
+
+
+  input::placeholder {
+  color: var(--lightgray);
+  opacity: 1;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1.5px solid var(--lightergray);
+  border-radius: var(--text-input-border-radius);
+  outline: none;
+  /* background: #fafbfc; */
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--focus);   /* Example accent color */
+  box-shadow: 0 0 0 2px #a259ec22;
+  background: #fff;
+}
+
+
+
+
+
+/* input[type="checkbox"] {
+  accent-color: #ffffffff; 
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  border: 1px solid var(--lightergray); 
+  border-radius: 2px; 
+
+}
+input[type="checkbox"]:focus {
+  width: 14px;
+  height: 14px;
+  outline-offset: 0px;
+    border-color: var(--focus); /
+
+} */
+
+
+/* input[type="checkbox"]:checked {
+  width: 14px;
+  height: 14px;
+} */
+
+
+
+
+
+
+
+
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--lightergray);
+  border-radius: 2px;
+  background: white;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background:  var(--slice-color);
+  border-color:  var(--slice-color);
+}
+
+input[type="checkbox"]:checked::before {
+  content: '✓'; /* Change the checkmark symbol */
+  position: absolute; /* Adjust position */
+  color: white; /* Change the color */
+  font-size: 14px; /* Adjust the size */
+  left: 0px; /* Adjust horizontal position */
+  bottom: -2px; /* Adjust vertical position */
+  font-weight: bold; /* Make it bold */
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+
+#objective-settings {
+
+}
+#objective-settings span{
+padding-left:10px;
+}
+
+.chat-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+}
+
+.chat-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.chat-icon {
+  font-size: 24px;
+}
+
+.element-preferences-container {
+   /* Initially hidden */
+   display: none;
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth slide-out effect */
+  transform: translateY(-10px); /* Start slightly above */
+  opacity: 0; /* Start invisible */
+}
+
+.element-preferences-container.visible {
+  display: flex; /* Make it visible */
+  transform: translateY(0); /* Slide into place */
+  opacity: 1; /* Fully visible */
+}
+
+.element-preferences-container {
+  display: flex;
+  gap: 10px;
+  /* border: 1px solid var(--lightgray); */
+  width: fit-content;
+  padding: 3px 0px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  /* box-shadow: inset 0px 3px 5px rgba(0, 0, 0, 0.05); Adds a slight gray shadow inside the top */
+}
+
+
+.meta-text {
+    font-size: 14px;
+    color: var(--lightgray);
+    margin-top: 0px;
+    font-style: italic;
+}
+
+.priority-icon {
+  /* font-size: 20px; */
+  color: var(--storyline-accent-color, #06b6d4);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.priority-icon:hover {
+  color: var(--focus);
+}
+
+
+.editable-time-needed.needs_attention {
+  /* Your attention-grabbing styles here */
+  /* border: 1px solid red;
+  background-color: #ffe6e6; */
+  color: red;
+}
+
+
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="slice-page-container">
+  <div class="slice-header">
+
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center;">
+        <%= radial_pie_chart(@pie, size: 120, pinwheel: false) %>
+      </div>
+    </div>
+
+
+
+  <div id="slice-info">
+    <div class="slice-title-row">
+    <h1 class="slice-title" 
+        contenteditable="true" 
+        data-field="name" 
+        data-original="<%= @slice.name %>"
+        data-type="slice">
+      <%= @slice.name %>
+    </h1>
+    <div class="slice-percentage">
+      <%= @slice.percentage %>%
+    </div>
+      <div id="objective-settings">
+        <%= link_to edit_setting_path(current_user), class: "" do %>
+          <span class="material-symbols-outlined">wand_shine</span>
+        <% end %>
+      </div>
+  </div>
+
+  <div class="slice-objective <%= 'empty' unless @slice.objective.present? %>" 
+       contenteditable="true" 
+       data-field="objective" 
+       data-original="<%= @slice.objective %>"
+       data-type="slice">
+    <% if @slice.objective.present? %>
+      <%= @slice.objective %>
+    <% else %>
+      <em>Click to add objective...</em>
+    <% end %>
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" style="background: <%= @slice.color %>; width: <%= @slice.percentage %>%;"></div>
+  </div>
+  </div>
+</div>
+
+
+
+
+<div id="slice-body-container">
+
+<!-- h3>Elements of <%#= @slice.name %></h3 -->
+<div id="elements-list">
+  <% @elements.each do |element| %>
+    <div class="element-item <%= element.completed? ? 'completed' : 'incomplete' %>" 
+         id="element-<%= element.id %>"
+         data-element-id="<%= element.id %>" 
+         draggable="false">
+      
+      <!-- Top row: drag handle, checkbox, name, and buttons -->
+      <div class="element-top-row">
+        <div class="drag-handle">
+          <span class="material-symbols-outlined">drag_indicator</span>
+        </div>
+        
+        <%= form_with model: [@pie, @slice, element], url: toggle_pie_slice_element_path(@pie, @slice, element), method: :patch, local: true, class: "element-form" do |f| %>
+          <%= f.check_box :completed, { 
+            checked: element.completed, 
+            onchange: "this.form.submit();",
+            class: "element-checkbox"
+          }, true, false %>
+        <% end %>
+        
+        <!-- Element name display/edit -->
+        <div class="element-name <%= element.completed? ? 'completed' : 'incomplete' %>" 
+             contenteditable="true" 
+             data-field="name" 
+             data-original="<%= element.name %>">
+          <%= element.name %>
+        </div>
+        
+        <div class="element-actions">
+        <span class="material-symbols-outlined ai-element-writer element priority-icon" id="element-name-<%= element.id %>">network_intelligence_update</span>
+
+            <%#= link_to edit_pie_slice_element_path(@pie, @slice, element), class: "edit-link #{element.completed? ? 'completed' : 'incomplete'}" do %>
+              <!-- span class="material-symbols-outlined">edit</span -->
+            <%# end %>
+                <%= link_to [@pie, @slice, element], 
+                      method: :delete, 
+                      data: { 
+                        turbo_method: :delete,
+                        turbo_confirm: "Are you sure you want to delete this element?"
+                      }, 
+                      class: "delete-link #{element.completed? ? 'completed' : 'incomplete'}" do %>
+                  <span class="material-symbols-outlined">delete</span>
+                <% end %>
+        </div>
+
+      </div>
+
+
+
+
+
+
+
+
+        <!-- objective-timeline -->
+        <div class="objective-timeline <%= element.completed? ? 'completed' : 'incomplete' %>"> 
+
+
+            <div class="element-timeline" style="margin-left: 42px;">
+              <span>I commit </span>
+              <span class="editable-time-needed <%= 'needs_attention' if (element.time_needed || 0).to_s == '0' %>" 
+                    contenteditable="true" 
+                    data-field="time_needed" 
+                    data-original="<%= element.time_needed || '' %>"
+                    style="min-width: 10px; display: inline-block; border-radius: 3px;">
+                <%= element.time_needed || 0 %>
+              </span>
+              <span class="editable-time-scale" 
+                    data-field="time_scale" 
+                    data-original="<%= element.time_scale || '' %>"
+                    style="min-width: 40px; display: inline-block; border-radius: 3px; cursor: pointer;">
+                <%= element.time_scale.present? ? element.time_scale : 'units' %>
+              </span>
+
+                  <span class="editable-cadence-wrapper" style="<%= 'display: none;' if (element.time_needed).to_s == '0' %>">
+                  <!-- Don't display this if the time_needed is 0 -->
+                        <span>every</span>
+                        <span class="editable-cadence" 
+                              data-field="cadence" 
+                              data-original="<%= element.cadence || '(how often?)' %>"
+                              style="display: inline-block; border-radius: 3px; cursor: pointer;">
+                          <%= element.cadence.present? ? element.cadence : '(how often?)' %>
+                        </span>
+
+
+                        <span>to <%= element.outcome_type == 'habit' ? 'develop' : 'achieve' %>
+                          this 
+                          <%= element.outcome_type || '' %> by </span>
+                        <span class="editable-deadline" 
+                              data-field="deadline" 
+                              data-original="<%= element.deadline&.strftime('%Y-%m-%d %H:%M') || '' %>"
+                              style="min-width: 100px; display: inline-block; border-radius: 3px; cursor: pointer;">
+                          <%= element.deadline&.strftime(show_time_in_deadlines ? '%b %d, %Y at %I:%M %p' : '%b %d, %Y') || '(when?)' %>
+                        </span>
+                  </span>
+
+
+            </div><!-- end of element-timeline -->
+        </div> <!-- end of objective-timeline --> 
+
+
+      <!-- Bottom row: objective display/edit -->
+      <div class="element-objective <%= 'empty' unless element.objective.present? %>" 
+           contenteditable="true" 
+           data-field="objective" 
+           data-original="<%= element.objective %>">
+        <% if element.objective.present? %>
+          <%= element.objective %>
+      </div>
+        <!-- Element PREFERENCES display/edit -->
+        <div class="element-preferences-container "> 
+        <span class="meta-text">Word Count:</span>
+            <div id="word-count-slider-container">
+                <span class="material-symbols-outlined slider-minus">remove</span>
+                <input type="range" id="word-count-slider-<%= element.id %>" min="5" max="40" value="15" step="1" />          
+                <span class="material-symbols-outlined slider-plus">add</span>
+            </div>
+            <span class="material-symbols-outlined ai-objective-writer brain-icon objective priority-icon">network_intelligence_update</span>
+        </div>
+
+
+
+        
+        <% else %>
+
+
+
+          <em>Click to add objective...</em>
+      </div>
+        <% end %>
+      
+    </div>
+  <% end %>
+</div>
+
+<%= form_with model: [@pie, @slice, Element.new], local: false, class: "add-element-form", id: "add-element-form" do |f| %>
+  <div class="form-row">
+    <%= f.text_field :name, placeholder: "Add new element...", class: "element-input", id: "new-element-name" %>
+    <%#= f.number_field :priority, placeholder: "Priority (1-10)", class: "element-input", style: "max-width: 120px;" %>
+    <%#= f.number_field :time_needed, placeholder: "Time", class: "element-input", style: "max-width: 80px;" %>
+    <%#= f.select :time_scale, 
+        options_for_select([
+          ['min', 'minutes'],
+          ['hrs', 'hours'], 
+          ['days', 'days'],
+          ['wks', 'weeks'],
+          ['mos', 'months']
+        ]), 
+        { include_blank: 'Scale' },
+        { class: "element-input", style: "max-width: 80px;" } %>
+    <%#= f.datetime_local_field :deadline, class: "element-input", style: "max-width: 180px;" %>
+    <%= f.submit "Add Element", class: "add-button" %>
+  </div>
+
+<% end %>
+
+
+
+
+
+
+
+
+</div><!-- end of lower content container -->
+</div><!-- end of page container -->
+
+
+<div class="bottom-actions">
+<%= link_to "← Back to " + @pie.name, pie_path(@pie), class: "back-to-wheel-link  " %>  
+
+
+<%= link_to "Delete Slice", [@pie, @slice], 
+      method: :delete, 
+      data: { 
+        confirm: "Are you sure you want to delete this slice? This will also delete all elements within it.",
+        turbo_method: :delete
+      },
+      class: "delete-slice-link" %>
+</div>
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Function to initialize all slice page functionality
+function initializeSlicePage() {
+  // Initialize drag and drop functionality
+  initializeDragAndDrop();
+  
+  // Handle contenteditable elements
+  document.querySelectorAll('[contenteditable="true"]:not([data-listeners-attached])').forEach(function(element) {
+    element.setAttribute('data-listeners-attached', 'true');
+    let originalValue = element.dataset.original || '';
+    
+    // Handle focus - select placeholder text if empty
+    element.addEventListener('focus', function() {
+      this.classList.add('editing');
+      if (this.classList.contains('empty')) {
+        this.innerHTML = '';
+        this.classList.remove('empty');
+      }
+      
+      // For element-objective, show preferences container
+      if (this.classList.contains('element-objective')) {
+        const preferencesContainer = this.closest('.element-item').querySelector('.element-preferences-container');
+        if (preferencesContainer) {
+          preferencesContainer.classList.add('visible');
+        }
+      }
+      
+      // For timeline fields, select all content on focus for easy editing
+      if (this.classList.contains('editable-time-needed')) {
+        setTimeout(() => {
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(this);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }, 10);
+      }
+    });
+    
+    // Handle blur - save changes
+    element.addEventListener('blur', function(e) {
+      // For element-objective, check if the blur is caused by clicking inside the preferences container
+      if (this.classList.contains('element-objective')) {
+        const preferencesContainer = this.closest('.element-item').querySelector('.element-preferences-container');
+        if (preferencesContainer && e.relatedTarget && preferencesContainer.contains(e.relatedTarget)) {
+          // Prevent blur and maintain focus
+          setTimeout(() => {
+            this.focus();
+          }, 10);
+          return;
+        }
+        
+        // Hide preferences container if not in editing mode
+        if (!this.classList.contains('editing')) {
+          if (preferencesContainer) {
+            preferencesContainer.classList.remove('visible');
+          }
+        }
+      }
+      
+      this.classList.remove('editing');
+      let newValue = this.innerText.trim();
+      
+      // For objective, check if it contains placeholder text
+      if (this.dataset.field === 'objective' && newValue === 'Click to add objective...') {
+        newValue = '';
+      }
+      
+      // For timeline fields, handle special validation
+      if (this.classList.contains('editable-time-needed')) {
+        const numValue = parseInt(newValue);
+        if (isNaN(numValue) || numValue < 0) {
+          newValue = '0';
+          this.innerText = newValue;
+        }
+        
+        // Update needs_attention class based on value
+        if (newValue === '0') {
+          this.classList.add('needs_attention');
+        } else {
+          this.classList.remove('needs_attention');
+        }
+        
+        // Show/hide cadence wrapper based on value
+        const elementItem = this.closest('.element-item');
+        const cadenceWrapper = elementItem.querySelector('.editable-cadence-wrapper');
+        if (cadenceWrapper) {
+          if (parseInt(newValue) > 0) {
+            cadenceWrapper.style.display = 'inline';
+          } else {
+            cadenceWrapper.style.display = 'none';
+          }
+        }
+      }
+      
+      if (newValue !== originalValue) {
+        saveField(this, newValue);
+      } else if (newValue === '' && this.dataset.field === 'objective') {
+        // Reset to placeholder if objective is empty
+        this.innerHTML = '<em>Click to add objective...</em>';
+        this.classList.add('empty');
+      }
+    });
+
+    // For element-objective, add MutationObserver to watch for editing class changes
+    if (element.classList.contains('element-objective')) {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            const target = mutation.target;
+            const preferencesContainer = target.closest('.element-item').querySelector('.element-preferences-container');
+            
+            if (preferencesContainer) {
+              if (target.classList.contains('editing')) {
+                preferencesContainer.classList.add('visible');
+              } else {
+                // Only hide if the element doesn't have focus
+                if (document.activeElement !== target) {
+                  preferencesContainer.classList.remove('visible');
+                }
+              }
+            }
+          }
+        });
+      });
+
+      observer.observe(element, { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+      });
+    }
+
+  // Handle special click behavior for time scale dropdowns
+  document.querySelectorAll('.editable-time-scale:not([data-listeners-attached])').forEach(function(element) {
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('select')) return; // Already has dropdown
+      
+      const currentValue = this.dataset.original || '';
+      const options = ['minutes', 'hours', 'days', 'weeks', 'months'];
+      
+      // Create select element
+      const select = document.createElement('select');
+      select.style.cssText = this.style.cssText;
+      select.style.border = '1px solid var(--editing-border)';
+      select.style.background = 'white';
+      select.style.outline = 'none';
+      select.style.fontSize = 'inherit';
+      select.style.fontFamily = 'inherit';
+      
+      // Add options
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        if (option === currentValue) {
+          optionElement.selected = true;
+        }
+        select.appendChild(optionElement);
+      });
+      
+      // Replace span with select
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(select, this);
+      select.focus();
+      
+      // Programmatically open the dropdown on creation
+      setTimeout(() => {
+        if (select.showPicker) {
+          select.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers
+          const event = new MouseEvent('mousedown', { bubbles: true });
+          select.dispatchEvent(event);
+        }
+      }, 10);
+      
+      // Track if we've already handled the selection to prevent double-handling
+      let isHandled = false;
+      
+      // Handle selection
+      const handleSelection = () => {
+        if (isHandled) return; // Prevent multiple calls
+        isHandled = true;
+        
+        // Check if select is still in the DOM
+        if (!select.parentNode) return;
+        
+        const newValue = select.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.setAttribute('data-original', newValue);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        newSpan.textContent = newValue;
+        
+        try {
+          select.parentNode.replaceChild(newSpan, select);
+          
+          // Re-attach listeners to new span
+          attachTimeScaleListeners(newSpan);
+          
+          // Save if changed
+          if (newValue !== currentValue) {
+            saveField(newSpan, newValue);
+          }
+        } catch (e) {
+          console.warn('Error replacing time scale element:', e);
+        }
+      };
+      
+      select.addEventListener('change', handleSelection);
+      select.addEventListener('blur', handleSelection);
+      
+      // Handle escape key
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!select.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = currentValue || 'units';
+          
+          try {
+            select.parentNode.replaceChild(newSpan, select);
+            attachTimeScaleListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring time scale element:', e);
+          }
+        }
+      });
+    });
+  });
+
+  // Handle special click behavior for cadence dropdowns
+  document.querySelectorAll('.editable-cadence:not([data-listeners-attached])').forEach(function(element) {
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('select')) return; // Already has dropdown
+      
+      const currentValue = this.dataset.original || '';
+      const options = ['day', 'week', 'month', 'quarter', 'year'];
+      
+      // Create select element
+      const select = document.createElement('select');
+      select.style.cssText = this.style.cssText;
+      select.style.border = '1px solid var(--editing-border)';
+      select.style.background = 'white';
+      select.style.outline = 'none';
+      select.style.fontSize = 'inherit';
+      select.style.fontFamily = 'inherit';
+      
+      // Add options
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        if (option === currentValue) {
+          optionElement.selected = true;
+        }
+        select.appendChild(optionElement);
+      });
+      
+      // Replace span with select
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(select, this);
+      select.focus();
+      
+      // Programmatically open the dropdown on creation
+      setTimeout(() => {
+        if (select.showPicker) {
+          select.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers
+          const event = new MouseEvent('mousedown', { bubbles: true });
+          select.dispatchEvent(event);
+        }
+      }, 10);
+      
+      // Track if we've already handled the selection to prevent double-handling
+      let isHandled = false;
+      
+      // Handle selection
+      const handleSelection = () => {
+        if (isHandled) return; // Prevent multiple calls
+        isHandled = true;
+        
+        // Check if select is still in the DOM
+        if (!select.parentNode) return;
+        
+        const newValue = select.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.setAttribute('data-original', newValue);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        newSpan.textContent = newValue;
+        
+        try {
+          select.parentNode.replaceChild(newSpan, select);
+          
+          // Re-attach listeners to new span
+          attachCadenceListeners(newSpan);
+          
+          // Save if changed
+          if (newValue !== currentValue) {
+            saveField(newSpan, newValue);
+          }
+        } catch (e) {
+          console.warn('Error replacing cadence element:', e);
+        }
+      };
+      
+      select.addEventListener('change', handleSelection);
+      select.addEventListener('blur', handleSelection);
+      
+      // Handle escape key
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!select.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = currentValue || 'units';
+          
+          try {
+            select.parentNode.replaceChild(newSpan, select);
+            attachCadenceListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring cadence element:', e);
+          }
+        }
+      });
+    });
+  });
+
+  // Handle deadline clicks for date picker editing
+  document.querySelectorAll('.editable-deadline:not([data-listeners-attached])').forEach(function(element) {
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('input')) return; // Already has date input
+      
+      const currentValue = this.dataset.original || '';
+      
+      // Create datetime-local input
+      const input = document.createElement('input');
+      input.type = 'datetime-local';
+      input.style.cssText = this.style.cssText;
+      input.style.border = '1px solid var(--editing-border)';
+      input.style.background = 'white';
+      input.style.outline = 'none';
+      input.style.fontSize = 'inherit';
+      input.style.fontFamily = 'inherit';
+      input.style.minWidth = '180px';
+      
+      // Set current value if it exists
+      if (currentValue) {
+        // Convert from stored format to datetime-local format
+        const date = new Date(currentValue);
+        if (!isNaN(date.getTime())) {
+          const isoString = date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM format
+          input.value = isoString;
+        }
+      }
+      
+      // Replace deadline span with input
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(input, this);
+      input.focus();
+      
+      // Immediately open the date picker
+      setTimeout(() => {
+        if (input.showPicker) {
+          input.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers - simulate click on input
+          const event = new MouseEvent('click', { bubbles: true });
+          input.dispatchEvent(event);
+        }
+      }, 10);
+      
+      // Track if we've already handled the input
+      let isHandled = false;
+      
+      const handleDateInput = () => {
+        if (isHandled) return;
+        isHandled = true;
+        
+        if (!input.parentNode) return;
+        
+        const newValue = input.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        
+        // Format the display value
+        let displayValue = '---';
+        let storedValue = '';
+        
+        if (newValue) {
+          const date = new Date(newValue);
+          if (!isNaN(date.getTime())) {
+            displayValue = date.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            });
+            storedValue = newValue; // Use the original datetime-local value
+          }
+        }
+        
+        newSpan.textContent = displayValue;
+        newSpan.setAttribute('data-original', storedValue);
+        
+        try {
+          input.parentNode.replaceChild(newSpan, input);
+          
+          // Re-attach listeners to new span
+          attachDeadlineListeners(newSpan);
+          
+          // Save if changed
+          if (storedValue !== currentValue) {
+            // Handle the save directly to avoid conflicts
+            const elementItem = newSpan.closest('.element-item');
+            const elementId = elementItem.dataset.elementId;
+            const url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${elementId}`;
+            const formData = new FormData();
+            formData.append('_method', 'PATCH');
+            formData.append('element[deadline]', storedValue);
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+              formData.append('authenticity_token', csrfToken.getAttribute('content'));
+            }
+            
+            fetch(url, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+              }
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data && data.success) {
+                console.log('Deadline saved successfully');
+              }
+            })
+            .catch(error => {
+              console.error('Error saving deadline:', error);
+              alert('Failed to save deadline. Please try again.');
+            });
+          }
+        } catch (e) {
+          console.warn('Error replacing deadline element:', e);
+        }
+      };
+      
+      input.addEventListener('change', handleDateInput);
+      input.addEventListener('blur', handleDateInput);
+      
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleDateInput();
+        }
+        
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!input.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = originalSpan.textContent;
+          
+          try {
+            input.parentNode.replaceChild(newSpan, input);
+            attachDeadlineListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring deadline element:', e);
+          }
+        }
+      });
+    });
+  });
+
+
+
+
+
+
+
+  // Function to attach listeners to deadline elements
+  function attachDeadlineListeners(element) {
+    if (element.hasAttribute('data-listeners-attached')) return;
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('input')) return;
+      
+      const currentValue = this.dataset.original || '';
+      
+      const input = document.createElement('input');
+      input.type = 'datetime-local';
+      input.style.cssText = this.style.cssText;
+      input.style.border = '1px solid var(--editing-border)';
+      input.style.background = 'white';
+      input.style.outline = 'none';
+      input.style.fontSize = 'inherit';
+      input.style.fontFamily = 'inherit';
+      input.style.minWidth = '180px';
+      
+      if (currentValue) {
+        const date = new Date(currentValue);
+        if (!isNaN(date.getTime())) {
+          const isoString = date.toISOString().slice(0, 16);
+          input.value = isoString;
+        }
+      }
+      
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(input, this);
+      input.focus();
+      
+      // Immediately open the date picker
+      setTimeout(() => {
+        if (input.showPicker) {
+          input.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers - simulate click on input
+          const event = new MouseEvent('click', { bubbles: true });
+          input.dispatchEvent(event);
+        }
+      }, 10);
+      
+      let isHandled = false;
+      
+      const handleDateInput = () => {
+        if (isHandled) return;
+        isHandled = true;
+        
+        if (!input.parentNode) return;
+        
+        const newValue = input.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        
+        let displayValue = '---';
+        let storedValue = '';
+        
+        if (newValue) {
+          const date = new Date(newValue);
+          if (!isNaN(date.getTime())) {
+            displayValue = date.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            });
+            storedValue = newValue; // Use the original datetime-local value
+          }
+        }
+        
+        newSpan.textContent = displayValue;
+        newSpan.setAttribute('data-original', storedValue);
+        
+        try {
+          input.parentNode.replaceChild(newSpan, input);
+          attachDeadlineListeners(newSpan);
+          
+          if (storedValue !== currentValue) {
+            // Handle the save directly to avoid conflicts
+            const elementItem = newSpan.closest('.element-item');
+            const elementId = elementItem.dataset.elementId;
+            const url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${elementId}`;
+            const formData = new FormData();
+            formData.append('_method', 'PATCH');
+            formData.append('element[deadline]', storedValue);
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+              formData.append('authenticity_token', csrfToken.getAttribute('content'));
+            }
+            
+            fetch(url, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data && data.success) {
+                console.log('Deadline saved successfully');
+              }
+            })
+            .catch(error => {
+              console.error('Error saving deadline:', error);
+              alert('Failed to save deadline. Please try again.');
+            });
+          }
+        } catch (e) {
+          console.warn('Error replacing deadline element:', e);
+        }
+      };
+      
+      input.addEventListener('change', handleDateInput);
+      input.addEventListener('blur', handleDateInput);
+      
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleDateInput();
+        }
+        
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!input.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = originalSpan.textContent;
+          
+          try {
+            input.parentNode.replaceChild(newSpan, input);
+            attachDeadlineListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring deadline element:', e);
+          }
+        }
+      });
+    });
+  }
+
+  // Function to attach listeners to time scale elements
+  function attachTimeScaleListeners(element) {
+    if (element.hasAttribute('data-listeners-attached')) return;
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('select')) return;
+      
+      const currentValue = this.dataset.original || '';
+      const options = ['minutes', 'hours', 'days', 'weeks', 'months'];
+      
+      const select = document.createElement('select');
+      select.style.cssText = this.style.cssText;
+      select.style.border = '1px solid var(--editing-border)';
+      select.style.background = 'white';
+      select.style.outline = 'none';
+      select.style.fontSize = 'inherit';
+      select.style.fontFamily = 'inherit';
+      
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        if (option === currentValue) {
+          optionElement.selected = true;
+        }
+        select.appendChild(optionElement);
+      });
+      
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(select, this);
+      select.focus();
+      
+      // Programmatically open the dropdown on creation
+      setTimeout(() => {
+        if (select.showPicker) {
+          select.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers
+          const event = new MouseEvent('mousedown', { bubbles: true });
+          select.dispatchEvent(event);
+        }
+      }, 10);
+      
+      // Track if we've already handled the selection
+      let isHandled = false;
+      
+      const handleSelection = () => {
+        if (isHandled) return; // Prevent multiple calls
+        isHandled = true;
+        
+        // Check if select is still in the DOM
+        if (!select.parentNode) return;
+        
+        const newValue = select.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.setAttribute('data-original', newValue);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        newSpan.textContent = newValue;
+        
+        try {
+          select.parentNode.replaceChild(newSpan, select);
+          attachTimeScaleListeners(newSpan);
+          
+          if (newValue !== currentValue) {
+            saveField(newSpan, newValue);
+          }
+        } catch (e) {
+          console.warn('Error replacing time scale element:', e);
+        }
+      };
+      
+      select.addEventListener('change', handleSelection);
+      select.addEventListener('blur', handleSelection);
+      
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!select.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = currentValue || 'units';
+          
+          try {
+            select.parentNode.replaceChild(newSpan, select);
+            attachTimeScaleListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring time scale element:', e);
+          }
+        }
+      });
+    });
+  }
+
+  // Function to attach listeners to cadence elements
+  function attachCadenceListeners(element) {
+    if (element.hasAttribute('data-listeners-attached')) return;
+    element.setAttribute('data-listeners-attached', 'true');
+    
+    element.addEventListener('click', function() {
+      if (this.querySelector('select')) return;
+      
+      const currentValue = this.dataset.original || '';
+      const options = ['Day', 'Week', 'Month', 'Quarter', 'Year'];
+      
+      const select = document.createElement('select');
+      select.style.cssText = this.style.cssText;
+      select.style.border = '1px solid var(--editing-border)';
+      select.style.background = 'white';
+      select.style.outline = 'none';
+      select.style.fontSize = 'inherit';
+      select.style.fontFamily = 'inherit';
+      
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        if (option === currentValue) {
+          optionElement.selected = true;
+        }
+        select.appendChild(optionElement);
+      });
+      
+      const originalSpan = this;
+      const parentNode = this.parentNode;
+      parentNode.replaceChild(select, this);
+      select.focus();
+      
+      // Programmatically open the dropdown on creation
+      setTimeout(() => {
+        if (select.showPicker) {
+          select.showPicker(); // Modern browsers
+        } else {
+          // Fallback for older browsers
+          const event = new MouseEvent('mousedown', { bubbles: true });
+          select.dispatchEvent(event);
+        }
+      }, 10);
+      
+      // Track if we've already handled the selection
+      let isHandled = false;
+      
+      const handleSelection = () => {
+        if (isHandled) return; // Prevent multiple calls
+        isHandled = true;
+        
+        // Check if select is still in the DOM
+        if (!select.parentNode) return;
+        
+        const newValue = select.value;
+        const newSpan = document.createElement('span');
+        newSpan.className = originalSpan.className;
+        newSpan.setAttribute('data-field', originalSpan.dataset.field);
+        newSpan.setAttribute('data-original', newValue);
+        newSpan.style.cssText = originalSpan.style.cssText;
+        newSpan.textContent = newValue;
+        
+        try {
+          select.parentNode.replaceChild(newSpan, select);
+          attachCadenceListeners(newSpan);
+          
+          if (newValue !== currentValue) {
+            saveField(newSpan, newValue);
+          }
+        } catch (e) {
+          console.warn('Error replacing cadence element:', e);
+        }
+      };
+      
+      select.addEventListener('change', handleSelection);
+      select.addEventListener('blur', handleSelection);
+      
+      select.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          if (isHandled) return;
+          isHandled = true;
+          
+          if (!select.parentNode) return;
+          
+          const newSpan = document.createElement('span');
+          newSpan.className = originalSpan.className;
+          newSpan.setAttribute('data-field', originalSpan.dataset.field);
+          newSpan.setAttribute('data-original', originalSpan.dataset.original);
+          newSpan.style.cssText = originalSpan.style.cssText;
+          newSpan.textContent = currentValue || 'units';
+          
+          try {
+            select.parentNode.replaceChild(newSpan, select);
+            attachCadenceListeners(newSpan);
+          } catch (e) {
+            console.warn('Error restoring cadence element:', e);
+          }
+        }
+      });
+    });
+  }
+    
+    // Handle Enter key
+    element.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (this.dataset.field === 'name' || this.classList.contains('editable-time-needed')) {
+          // For name and time needed fields, Enter saves and exits
+          e.preventDefault();
+          this.blur();
+        }
+        // For objective field, Enter creates new line (default behavior)
+      }
+      
+      if (e.key === 'Escape') {
+        // Restore original value and exit
+        if (this.dataset.field === 'objective') {
+          if (originalValue === '') {
+            this.innerHTML = '<em>Click to add objective...</em>';
+            this.classList.add('empty');
+          } else {
+            this.innerText = originalValue;
+          }
+        } else {
+          this.innerText = originalValue;
+        }
+        this.blur();
+      }
+    });
+  });
+
+  // Handle AI brain clicks for generating objectives
+  document.querySelectorAll('.ai-objective-writer:not([data-listeners-attached])').forEach(function(brainIcon) {
+    brainIcon.setAttribute('data-listeners-attached', 'true');
+    
+    brainIcon.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Find the element item this brain icon belongs to
+      const elementItem = this.closest('.element-item');
+      if (!elementItem) return;
+      
+      // Find the objective field within this element
+      const objectiveField = elementItem.querySelector('.element-objective');
+      if (!objectiveField) return;
+      
+      const elementId = elementItem.dataset.elementId;
+      
+      // Show loading state
+      const originalContent = objectiveField.innerHTML;
+      objectiveField.innerHTML = 'Generating AI suggestion...';
+      objectiveField.style.opacity = '0.7';
+      
+      // Get word count from slider within the same element 
+      const wordCountSlider = document.getElementById('word-count-slider-' + elementId);
+      const wordCount = wordCountSlider ? parseInt(wordCountSlider.value) : 30;
+      
+      // Prepare form data for AI generation request
+      const formData = new FormData();
+      formData.append('_method', 'PATCH');
+      formData.append('element[objective]', 'help'); // Trigger AI generation
+      formData.append('word_count', wordCount); // Pass word count from slider
+      
+      // Add CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        formData.append('authenticity_token', csrfToken.getAttribute('content'));
+      }
+      
+      const url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${elementId}`;
+      
+      fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error(`Network response was not ok: ${response.status}`);
+      })
+      .then(data => {
+        if (data && data.success && data.element) {
+          const updatedObjective = data.element.objective;
+          
+          if (updatedObjective && updatedObjective.trim() !== '') {
+            objectiveField.innerText = updatedObjective;
+            objectiveField.dataset.original = updatedObjective;
+            objectiveField.classList.remove('empty');
+          } else {
+            objectiveField.innerHTML = '<em>Click to add objective...</em>';
+            objectiveField.classList.add('empty');
+            objectiveField.dataset.original = '';
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        alert('Failed to generate AI suggestion. Please try again.');
+        // Restore original content on error
+        objectiveField.innerHTML = originalContent;
+      })
+      .finally(() => {
+        objectiveField.style.opacity = '1';
+      });
+    });
+  });
+
+  // Initialize add element form if it exists
+  const addElementForm = document.getElementById('add-element-form');
+  if (addElementForm && !addElementForm.hasAttribute('data-listeners-attached')) {
+    addElementForm.setAttribute('data-listeners-attached', 'true');
+    
+    addElementForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const form = this;
+      const formData = new FormData(form);
+      const nameInput = document.getElementById('new-element-name');
+      const elementName = nameInput.value.trim();
+      
+      if (!elementName) {
+        alert('Please enter an element name');
+        return;
+      }
+      
+      // Add CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]');
+      if (csrfToken) {
+        formData.append('authenticity_token', csrfToken.getAttribute('content'));
+      }
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Create new element HTML
+          const newElementHtml = `
+            <div class="element-item incomplete" data-element-id="${data.element.id}" draggable="false">
+              <div class="element-top-row">
+                <div class="drag-handle">
+                  <span class="material-symbols-outlined">drag_indicator</span>
+                </div>
+                
+                <form class="element-form" action="/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${data.element.id}/toggle" method="post">
+                  <input type="hidden" name="_method" value="patch">
+                  <input type="hidden" name="authenticity_token" value="${csrfToken ? csrfToken.getAttribute('content') : ''}">
+                  <input type="checkbox" name="element[completed]" value="true" class="element-checkbox" onchange="this.form.submit();">
+                </form>
+                
+                <div class="element-name" contenteditable="true" data-field="name" data-original="${data.element.name}">
+                  ${data.element.name}
+                </div>
+                
+                <div class="element-actions">
+                  <a href="/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${data.element.id}/edit" class="edit-link">
+                    <span class="material-symbols-outlined">edit</span>
+                  </a>
+                  <a href="/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${data.element.id}" data-method="delete" data-confirm="Are you sure?" class="delete-link">
+                    <span class="material-symbols-outlined">delete</span>
+                  </a>
+                </div>
+              </div>
+              
+              <div class="element-objective empty" contenteditable="true" data-field="objective" data-original="">
+                <em>Click to add objective...</em>
+              </div>
+            </div>
+          `;
+          
+          // Add to elements list
+          document.getElementById('elements-list').insertAdjacentHTML('beforeend', newElementHtml);
+          
+          // Clear the input
+          nameInput.value = '';
+          
+          // Re-initialize for new elements
+          initializeSlicePage();
+        } else {
+          alert('Failed to add element: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add element. Please try again.');
+      });
+    });
+  }
+
+  // Prevent preferences container from stealing focus
+  document.querySelectorAll('.element-preferences-container:not([data-listeners-attached])').forEach(function(container) {
+    container.setAttribute('data-listeners-attached', 'true');
+    
+    // Only prevent default on non-interactive elements
+    container.addEventListener('mousedown', function(e) {
+      // Allow interaction with input elements (sliders) and buttons
+      if (e.target.tagName === 'INPUT' || e.target.classList.contains('ai-objective-writer') || 
+          e.target.classList.contains('slider-minus') || e.target.classList.contains('slider-plus')) {
+        return; // Let these elements handle their own events
+      }
+      
+      // For other elements in the container, prevent focus change
+      e.preventDefault();
+    });
+    
+    // Handle clicks to maintain objective focus without blocking interactions
+    container.addEventListener('click', function(e) {
+      // Don't interfere with input elements and interactive elements
+      if (e.target.tagName === 'INPUT' || e.target.classList.contains('ai-objective-writer') || 
+          e.target.classList.contains('slider-minus') || e.target.classList.contains('slider-plus')) {
+        e.stopPropagation(); // Just prevent bubbling up
+        return;
+      }
+      
+      e.stopPropagation(); // Prevent event bubbling
+      
+      // Keep the objective focused for non-interactive clicks
+      const elementItem = this.closest('.element-item');
+      const objective = elementItem.querySelector('.element-objective');
+      if (objective) {
+        setTimeout(() => {
+          objective.focus();
+        }, 10);
+      }
+    });
+  });
+}
+
+function saveField(element, newValue) {
+  const fieldName = element.dataset.field;
+  const dataType = element.dataset.type;
+  
+  let url, formData;
+  
+  if (dataType === 'slice') {
+    // Save slice fields
+    url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>`;
+    formData = new FormData();
+    formData.append('_method', 'PATCH');
+    formData.append(`slice[${fieldName}]`, newValue);
+  } else {
+    // Save element fields
+    const elementItem = element.closest('.element-item');
+    const elementId = elementItem.dataset.elementId;
+    url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${elementId}`;
+    formData = new FormData();
+    formData.append('_method', 'PATCH');
+    
+    // Handle special formatting for deadline field
+    if (fieldName === 'deadline') {
+      // Try to parse various date formats and convert to ISO format
+      const dateValue = new Date(newValue);
+      if (!isNaN(dateValue.getTime())) {
+        // Convert to ISO format that Rails can understand
+        const isoString = dateValue.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM format
+        formData.append(`element[${fieldName}]`, isoString);
+      } else {
+        formData.append(`element[${fieldName}]`, '');
+      }
+    } else {
+      formData.append(`element[${fieldName}]`, newValue);
+    }
+  }
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  // Show saving indicator
+  element.style.opacity = '0.6';
+  
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error(`Network response was not ok: ${response.status}`);
+  })
+  .then(data => {
+    if (data && data.success && data.element) {
+      if (fieldName === 'objective') {
+        // For element objectives, use the updated value from the server
+        const updatedObjective = data.element.objective;
+        
+        if (updatedObjective && updatedObjective.trim() !== '') {
+          element.innerText = updatedObjective;
+          element.dataset.original = updatedObjective;
+          element.classList.remove('empty');
+        } else {
+          element.innerHTML = '<em>Click to add objective...</em>';
+          element.classList.add('empty');
+          element.dataset.original = '';
+        }
+      } else if (fieldName === 'deadline') {
+        // Update deadline display with formatted date
+        if (data.element.deadline) {
+          const date = new Date(data.element.deadline);
+          const formatted = date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+          element.innerText = formatted;
+          element.dataset.original = data.element.deadline;
+        } else {
+          element.innerText = '---';
+          element.dataset.original = '';
+        }
+      } else if (fieldName === 'time_needed' || fieldName === 'time_scale') {
+        // Update time fields
+        element.dataset.original = newValue;
+        if (fieldName === 'time_needed' && newValue === '0') {
+          element.innerText = '0';
+        }
+      } else if (fieldName === 'name') {
+        // When name is updated, also update outcome_type if it changed
+        element.dataset.original = newValue;
+        
+        // Update outcome_type display if it was returned from server
+        if (data.element.outcome_type) {
+          const elementItem = element.closest('.element-item');
+          const outcomeTypeElement = elementItem.querySelector('.outcome-type-display');
+          if (outcomeTypeElement) {
+            outcomeTypeElement.textContent = data.element.outcome_type;
+          }
+        }
+      } else {
+        // For other fields, use the value that was sent
+        element.dataset.original = newValue;
+      }
+    } else {
+      // For other fields or slice updates, use the value that was sent
+      element.dataset.original = newValue;
+      
+      if (fieldName === 'objective' && newValue === '') {
+        element.innerHTML = '<em>Click to add objective...</em>';
+        element.classList.add('empty');
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+    alert('Failed to save changes. Please try again.');
+    // Reset field on error
+    if (fieldName === 'objective' && element.dataset.original === '') {
+      element.innerHTML = '<em>Click to add objective...</em>';
+      element.classList.add('empty');
+    } else {
+      element.innerText = element.dataset.original || '';
+    }
+  })
+  .finally(() => {
+    element.style.opacity = '1';
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Drag and Drop functionality
+function initializeDragAndDrop() {
+  const elementsList = document.getElementById('elements-list');
+  if (!elementsList) return;
+
+  let draggedElement = null;
+
+  // Add event listeners to all element items
+  const elementItems = elementsList.querySelectorAll('.element-item');
+  
+  elementItems.forEach(function(item) {
+    const dragHandle = item.querySelector('.drag-handle');
+    if (!dragHandle) return;
+
+    // Make the drag handle draggable
+    dragHandle.draggable = true;
+
+    // Drag start - only from drag handle
+    dragHandle.addEventListener('dragstart', function(e) {
+      draggedElement = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', item.outerHTML);
+    });
+
+    // Drag end - only from drag handle
+    dragHandle.addEventListener('dragend', function(e) {
+      item.classList.remove('dragging');
+      draggedElement = null;
+      
+      // Remove drag-over classes from all items
+      elementItems.forEach(function(item) {
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+    });
+
+    // Drag over - on the entire element item
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (this !== draggedElement) {
+        // Remove any existing drag-over classes
+        this.classList.remove('drag-over-top', 'drag-over-bottom');
+        
+        // Determine if cursor is in top or bottom half
+        const rect = this.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        
+        if (e.clientY < midpoint) {
+          this.classList.add('drag-over-top');
+        } else {
+          this.classList.add('drag-over-bottom');
+        }
+      }
+    });
+
+    // Drag leave - on the entire element item
+    item.addEventListener('dragleave', function(e) {
+      // Only remove classes if we're actually leaving the element
+      // Check if the related target is not a child of this element
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drag-over-top', 'drag-over-bottom');
+      }
+    });
+
+    // Drop - on the entire element item
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over-top', 'drag-over-bottom');
+      
+      if (this !== draggedElement) {
+        const rect = this.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        
+        if (e.clientY < midpoint) {
+          // Insert before this element
+          this.parentNode.insertBefore(draggedElement, this);
+        } else {
+          // Insert after this element
+          this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        }
+        
+        // Update the order in the database
+        updateElementOrder();
+      }
+    });
+  });
+}
+
+function updateElementOrder() {
+  const elementsList = document.getElementById('elements-list');
+  const elementItems = elementsList.querySelectorAll('.element-item');
+  const elementIds = Array.from(elementItems).map(item => item.dataset.elementId);
+  
+  const formData = new FormData();
+  formData.append('_method', 'PATCH');
+  elementIds.forEach(function(id) {
+    formData.append('element_ids[]', id);
+  });
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  fetch(`/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/reorder`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (!data.success) {
+      console.error('Failed to update element order:', data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error updating element order:', error);
+  });
+}
+
+// Initialize on both DOMContentLoaded and Turbo events
+document.addEventListener('DOMContentLoaded', initializeSlicePage);
+document.addEventListener('turbo:load', initializeSlicePage);
+document.addEventListener('turbo:render', initializeSlicePage);
+</script>
+
+<script>
+  document.querySelectorAll('.ai-element-writer').forEach(function(icon) {
+    icon.addEventListener('click', function() {
+      const elementItem = this.closest('.element-item');
+      const elementId = elementItem.dataset.elementId;
+      const elementNameContainer = elementItem.querySelector('.element-name');
+      const elementName = elementNameContainer.textContent.trim();
+      
+      // Call the tangibility modal function
+      if (window.showTangibilityModal) {
+        window.showTangibilityModal(elementId, elementName);
+      } else {
+        alert('Tangibility modal function not found.');
+      }
+    });
+  });
+</script>
+
+<!-- Floating Chat Button -->
+<%= link_to "/chat", class: "chat-button", title: "Health & Wellness Coach" do %>
+  <span class="chat-icon">💬</span>
+<% end %>

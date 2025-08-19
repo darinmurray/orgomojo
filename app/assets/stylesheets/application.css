@@ -1,0 +1,517 @@
+/* app/assets/stylesheets/application.css */
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* CSS Variables for Montserrat Font Weights */
+:root {
+  /* Montserrat Font Family */
+  --font-family-primary: 'Montserrat', sans-serif;
+  
+  /* Montserrat Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+  --font-weight-black: 900;
+  
+  /* Convenience aliases */
+  --font-weight-normal: var(--font-weight-regular);
+  --font-weight-strong: var(--font-weight-bold);
+  
+  /* Material Icons */
+  --material-icons-weight: 300;
+
+  --darkestgray: #333333;
+  --darkgray: #666666;
+  --lightgray: #b1b1b1ff;
+  --lightergray: #e9ecef;
+  --hilighteryellow: #feffe1;
+  --focus: #a259ec;
+  --red: #cc0000;
+  --editing-border: #cbcbcc;
+
+  --text-input-border-radius: 8px;
+  --button-border-radius: 8px;
+  --framed_item-border-radius: 10px;
+
+    --pie-spoke: #efefef;
+    --pie-circumference: #efefef;
+    --inline-btn-padding: 6px 12px;
+    --framed-item-box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+
+
+
+
+
+
+/* TOOLTIP COLORS */
+/* TOOLTIP COLORS */
+/* TOOLTIP COLORS */
+  --tooltip-1-border-color: #a752f6;
+  --tooltip-1-background-color: #a752f6;
+  --tooltip-1-text-color: #ffffff;
+  /* --tooltip-1-border-color: #ffb3ba;
+  --tooltip-1-background-color: #ffe6e6;
+  --tooltip-1-text-color: #ff4d4d; */
+
+  --tooltip-2-border-color: #5552f6;
+  --tooltip-2-background-color: #5552f6;
+  --tooltip-2-text-color: #ffffff;
+  /* --tooltip-2-border-color: #bae1ff;
+  --tooltip-2-background-color: #e6f7ff;
+  --tooltip-2-text-color: #4da6ff; */
+
+  --tooltip-3-border-color: #52f6c8;
+  --tooltip-3-background-color: #52f6c8;
+  --tooltip-3-text-color: #ffffff;
+
+  --tooltip-4-border-color: #f652af;
+  --tooltip-4-background-color: #f652af;
+  --tooltip-4-text-color: #ffffff;
+}
+
+
+
+
+
+
+
+
+.fade-in {
+  opacity: 0; /* Ensure the element is initially hidden */
+  animation: fadeInAnimation 1.5s forwards;
+}
+
+@keyframes fadeInAnimation {
+  to {
+    opacity: 1; /* Fade in to full visibility */
+  }
+}
+
+.fade-out {
+  opacity: 1;
+  animation: fadeOutAnimation 1.5s forwards;
+}
+
+@keyframes fadeOutAnimation {
+  to {
+    opacity: 0;
+  }
+}
+
+/* tooltip styling */
+/*  D E F A U L T  */
+/* tooltip styling */
+.tooltip {
+    font-size: 0.9rem;
+  padding: 18px 18px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width:200px;
+  line-height: 1.5;
+  border: 1px solid black;
+  background-color: var(--lightergray);
+  color: black;
+    margin-right: 24px;
+
+    /* -webkit-box-shadow: 5px 5px 20px 5px rgba(255,208,251,0.56); 
+box-shadow: 5px 5px 20px 5px rgba(255,208,251,0.56); */
+}
+
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -24px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 0 10px 24px;
+  border-color: transparent transparent transparent black;
+  
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -7px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 7px;
+  border-color: transparent transparent transparent var(--lightergray);
+}
+
+
+
+
+/* SPECIFIC tooltip styles */
+/* SPECIFIC tooltip styles */
+/* SPECIFIC tooltip styles */
+.tooltip.one::after {
+  border-color: transparent transparent transparent var(--tooltip-1-border-color);
+}
+.tooltip.one::before {
+  border-color: transparent transparent transparent var(--tooltip-1-background-color);
+}
+.tooltip.two::after {
+  border-color: transparent transparent transparent var(--tooltip-2-border-color);
+}
+.tooltip.two::before {
+  border-color: transparent transparent transparent var(--tooltip-2-background-color);
+}
+.tooltip.three::after {
+  border-color: transparent transparent transparent var(--tooltip-3-border-color);
+}
+.tooltip.three::before {
+  border-color: transparent transparent transparent var(--tooltip-3-background-color);
+}
+.tooltip.four::after {
+  border-color: transparent transparent transparent var(--tooltip-4-border-color);
+}
+.tooltip.four::before {
+  border-color: transparent transparent transparent var(--tooltip-4-background-color);
+}
+
+
+
+
+.tooltip.one {
+  border: 1px solid var(--tooltip-1-border-color);
+  background-color: var(--tooltip-1-background-color);
+  color: var(--tooltip-1-text-color);
+}
+.tooltip.two {
+  border: 1px solid var(--tooltip-2-border-color);
+  background-color: var(--tooltip-2-background-color);
+  color: var(--tooltip-2-text-color);
+}
+.tooltip.three {
+  border: 1px solid var(--tooltip-3-border-color);
+  background-color: var(--tooltip-3-background-color);
+  color: var(--tooltip-3-text-color);
+}
+.tooltip.four {
+  border: 1px solid var(--tooltip-4-border-color);
+  background-color: var(--tooltip-4-background-color);
+  color: var(--tooltip-4-text-color);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.material-icons,
+.material-symbols-outlined {
+  font-variation-settings: 'wght' var(--material-icons-weight);
+}
+
+body {
+  font-family: var(--font-family-primary);
+  color: #282828;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+body.landing-page {
+  font-family:  var(--font-family-primary);
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+h1 {
+  text-align: center;
+}
+
+h3 {
+    display: block;
+    font-size: 1.17em;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
+
+.logged-in-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom:40px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+
+
+.back-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.material-symbols-outlined.back-button {
+  font-size: 32px;
+  color: #333;
+}
+.material-symbols-outlined.pie-home-icon,
+.material-symbols-outlined.home-icon,
+.material-symbols-outlined.story-graph-icon {
+  padding-left:20px;
+  font-size: 32px;
+  color: #333;
+}
+
+/* Necessary to make the graph icon appear visually similar to the home button size */
+.material-symbols-outlined.story-graph-icon {
+  font-size: 28px;
+}
+
+
+.user-photo-header {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+
+.material-symbols-outlined.vertical-meatball {
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.radial-pie-chart {
+  max-width: 100%;
+  height: auto;
+}
+
+.pie-slice {
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.pie-slice:hover {
+  opacity: 0.8;
+}
+
+/* .pie-container {
+  text-align: center;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+} */
+
+.pie-chart-container {
+  /* background: #f9f9f9; */
+  /* margin: 20px; */
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.slice-label {
+  font-size: 14px;
+  font-weight: bold;
+  text-anchor: middle;
+  fill: #989898;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .bottom-actions {
+  margin-top: 30px;
+  padding-top: 40px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end; /* or space-between/center, as needed */
+  gap: 32px;  /* Add spacing between the links/buttons */
+  border-top: 1px solid #ddd;
+  }
+
+/* for the trash cans */
+.delete-link {
+  color: var(--lightgray);
+  text-decoration: none;
+  cursor: pointer;
+  }
+  
+  .delete-slice-link,
+  .delete-slice-link:visited {
+    color: var(--lightgray);
+    text-decoration: none;
+    cursor: pointer;
+
+  }
+  .delete-slice-link:hover {
+   color: #dc3545;
+    text-decoration: underline;
+  }
+
+
+
+ /* a:visited {
+    color: var(--lightgray);
+    text-decoration: none;
+    cursor: pointer;
+  } */
+
+
+
+
+
+
+  .back-link,
+  .back-to-wheel-link {
+    flex: 1;
+    color: var(--darkgray);
+    text-decoration: none;
+    margin-left: 10px;
+  }
+
+
+
+
+
+
+  /* SLIDER defaults, as used in storyline, and now slice show */
+  /* These now need to be removed from storyline.html.erb */
+
+  /* THESE DON'T HAVE ACCESS TO THE CSS VARS FROM STORYLINE.CSS
+  MAKE THOSE UNIVERSLA */
+
+         #story-parameters-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin: 0 25px;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            gap:15px;
+            color: var(--storyline-text-color);
+            border: 1px solid var(--lightgray, #e1e5e9);
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            border-top: transparent;
+        }
+        #word-count-slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* margin-top: 20px;
+            margin-bottom: 20px; */
+            margin-right: 10px;
+        }
+
+        
+        #word-count-slider {
+            width: 150px;
+            margin: 0 10px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            vertical-align: middle;
+        }
+
+input[type="range" i] {
+    appearance: auto;
+    cursor: default;
+    color: light-dark(rgba(164, 33, 33, 1), rgba(37, 119, 195, 1));
+    padding: initial;
+    border: initial;
+    margin: 2px;
+}
+
+
+
+
+ #word-count-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--storyline-accent-color, #06b6d4);
+  cursor: pointer;
+  margin-top: -4px; /* <-- This centers the thumb over a 3px track */
+}
+
+#word-count-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--storyline-accent-color, #06b6d4);
+  cursor: pointer;
+  margin-top: -8.5px; /* Try this, but Firefox usually centers naturally */
+}
+
+
+#word-count-slider::-webkit-slider-runnable-track {
+    height: 1px;
+    background: var(--storyline-accent-color, #06b6d4); /* fallback color */
+    border-radius: 4px;
+}
+#word-count-slider::-moz-range-track {
+    height: 1px;
+    background: var(--storyline-accent-color, #06b6d4);
+    border-radius: 4px;
+}
+#word-count-slider::-ms-fill-lower,
+#word-count-slider::-ms-fill-upper {
+    height: 3px;
+    background: var(--light-gray, #06b6d4);
+    border-radius: 4px;
+}
+
+.slider-minus, .slider-plus {
+    color: var(--lightgray, #e1e5e9);
+}

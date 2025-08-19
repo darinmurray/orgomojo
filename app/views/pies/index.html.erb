@@ -1,0 +1,24 @@
+<!-- app/views/pies/index.html.erb -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <h1>Radial Pie Charts</h1>
+  <%= link_to 'New Pie Chart', new_pie_path, 
+      style: "background: #28a745; color: white; padding: 12px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+</div>
+
+<% @pies.each do |pie| %>
+  <div class="pie-container" style="margin-bottom: 40px;">
+    <h2><%= link_to pie.name, pie_path(pie) %></h2>
+    <%= radial_pie_chart(pie, size: 300) %>
+    <div style="margin-top: 15px;">
+      <%= link_to 'Edit', edit_pie_path(pie), style: "margin-right: 10px; color: #007cba;" %>
+      <%= link_to 'Delete', pie_path(pie), method: :delete, 
+          confirm: 'Are you sure?', style: "color: #dc3545;" %>
+    </div>
+  </div>
+<% end %>
+
+<% if @pies.empty? %>
+  <div style="text-align: center; margin-top: 50px; color: #6c757d;">
+    <p>No pie charts yet. <%= link_to 'Create your first one!', new_pie_path %></p>
+  </div>
+<% end %>

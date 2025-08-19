@@ -1,0 +1,1424 @@
+<%
+# Fabricated data for preview - this simulates database objects
+# Use local variables with Struct.new to avoid constant assignment issues
+fake_pie_class = Struct.new(:id, :name, :slices) do
+  def initialize(id, name)
+    super(id, name, [])
+  end
+end
+
+fake_slice_class = Struct.new(:id, :name, :color, :percentage, :elements) do
+  def initialize(id, name, color, percentage)
+    super(id, name, color, percentage, [])
+  end
+  
+  def any?
+    elements.any?
+  end
+end
+
+fake_element_class = Struct.new(:id, :name, :objective, :completed) do
+  def initialize(id, name, objective = nil, completed = false)
+    super(id, name, objective, completed)
+  end
+  
+  def completed?
+    completed
+  end
+end
+
+# Create fabricated pie with slices and elements
+@pie = fake_pie_class.new(999, "Life Balance Preview")
+
+# Create slices
+health_slice = fake_slice_class.new(1, "Health", "#ff6b6b", 45)
+health_slice.elements = [
+  fake_element_class.new(1, "Exercise 30 min daily", "Complete a 30-minute workout routine every day", false),
+  fake_element_class.new(2, "Drink 8 glasses of water", "Consume at least 64 ounces of water daily", true),
+  fake_element_class.new(3, "Get 8 hours of sleep", "Maintain consistent sleep schedule with 8 hours nightly", false),
+  fake_element_class.new(4, "Eat 5 servings vegetables", "Include 5 servings of vegetables in daily meals", false)
+]
+
+relationships_slice = fake_slice_class.new(2, "Relationships", "#4ecdc4", 60)
+relationships_slice.elements = [
+  fake_element_class.new(5, "Call family weekly", "Schedule regular weekly calls with family members", true),
+  fake_element_class.new(6, "Date night monthly", "Plan monthly date activities with partner", false),
+  fake_element_class.new(7, "Friend meetup bi-weekly", "Organize social gatherings with friends every two weeks", false)
+]
+
+career_slice = fake_slice_class.new(3, "Career", "#45b7d1", 30)
+career_slice.elements = [
+  fake_element_class.new(8, "Learn new skill", "Complete online course in relevant professional skill", false),
+  fake_element_class.new(9, "Network monthly", "Attend one networking event per month", true),
+  fake_element_class.new(10, "Update resume", "Revise and modernize resume with recent accomplishments", false),
+  fake_element_class.new(11, "Seek mentorship", "Connect with industry mentor for career guidance", false)
+]
+
+hobbies_slice = fake_slice_class.new(4, "Spiritual/personal Growth", "#f7dc6f", 80)
+hobbies_slice.elements = [
+  fake_element_class.new(12, "Read 2 books monthly", "Complete reading two books each month", false),
+  fake_element_class.new(13, "Regular Meditation", "Practice meditation for 30 minutes daily", true),
+  fake_element_class.new(14, "Tai Chi", "Complete monthly Tai Chi challenge", false)
+]
+
+finances_slice = fake_slice_class.new(5, "Financial Health", "#bb8fce", 38)
+finances_slice.elements = [
+  fake_element_class.new(15, "Budget tracking", "Review and update monthly budget", true),
+  fake_element_class.new(16, "Emergency fund", "Save $500 monthly for emergency fund", false),
+  fake_element_class.new(17, "Investment research", "Research and evaluate investment options", false)
+]
+finances_slice = fake_slice_class.new(6, "Fun - Hobbies - Self", "#bb8fce", 59)
+finances_slice.elements = [
+  fake_element_class.new(15, "Mud Track Racing", "Get down and dirty!", true),
+  fake_element_class.new(16, "Engine Building", "Build and customize your own engine", false),
+  fake_element_class.new(17, "Local Exploration", "Research and explore local attractions", false)
+]
+
+@pie.slices = [health_slice, relationships_slice, career_slice, hobbies_slice, finances_slice]
+
+# Helper method to simulate truncate
+def truncate(text, length: 30)
+  text.length > length ? text[0...length] + "..." : text
+end
+
+# Mock radial_pie_chart helper - creates a simple SVG pie chart
+def radial_pie_chart(pie, size: 350, **options)
+  slices = pie.slices
+  total = slices.map(&:percentage).sum
+  
+  svg_content = <<~SVG
+    <svg width="#{size}" height="#{size}" viewBox="0 0 #{size} #{size}">
+      <g transform="translate(#{size/2}, #{size/2})">
+  SVG
+  
+  current_angle = 0
+  radius = size * 0.4
+  
+  slices.each_with_index do |slice, index|
+    angle = (slice.percentage / total.to_f) * 360
+    start_angle = current_angle * Math::PI / 180
+    end_angle = (current_angle + angle) * Math::PI / 180
+    
+    large_arc = angle > 180 ? 1 : 0
+    
+    x1 = radius * Math.cos(start_angle)
+    y1 = radius * Math.sin(start_angle)
+    x2 = radius * Math.cos(end_angle)
+    y2 = radius * Math.sin(end_angle)
+    
+    path_data = "M 0 0 L #{x1} #{y1} A #{radius} #{radius} 0 #{large_arc} 1 #{x2} #{y2} Z"
+    
+    svg_content += <<~SVG
+      <path d="#{path_data}" fill="#{slice.color}" stroke="white" stroke-width="2"/>
+    SVG
+    
+    current_angle += angle
+  end
+  
+  svg_content += <<~SVG
+      </g>
+    </svg>
+  SVG
+  
+  svg_content.html_safe
+end
+%>
+
+<style>
+/* .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-size: 14px;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 600,
+  'GRAD' 0,
+  'opsz' 20
+} */
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Force navigation to display correctly on this page */
+body > .main-nav {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  width: 64px !important;
+  min-width: 64px !important;
+  background: #f7f7fa !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  padding-top: 32px !important;
+  z-index: 100 !important;
+  transition: width 0.2s !important;
+  box-sizing: border-box !important;
+}
+
+:root {
+  --lightgray: #b1b1b1ff;
+  --lightergray: #e9ecef;
+}
+
+
+  .pie-container {
+    display: flex;
+    gap: 60px;
+    /* align-items: flex-start; */
+    justify-content: center;
+    margin: 40px 40px;
+  }
+  
+
+.pie-title-editable {
+  outline: none;
+  border: 1px solid transparent;
+  padding: 5px 15px;
+  border-radius: var(--text-input-border-radius);
+  cursor: text;
+  transition: border-color 0.2s ease;
+  
+  /* Center the element and make it auto-width */
+  display: inline-block;
+  margin: 0 auto;
+  text-align: center;
+  width: auto;
+}
+
+/* Wrap the h1 in a container to center it */
+.pie-title-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 1000;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip,
+.tooltip-container .pie-title-editable:focus + .tooltip,
+.show-tooltip .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pie-title-editable:hover:not(.editing) {
+  border-color: var(--focus);
+}
+
+.pie-title-editable.editing {
+  border-color: var(--focus);
+}
+
+.pie-title-editable:empty:before {
+  content: attr(placeholder);
+  color: #999;
+  font-style: italic;
+}
+
+
+
+  .pie-legend-left,
+  .pie-legend-right {
+    flex: 1;
+    min-width: 0;
+    /* max-width: 300px; */
+    min-width: 150px;
+  }
+  
+  .slice-container {
+    margin-bottom: 25px;
+    border-radius: 0px;
+    overflow: hidden;
+  }
+  
+  .slice-link {
+    font-size: 18px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+  }
+  
+  .slice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+  }
+
+  
+
+  .slice-header-container {
+    padding: 0 10px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+    border-radius: var(--text-input-border-radius);
+    transition: all 0.2s ease;
+  }
+
+  /* Remove CSS hover - let JavaScript handle all hover effects */
+
+  .slice-header-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .slice-percentage {
+    font-size: 13px;
+    font-weight: normal;
+    color: var(--lightgray);
+  }
+  
+
+
+
+/* wraps the whole elements list */
+  .elements-container {
+    padding-left: 7px;
+    /* background: lightgray; */
+    margin-bottom: 15px;
+  }
+  
+
+  /* Style for individual elements */
+  .element-row {
+  /* background: lightblue; */
+  display: flex; 
+  align-items: center; 
+  padding: 3px 0;
+}
+
+.element-list-view {
+  padding-left: 0px;
+}
+
+
+
+/* Style for completed elements */
+.element-completed-list-view {
+  font-weight: normal;
+  color: var(--lightgray); 
+}
+
+/* left margin when no check mark */
+.check-mark-space {
+  margin-right: 0px;
+}
+
+
+.elements-list {
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+}
+
+
+  .no-elements {
+    color: var(--lightgray);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+  }
+  
+
+
+  #pie-section {
+    flex-shrink: 0;
+  }
+  
+  .pie-chart-container {
+    text-align: center;
+  }
+
+
+  .progress-bar-container {
+    background: var(--lightergray); /* #e9ecef; */
+    margin-top: 0px;
+    margin-bottom: 5px;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+
+
+/* ============ Modal styles ============== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.colors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.color-picker {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  z-index: 2;
+}
+.color-square {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.1s ease;
+}
+
+.color-square:hover {
+  transform: scale(1.1);
+}
+
+.color-label {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Style the color input when supported */
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 4px;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.colors-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #6c757d;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.colors-link:hover {
+  background-color: #f8f9fa;
+}
+
+.bottom-actions {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 20px 40px;
+}
+
+
+
+
+
+.material-symbols-outlined.palette {
+  font-size: 24px;
+  vertical-align: middle;
+}
+</style>
+
+<div class="pie-title-container">
+  <div class="tooltip-container">
+    <div class="tooltip">Name your Focus Wheel</div>
+    <h1 contenteditable="true" 
+        id="pie-name-input"
+        data-field="name" 
+        data-original="<%= @pie.name %>"
+        data-type="pie"
+        class="pie-title-editable"
+        placeholder="Enter your Focus Wheel name">
+      <%= @pie.name %>
+    </h1>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Three-column flex container -->
+<div class="pie-container">
+  
+  <!-- Left Legend Section -->
+  <div class="pie-legend-left">
+    <div>
+      <% @pie.slices.each_with_index do |slice, index| %>
+        <% if index < (@pie.slices.count / 2.0).ceil %>
+          <div class="slice-container" data-slice-id="<%= slice.id %>">
+
+
+            <!-- Slice Header -->
+            <div class="slice-link">
+            <div class="slice-header-container">
+              <div class="slice-header">
+                <div class="slice-header-left">
+                  <div>
+                    <strong><%= truncate(slice.name, length: 35) %></strong>
+                    <div id="slice-<%= slice.id %>-stats"></div>
+                  </div>
+                </div>
+                <div id="slice-<%= slice.id %>-percentage">
+                  <div class="slice-percentage percentage">
+                    <%= slice.percentage %>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-bar-container">
+                  <div class="progress-bar" style="background: <%= slice.color %>; width: <%= slice.percentage %>%;"></div>
+              </div>
+
+            </div><!-- end slice-header-container -->
+            </div>
+            
+            <!-- Elements List -->
+            <div class="elements-container">
+              <div id="slice-<%= slice.id %>-elements-list" class="elements-list">
+                <% if slice.elements.any? %>
+                  <% slice.elements.each do |element| %>
+                    <div class="element-row">
+                      <div class="element-list-view <%= element.completed? ? 'element-completed-list-view' : '' %>">
+                        <% if element.completed? %>
+                          <span class="material-symbols-outlined check-mark">check_circle</span>
+                        <% else %>
+                          <span class="check-mark-space"></span>
+                        <% end %>
+                        <%= element.name %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div id="slice-<%= slice.id %>-no-elements" class="no-elements">
+                    No elements yet.
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pie Chart Section (Center) -->
+  <div id="pie-section">
+    <div id="pie-chart">
+      <div class="pie-chart-container">
+        <%= radial_pie_chart(@pie, size: 350, pinwheel: false, curved_labels: false) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Legend Section -->
+  <div class="pie-legend-right">
+    <div>
+      <% @pie.slices.each_with_index do |slice, index| %>
+        <% if index >= (@pie.slices.count / 2.0).ceil %>
+          <div class="slice-container" data-slice-id="<%= slice.id %>">
+          
+          
+
+            <!-- Slice Header -->
+            <div class="slice-link">
+            <div class="slice-header-container">
+              <div class="slice-header">
+                <div class="slice-header-left">
+                  <div>
+                    <strong><%= truncate(slice.name, length: 35) %></strong>
+                    <div id="slice-<%= slice.id %>-stats"></div>
+                  </div>
+                </div>
+                <div id="slice-<%= slice.id %>-percentage">
+                  <div class="slice-percentage percentage">
+                    <%= slice.percentage %>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-bar-container">
+                  <div class="progress-bar" style="background: <%= slice.color %>; width: <%= slice.percentage %>%;"></div>
+              </div>
+
+            </div><!-- end slice-header-container -->
+            </div>
+
+
+
+                    <!-- Elements List -->
+                    <div class="elements-container">
+                      <div id="slice-<%= slice.id %>-elements-list" class="elements-list">
+                        <% if slice.elements.any? %>
+                          <% slice.elements.each do |element| %>
+                            <div class="element-row">
+                              <div class="element-list-view <%= element.completed? ? 'element-completed-list-view' : '' %>">
+                                <% if element.completed? %>
+                                  <span class="material-symbols-outlined check-mark">check_circle</span>
+                                <% else %>
+                                  <span class="check-mark-space"></span>
+                                <% end %>
+                                <%= element.name %>
+                              </div>
+                            </div>
+                          <% end %>
+                        <% else %>
+                          <div id="slice-<%= slice.id %>-no-elements" class="no-elements">
+                            No elements yet.
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- Bottom Actions -->
+<div class="bottom-actions">
+<a href="#" class="back-to-wheel-link">← Back to my Wheels</a>  
+
+
+
+<!-- Color Palette Modal -->
+  
+  <a href="#" class="colors-link" onclick="openColorsModal(); return false;">
+    <span class="material-symbols-outlined palette">settings</span>
+  </a>
+
+
+
+
+<a href="#" class="delete-slice-link">Delete Slice (Preview)</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- Colors Modal -->
+<!-- Colors Modal -->
+<div id="colors-modal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2><%= @pie.name %></h2>
+    </div>
+    
+    <div class="modal-body">
+      <div class="colors-list">
+        <% @pie.slices.each do |slice| %>
+          <div class="color-item" data-slice-id="<%= slice.id %>">
+            <input type="color" 
+                   class="color-picker" 
+                   value="<%= slice.color %>" 
+                   data-original-color="<%= slice.color %>"
+                   onchange="updateColorPreview(this)">
+            <div class="color-square" style="background-color: <%= slice.color %>;"></div>
+            <span class="color-label"><%= slice.name %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="cancel-btn" onclick="cancelColorChanges()">Cancel</button>
+      <button type="button" class="save-btn" onclick="saveColors()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Function to initialize slice hover and click functionality
+function initializeSliceInteractions() {
+  console.log('Initializing slice interactions...');
+  
+  // Target the slice-link elements (which wrap the slice-header-container)
+  const sliceLinks = document.querySelectorAll('.slice-link');
+  
+  console.log('Found slice links:', sliceLinks.length);
+  
+  sliceLinks.forEach(function(sliceLink) {
+    // Check if already initialized
+    if (sliceLink.hasAttribute('data-slice-listeners-attached')) {
+      console.log('Slice link already has listeners attached, skipping');
+      return;
+    }
+    
+    // Mark as initialized
+    sliceLink.setAttribute('data-slice-listeners-attached', 'true');
+    
+    // Find the slice-header-container inside this link
+    const headerContainer = sliceLink.querySelector('.slice-header-container');
+    
+    if (headerContainer) {
+      // Add hover effects using direct style properties
+      sliceLink.addEventListener('mouseenter', function() {
+        console.log('Mouseenter event triggered on slice link');
+        headerContainer.style.border = '1px solid var(--focus)';
+        headerContainer.style.backgroundColor = 'rgba(0, 124, 186, 0.05)';
+        headerContainer.style.cursor = 'pointer';
+      });
+      
+      sliceLink.addEventListener('mouseleave', function() {
+        console.log('Mouseleave event triggered on slice link');
+        headerContainer.style.border = '1px solid transparent';
+        headerContainer.style.backgroundColor = '';
+        headerContainer.style.cursor = '';
+      });
+      
+      sliceLink.addEventListener('click', function(e) {
+        console.log('Click event triggered on slice link');
+        // Let the default link behavior handle navigation
+      });
+      
+      console.log('Added hover effects to slice link');
+    } else {
+      console.log('No header container found inside slice link');
+    }
+  });
+  
+  console.log('Slice interactions initialized for', sliceLinks.length, 'slice links');
+}
+
+// Function to initialize pie name editing functionality
+function initializePieNameEditing() {
+  // Handle contenteditable pie name - be more specific and flexible
+  const pieNameElement = document.querySelector('#pie-name-input');
+  
+  if (pieNameElement && !pieNameElement.hasAttribute('data-listeners-attached')) {
+    pieNameElement.setAttribute('data-listeners-attached', 'true');
+    let originalValue = pieNameElement.dataset.original || pieNameElement.innerText.trim();
+    
+    // Auto-focus and show tooltip on page load
+    setTimeout(() => {
+      pieNameElement.focus();
+      const tooltipContainer = pieNameElement.closest('.tooltip-container');
+      if (tooltipContainer) {
+        tooltipContainer.classList.add('show-tooltip');
+        // Hide tooltip after 3 seconds
+        setTimeout(() => {
+          tooltipContainer.classList.remove('show-tooltip');
+        }, 3000);
+      }
+      
+      // Select all text for easy editing
+      const range = document.createRange();
+      range.selectNodeContents(pieNameElement);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }, 100);
+    
+    // Handle focus
+    function handleFocus() {
+      this.classList.add('editing');
+    }
+    
+    // Handle blur - save changes and create new pie
+    function handleBlur() {
+      this.classList.remove('editing');
+      let newValue = this.innerText.trim();
+      
+      // Hide tooltip when editing is done
+      const tooltipContainer = this.closest('.tooltip-container');
+      if (tooltipContainer) {
+        tooltipContainer.classList.remove('show-tooltip');
+      }
+      
+      if (newValue && newValue !== originalValue && newValue !== 'Life Balance Preview') {
+        createNewPie(newValue);
+      } else if (newValue === '') {
+        // Don't allow empty pie name - restore original
+        this.innerText = originalValue;
+      }
+    }
+    
+    // Handle Enter key
+    function handleKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.blur();
+      }
+      
+      if (e.key === 'Escape') {
+        this.innerText = originalValue;
+        this.blur();
+      }
+    }
+    
+    // Add event listeners
+    pieNameElement.addEventListener('focus', handleFocus);
+    pieNameElement.addEventListener('blur', handleBlur);
+    pieNameElement.addEventListener('keydown', handleKeydown);
+  }
+}
+
+// Function to create a new pie with fabricated data
+function createNewPie(pieName) {
+  console.log('Creating new pie with name:', pieName);
+  
+  // Show loading indicator
+  const pieNameElement = document.querySelector('#pie-name-input');
+  if (pieNameElement) {
+    pieNameElement.style.opacity = '0.6';
+    pieNameElement.contentEditable = 'false';
+  }
+  
+  // Prepare the pie data with fabricated slices
+  const pieData = {
+    name: pieName,
+    slices_attributes: [
+      {
+        name: "Health",
+        color: "#ff6b6b",
+        percentage: 25,
+        elements_attributes: [
+          { name: "Exercise 30 min daily", objective: "Complete a 30-minute workout routine every day", completed: false },
+          { name: "Drink 8 glasses of water", objective: "Consume at least 64 ounces of water daily", completed: true },
+          { name: "Get 8 hours of sleep", objective: "Maintain consistent sleep schedule with 8 hours nightly", completed: false },
+          { name: "Eat 5 servings vegetables", objective: "Include 5 servings of vegetables in daily meals", completed: false }
+        ]
+      },
+      {
+        name: "Relationships",
+        color: "#4ecdc4",
+        percentage: 20,
+        elements_attributes: [
+          { name: "Call family weekly", objective: "Schedule regular weekly calls with family members", completed: true },
+          { name: "Date night monthly", objective: "Plan monthly date activities with partner", completed: false },
+          { name: "Friend meetup bi-weekly", objective: "Organize social gatherings with friends every two weeks", completed: false }
+        ]
+      },
+      {
+        name: "Career Growth",
+        color: "#45b7d1",
+        percentage: 30,
+        elements_attributes: [
+          { name: "Learn new skill", objective: "Complete online course in relevant professional skill", completed: false },
+          { name: "Network monthly", objective: "Attend one networking event per month", completed: true },
+          { name: "Update resume", objective: "Revise and modernize resume with recent accomplishments", completed: false },
+          { name: "Seek mentorship", objective: "Connect with industry mentor for career guidance", completed: false }
+        ]
+      },
+      {
+        name: "Personal Interests",
+        color: "#f7dc6f",
+        percentage: 15,
+        elements_attributes: [
+          { name: "Read 2 books monthly", objective: "Complete reading two books each month", completed: false },
+          { name: "Learn guitar", objective: "Practice guitar for 30 minutes daily", completed: true },
+          { name: "Photography project", objective: "Complete monthly photography challenge", completed: false }
+        ]
+      },
+      {
+        name: "Financial Health",
+        color: "#bb8fce",
+        percentage: 10,
+        elements_attributes: [
+          { name: "Budget tracking", objective: "Review and update monthly budget", completed: true },
+          { name: "Emergency fund", objective: "Save $500 monthly for emergency fund", completed: false },
+          { name: "Investment research", objective: "Research and evaluate investment options", completed: false }
+        ]
+      }
+    ]
+  };
+  
+  // Create form data
+  const formData = new FormData();
+  
+  // Add pie name
+  formData.append('pie[name]', pieData.name);
+  
+  // Add slices and their elements
+  pieData.slices_attributes.forEach((slice, sliceIndex) => {
+    formData.append(`pie[slices_attributes][${sliceIndex}][name]`, slice.name);
+    formData.append(`pie[slices_attributes][${sliceIndex}][color]`, slice.color);
+    formData.append(`pie[slices_attributes][${sliceIndex}][percentage]`, slice.percentage);
+    
+    slice.elements_attributes.forEach((element, elementIndex) => {
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][name]`, element.name);
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][objective]`, element.objective);
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][completed]`, element.completed);
+    });
+  });
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  // Submit the form
+  fetch('/pies', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers.get('content-type'));
+    
+    if (response.ok) {
+      return response.json();
+    } else {
+      return response.text().then(text => {
+        console.log('Error response body:', text);
+        throw new Error('Network response was not ok: ' + response.status + ' - ' + text);
+      });
+    }
+  })
+  .then(data => {
+    console.log('Pie created successfully:', data);
+    // Navigate to the new pie's show page
+    if (data.id) {
+      window.location.href = `/pies/${data.id}`;
+    } else {
+      // Fallback: redirect to pies index
+      window.location.href = '/pies';
+    }
+  })
+  .catch(error => {
+    console.error('Error creating pie:', error);
+    alert('Failed to create Focus Wheel. Please try again. Error: ' + error.message);
+    
+    // Restore the input
+    if (pieNameElement) {
+      pieNameElement.style.opacity = '1';
+      pieNameElement.contentEditable = 'true';
+      pieNameElement.focus();
+    }
+  });
+}
+
+function savePieField(element, newValue) {
+  const fieldName = element.dataset.field || 'name';
+  
+  // Get pie ID from URL or data attribute
+  let pieId = element.dataset.pieId;
+  if (!pieId) {
+    const urlParts = window.location.pathname.split('/');
+    const pieIndex = urlParts.indexOf('pies');
+    if (pieIndex !== -1 && urlParts[pieIndex + 1]) {
+      pieId = urlParts[pieIndex + 1];
+    }
+  }
+  
+  if (!pieId) {
+    alert('Could not save - missing pie ID');
+    return;
+  }
+  
+  const url = '/pies/' + pieId;
+  const formData = new FormData();
+  
+  formData.append('_method', 'PATCH');
+  formData.append('pie[' + fieldName + ']', newValue);
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  // Show saving indicator
+  element.style.opacity = '0.6';
+  
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(function(response) {
+    if (response.ok) {
+      // Update the original value for future comparisons
+      element.dataset.original = newValue;
+      
+      // Update the page title if it matches the pie name
+      if (document.title.includes('Pie') || document.title.includes('Balanced')) {
+        document.title = newValue + ' - Radial Pie App';
+      }
+      
+      return response.text();
+    }
+    throw new Error('Network response was not ok: ' + response.status);
+  })
+  .catch(function(error) {
+    alert('Failed to save pie name. Please try again.');
+    // Restore original value on error
+    element.innerText = element.dataset.original || originalValue;
+  })
+  .finally(function() {
+    element.style.opacity = '1';
+  });
+}
+
+// Function to initialize pie chart slice interactivity
+function initializePieChart() {
+  console.log('Initializing pie chart interactions...');
+  
+  const pieChart = document.getElementById('pie-chart');
+  if (!pieChart) {
+    console.log('No pie chart element found');
+    return;
+  }
+  
+  console.log('Pie chart element found, looking for SVG elements...');
+  
+  // Find all SVG elements in the pie chart
+  const svgElements = pieChart.querySelectorAll('svg');
+  console.log('Found SVG elements:', svgElements.length);
+  
+  if (svgElements.length === 0) {
+    console.log('No SVG elements found, trying again in 500ms...');
+    setTimeout(initializePieChart, 500);
+    return;
+  }
+  
+  svgElements.forEach(function(svg, svgIndex) {
+    console.log('Processing SVG element', svgIndex);
+    
+    // Find all path elements (pie slices) specifically
+    const pathElements = svg.querySelectorAll('path');
+    console.log('Found path elements (pie slices):', pathElements.length);
+    
+    pathElements.forEach(function(path, pathIndex) {
+      // Check if path already has event listeners
+      if (path.hasAttribute('data-pie-listeners-attached')) {
+        console.log('Path', pathIndex, 'already has listeners, skipping');
+        return;
+      }
+      
+      // Mark as having listeners attached
+      path.setAttribute('data-pie-listeners-attached', 'true');
+      
+      console.log('Adding listeners to path element', pathIndex);
+      
+      // Add hover effects with immediate test
+      path.addEventListener('mouseenter', function(e) {
+        console.log('🟢 PATH HOVER DETECTED on path', pathIndex);
+        this.style.cursor = 'pointer';
+        this.setAttribute('fill-opacity', '0.7');
+        this.setAttribute('stroke', 'var(--focus)');
+        this.setAttribute('stroke-width', '1');
+      });
+      
+      path.addEventListener('mouseleave', function(e) {
+        console.log('🔴 PATH HOVER LEAVE on path', pathIndex);
+        this.setAttribute('fill-opacity', '1');
+        this.removeAttribute('stroke');
+        this.removeAttribute('stroke-width');
+      });
+      
+      // Add click functionality
+      path.addEventListener('click', function(e) {
+        console.log('🎯 PATH CLICKED:', pathIndex);
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Get all slice containers and their details for debugging
+        const sliceContainers = document.querySelectorAll('.slice-container');
+        console.log('📊 Available slice containers:', sliceContainers.length);
+        
+        // Debug: show all slice containers and their slice names
+        sliceContainers.forEach((container, index) => {
+          const sliceLink = container.querySelector('.slice-link');
+          const sliceName = sliceLink ? sliceLink.textContent.trim().split('\n')[0] : 'No link found';
+          console.log(`  Container ${index}: "${sliceName}" -> ${sliceLink ? sliceLink.href : 'no href'}`);
+        });
+        
+        // Debug: show all SVG paths and see if we can get any identifying info
+        const allPaths = Array.from(document.querySelectorAll('#pie-chart svg path'));
+        console.log('🥧 All SVG paths:', allPaths.length);
+        allPaths.forEach((p, index) => {
+          const pathData = p.getAttribute('d');
+          console.log(`  Path ${index}: d="${pathData ? pathData.substring(0, 50) + '...' : 'no d attribute'}"`);
+        });
+        
+        // Try multiple strategies to find the correct slice
+        let targetLink = null;
+        
+        // Strategy 1: Direct index matching
+        console.log('🎯 Trying direct index mapping - clicked path:', pathIndex, 'total containers:', sliceContainers.length);
+        if (sliceContainers[pathIndex]) {
+          const sliceLink = sliceContainers[pathIndex].querySelector('.slice-link');
+          if (sliceLink) {
+            console.log('✅ Found slice link by direct index:', sliceLink.href);
+            targetLink = sliceLink;
+          }
+        }
+        
+        // Strategy 2: Try reverse index (sometimes SVG is in reverse order)
+        if (!targetLink) {
+          const reverseIndex = sliceContainers.length - 1 - pathIndex;
+          console.log('🔄 Trying reverse index mapping:', reverseIndex);
+          if (sliceContainers[reverseIndex]) {
+            const sliceLink = sliceContainers[reverseIndex].querySelector('.slice-link');
+            if (sliceLink) {
+              console.log('✅ Found slice link by reverse index:', sliceLink.href);
+              targetLink = sliceLink;
+            }
+          }
+        }
+        
+        // Strategy 3: For now, let's cycle through all slices based on path index
+        if (!targetLink && sliceContainers.length > 0) {
+          const adjustedIndex = pathIndex % sliceContainers.length;
+          console.log('🔄 Using modulo adjustment:', adjustedIndex);
+          const sliceLink = sliceContainers[adjustedIndex].querySelector('.slice-link');
+          if (sliceLink) {
+            console.log('✅ Found slice link by adjusted index:', sliceLink.href);
+            targetLink = sliceLink;
+          }
+        }
+        
+        if (targetLink) {
+          console.log('🚀 Navigating to:', targetLink.href);
+          window.location.href = targetLink.href;
+        } else {
+          console.log('❌ Could not find any slice links to navigate to');
+        }
+      });
+      
+      // Test if the element is actually interactive by adding a temporary visual change
+      path.style.transition = 'all 0.2s ease';
+      
+      console.log('✅ Successfully added listeners to path', pathIndex);
+    });
+    
+    console.log('Finished processing SVG', svgIndex, '- added listeners to', pathElements.length, 'paths');
+  });
+  
+  console.log('🎉 Pie chart initialization complete');
+}
+
+// Initialize immediately if DOM is already ready
+if (document.readyState === 'loading') {
+  console.log('Document still loading, waiting for DOMContentLoaded');
+} else {
+  console.log('Document ready, initializing immediately');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+}
+
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOMContentLoaded event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+});
+
+// Initialize on Turbo events
+document.addEventListener('turbo:load', function() {
+  console.log('turbo:load event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+});
+
+document.addEventListener('turbo:render', function() {
+  console.log('turbo:render event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+});
+
+// Also try turbo:frame-load in case it's in a frame
+document.addEventListener('turbo:frame-load', function() {
+  console.log('turbo:frame-load event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+});
+
+// ============ Modal functionality ============
+function openColorsModal() {
+  const modal = document.getElementById('colors-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
+}
+
+function closeColorsModal() {
+  const modal = document.getElementById('colors-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function updateColorPreview(colorInput) {
+  // Update the visual color square when color picker changes
+  const colorSquare = colorInput.nextElementSibling;
+  if (colorSquare) {
+    colorSquare.style.backgroundColor = colorInput.value;
+  }
+}
+
+function cancelColorChanges() {
+  // Reset all colors to their original values
+  document.querySelectorAll('.color-picker').forEach(function(input) {
+    const originalColor = input.dataset.originalColor;
+    input.value = originalColor;
+    const colorSquare = input.nextElementSibling;
+    if (colorSquare) {
+      colorSquare.style.backgroundColor = originalColor;
+    }
+  });
+  closeColorsModal();
+}
+
+function saveColors() {
+  const colorChanges = [];
+  
+  // Collect all color changes
+  document.querySelectorAll('.color-picker').forEach(function(input) {
+    const colorItem = input.closest('.color-item');
+    if (colorItem) {
+      const sliceId = colorItem.dataset.sliceId;
+      const newColor = input.value;
+      const originalColor = input.dataset.originalColor;
+      
+      if (newColor !== originalColor) {
+        colorChanges.push({
+          sliceId: sliceId,
+          color: newColor
+        });
+      }
+    }
+  });
+  
+  if (colorChanges.length === 0) {
+    closeColorsModal();
+    return;
+  }
+  
+  // Get pie ID for color saving
+  let pieId;
+  const urlParts = window.location.pathname.split('/');
+  const pieIndex = urlParts.indexOf('pies');
+  if (pieIndex !== -1 && urlParts[pieIndex + 1]) {
+    pieId = urlParts[pieIndex + 1];
+  }
+  
+  if (!pieId) {
+    alert('Could not save colors - missing pie ID');
+    return;
+  }
+  
+  // Save colors via AJAX
+  Promise.all(colorChanges.map(function(change) {
+    const formData = new FormData();
+    formData.append('_method', 'PATCH');
+    formData.append('slice[color]', change.color);
+    
+    // Add CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      formData.append('authenticity_token', csrfToken.getAttribute('content'));
+    }
+    
+    return fetch('/pies/' + pieId + '/slices/' + change.sliceId, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+  }))
+  .then(function() {
+    // Update original colors for future comparisons
+    document.querySelectorAll('.color-picker').forEach(function(input) {
+      input.dataset.originalColor = input.value;
+    });
+    
+    // Refresh the page to show updated colors in the pie chart
+    window.location.reload();
+  })
+  .catch(function(error) {
+    alert('Failed to save colors. Please try again.');
+  });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'colors-modal') {
+    closeColorsModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('colors-modal');
+    if (modal && modal.style.display === 'flex') {
+      cancelColorChanges();
+    }
+  }
+});
+</script>

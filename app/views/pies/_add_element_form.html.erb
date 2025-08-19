@@ -1,0 +1,23 @@
+<!-- app/views/pies/_add_element_form.html.erb -->
+<%= form_with model: [pie, slice, element], 
+    local: false,
+    html: { 
+      style: " "
+    } do |f| %>
+  <% if element.errors.any? %>
+    <div style="color: red; margin-bottom: 10px;">
+      <% element.errors.full_messages.each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+  <% end %>
+  
+  <div style="display: flex; gap: 10px; align-items: end; margin-left:30px;">
+    <%= f.text_field :name, placeholder: "Add new element...", 
+        required: true,
+        id: "add-element-input-#{slice.id}",
+        style: "flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;" %>
+    <%= f.submit "Add", 
+        style: "background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 14px;" %>
+  </div>
+<% end %>

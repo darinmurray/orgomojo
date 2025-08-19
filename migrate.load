@@ -1,0 +1,9 @@
+LOAD DATABASE
+     FROM sqlite:///Users/dmurray/sites/orgomojo/db/development.sqlite3
+     INTO postgresql://dmurray@localhost/orgomojo_development
+
+WITH include drop, create tables, create indexes, reset sequences
+
+EXCLUDING TABLE NAMES MATCHING ~<ar_internal_metadata>, ~<schema_migrations>
+
+ALTER SCHEMA 'main' RENAME TO 'public';

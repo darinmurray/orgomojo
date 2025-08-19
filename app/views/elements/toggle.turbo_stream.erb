@@ -1,0 +1,30 @@
+<!-- app/views/elements/toggle.turbo_stream.erb -->
+<!-- Update the element row to reflect the new checked state -->
+<%= turbo_stream.replace "element-#{@element.id}" do %>
+  <%= render 'pies/element_row', pie: @pie, slice: @slice, element: @element %>
+<% end %>
+
+<!-- Update slice stats -->
+<%= turbo_stream.update "slice-#{@slice.id}-stats" do %>
+  <div style="font-size: 14px; color: #666; margin-top: 2px;" class="completion-count">
+    <%= @slice.elements.where(completed: true).count %>/<%= @slice.elements.count %> elements completed
+  </div>
+<% end %>
+
+<!-- Update percentage -->
+<%= turbo_stream.update "slice-#{@slice.id}-percentage" do %>
+  <div style="font-size: 24px; font-weight: bold; color: #007cba;" class="percentage">
+    <%= @slice.percentage %>%
+  </div>
+<% end %>
+
+<!-- Force complete page section reload for pie chart -->
+<%= turbo_stream.replace "pie-section" do %>
+  <div id="pie-section">
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center; margin: 40px 0;">
+        <%= radial_pie_chart(@pie, size: 500, pinwheel: true) %>
+      </div>
+    </div>
+  </div>
+<% end %>

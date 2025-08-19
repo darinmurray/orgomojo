@@ -1,0 +1,1211 @@
+<%
+# Fabricated data for wizard - this simulates database objects
+fake_pie_class = Struct.new(:id, :name, :slices) do
+  def initialize(id, name)
+    super(id, name, [])
+  end
+end
+
+fake_slice_class = Struct.new(:id, :name, :color, :percentage, :elements) do
+  def initialize(id, name, color, percentage)
+    super(id, name, color, percentage, [])
+  end
+  
+  def any?
+    elements.any?
+  end
+end
+
+fake_element_class = Struct.new(:id, :name, :objective, :completed) do
+  def initialize(id, name, objective = nil, completed = false)
+    super(id, name, objective, completed)
+  end
+  
+  def completed?
+    completed
+  end
+end
+
+# Create available categories with dummy data
+@available_categories = [
+  fake_slice_class.new(1, "Health", "#ff6b6b", 45).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(1, "Exercise 30 min daily", "Complete a 30-minute workout routine every day", false),
+      fake_element_class.new(2, "Drink 8 glasses of water", "Consume at least 64 ounces of water daily", true),
+      fake_element_class.new(3, "Get 8 hours of sleep", "Maintain consistent sleep schedule with 8 hours nightly", false),
+      fake_element_class.new(4, "Eat 5 servings vegetables", "Include 5 servings of vegetables in daily meals", true),
+      fake_element_class.new(5, "Stretch in the morning", "Perform a 10-minute stretching routine every morning", true),
+      fake_element_class.new(6, "Take a daily walk", "Go for a 20-minute walk outdoors every day", false),
+      fake_element_class.new(7, "Limit sugar intake", "Reduce daily sugar consumption to less than 25 grams", false),
+      fake_element_class.new(8, "Practice yoga weekly", "Attend a yoga session once a week to improve flexibility", true)
+    ]
+  end,
+  
+  fake_slice_class.new(2, "Friends and Family", "#253da7ff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(9, "Call family weekly", "Schedule regular weekly calls with family members", true),
+      fake_element_class.new(10, "Date night monthly", "Plan monthly date activities with partner", false),
+      fake_element_class.new(11, "Friend meetup bi-weekly", "Organize social gatherings with friends every two weeks", true),
+      fake_element_class.new(12, "Send birthday cards", "Send personalized birthday cards to close friends and family", true),
+      fake_element_class.new(13, "Volunteer together", "Participate in a community service activity with friends or family", false),
+      fake_element_class.new(14, "Plan a family game night", "Organize a fun game night with family members", true),
+      fake_element_class.new(15, "Reconnect with an old friend", "Reach out to an old friend and catch up", false)
+    ]
+  end,
+  
+  fake_slice_class.new(3, "Career", "#4d3d78ff", 30).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(16, "Learn new skill", "Complete online course in relevant professional skill", false),
+      fake_element_class.new(17, "Network monthly", "Attend one networking event per month", true),
+      fake_element_class.new(18, "Update resume", "Revise and modernize resume with recent accomplishments", false),
+      fake_element_class.new(19, "Seek mentorship", "Connect with industry mentor for career guidance", false),
+      fake_element_class.new(20, "Improve public speaking", "Join a public speaking group to enhance skills", false),
+      fake_element_class.new(21, "Attend industry conference", "Participate in an annual industry event", true),
+      fake_element_class.new(22, "Build portfolio", "Create a portfolio showcasing your work", false),
+      fake_element_class.new(23, "Set career goals", "Define short-term and long-term career objectives", false),
+      fake_element_class.new(24, "Learn coding", "Complete a coding bootcamp or course", false),
+      fake_element_class.new(25, "Write a blog", "Start a professional blog to share insights", true)
+    ]
+  end,
+  
+  fake_slice_class.new(4, "Hobbies and Interests", "#f7dc6f", 80).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(26, "Photography Project", "Complete a monthly photography challenge", true),
+      fake_element_class.new(27, "Learn Guitar", "Practice guitar for 30 minutes daily", true),
+      fake_element_class.new(28, "Gardening", "Spend time tending to your garden weekly", false),
+      fake_element_class.new(29, "Cooking new recipes", "Experiment with a new recipe every week", true),
+      fake_element_class.new(30, "Join a book club", "Participate in discussions about books", true),
+      fake_element_class.new(31, "Start painting", "Create a painting every month", true),
+      fake_element_class.new(32, "Explore hiking trails", "Visit a new hiking trail every weekend", true),
+      fake_element_class.new(33, "Learn a new language", "Dedicate time to learning a foreign language", false),
+      fake_element_class.new(34, "Play board games", "Host a board game night with friends", true),
+      fake_element_class.new(35, "Try pottery", "Attend a pottery class to create something unique", false)
+    ]
+  end,
+  
+  fake_slice_class.new(5, "Financial Health", "#bb8fce", 38).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(36, "Budget tracking", "Review and update monthly budget", true),
+      fake_element_class.new(37, "Emergency fund", "Save $500 monthly for emergency fund", false),
+      fake_element_class.new(38, "Investment research", "Research and evaluate investment options", false),
+      fake_element_class.new(39, "Track expenses", "Record daily expenses to identify spending patterns", true),
+      fake_element_class.new(40, "Pay off debt", "Focus on reducing credit card debt", false),
+      fake_element_class.new(41, "Increase savings", "Set aside 20% of income for savings", true),
+      fake_element_class.new(42, "Review insurance policies", "Ensure adequate coverage for health and assets", false),
+      fake_element_class.new(43, "Plan for retirement", "Contribute to a retirement fund regularly", false),
+      fake_element_class.new(44, "Cut unnecessary expenses", "Identify and eliminate wasteful spending", true),
+      fake_element_class.new(45, "Start a side hustle", "Generate additional income through a side project", false)
+    ]
+  end,
+  
+  fake_slice_class.new(6, "Self Development", "#43b845ff", 59).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(46, "Mud Track Racing", "Get down and dirty!", true),
+      fake_element_class.new(47, "Engine Building", "Build and customize your own engine", false),
+      fake_element_class.new(48, "Local Exploration", "Research and explore local attractions", true),
+      fake_element_class.new(49, "Meditation practice", "Spend 10 minutes daily meditating", true),
+      fake_element_class.new(50, "Read self-help books", "Complete one self-help book per month", false),
+      fake_element_class.new(51, "Take online courses", "Enroll in courses to learn new skills", true),
+      fake_element_class.new(52, "Write a journal", "Reflect on daily experiences in a journal", true),
+      fake_element_class.new(53, "Attend personal growth workshops", "Participate in seminars for self-improvement", false),
+      fake_element_class.new(54, "Practice gratitude", "Write down three things you're grateful for daily", true),
+      fake_element_class.new(55, "Learn public speaking", "Join a Toastmasters group to improve speaking skills", false)
+    ]
+  end,
+  
+  fake_slice_class.new(7, "Physical Environment", "#cd4ecbff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(66, "Declutter living space", "Organize and remove unnecessary items from your home", true),
+      fake_element_class.new(67, "Create a cozy reading nook", "Set up a comfortable space for reading and relaxation", true),
+      fake_element_class.new(68, "Incorporate plants", "Add indoor plants to improve air quality and aesthetics", false),
+      fake_element_class.new(69, "Enhance lighting", "Upgrade lighting fixtures for better ambiance", true),
+      fake_element_class.new(70, "Reorganize furniture", "Arrange furniture to optimize space and functionality", true)
+    ]
+  end,
+  
+  fake_slice_class.new(8, "Personal Growth", "#ff9f43", 50).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(76, "Read self-improvement book", "Complete a book on personal development", true),
+      fake_element_class.new(77, "Practice mindfulness", "Spend 10 minutes daily on mindfulness exercises", true),
+      fake_element_class.new(78, "Set personal goals", "Define and track progress on personal growth goals", false),
+      fake_element_class.new(79, "Attend a workshop", "Participate in a personal growth workshop or seminar", false),
+      fake_element_class.new(80, "Develop a new habit", "Focus on building a positive habit for 30 days", true),
+      fake_element_class.new(81, "Write a gratitude journal", "List three things you're grateful for daily", true),
+      fake_element_class.new(82, "Learn a new skill", "Dedicate time to learning a new skill or hobby", false),
+      fake_element_class.new(83, "Seek feedback", "Ask for constructive feedback from a mentor or peer", false)
+    ]
+  end,
+  
+  fake_slice_class.new(9, "Spirituality", "#6a89cc", 40).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(85, "Attend spiritual gathering", "Participate in a weekly spiritual or religious event", false),
+      fake_element_class.new(86, "Reflect on values", "Journal about personal values and their meaning", false),
+      fake_element_class.new(87, "Read spiritual texts", "Read a chapter from a spiritual or religious book", true),
+      fake_element_class.new(88, "Practice gratitude", "Express gratitude for three things daily", true),
+      fake_element_class.new(89, "Connect with nature", "Spend time outdoors to feel connected to the world", false),
+      fake_element_class.new(90, "Volunteer for a cause", "Help a cause that aligns with your spiritual values", false),
+      fake_element_class.new(91, "Create a vision board", "Visualize your spiritual goals and aspirations", false)
+    ]
+  end,
+  
+  fake_slice_class.new(10, "Community", "#78e08f", 35).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(92, "Volunteer monthly", "Contribute time to a local charity or cause", false),
+      fake_element_class.new(93, "Join a civic group", "Participate in a community or civic organization", false),
+      fake_element_class.new(94, "Organize a neighborhood event", "Plan a gathering to connect with neighbors", true),
+      fake_element_class.new(95, "Support a local business", "Shop or promote a small local business", true),
+      fake_element_class.new(96, "Attend town meetings", "Participate in local government or town hall meetings", false),
+      fake_element_class.new(97, "Mentor someone", "Offer guidance to someone in your community", true),
+      fake_element_class.new(98, "Clean a public space", "Organize or join a cleanup event for a park or street", false),
+      fake_element_class.new(99, "Donate to a cause", "Contribute to a charity or community project", false)
+    ]
+  end,
+  
+  fake_slice_class.new(11, "Creativity", "#e55039", 70).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(100, "Paint weekly", "Create a new painting or artwork each week", true),
+      fake_element_class.new(101, "Write a poem", "Compose a poem or short story", true),
+      fake_element_class.new(102, "Learn a new instrument", "Dedicate time to learning a musical instrument", false),
+      fake_element_class.new(103, "Design a craft project", "Complete a DIY craft project", true),
+      fake_element_class.new(104, "Take a photography walk", "Capture creative photos during a walk", true),
+      fake_element_class.new(105, "Experiment with cooking", "Try creating a new recipe or dish", true),
+      fake_element_class.new(106, "Join an art class", "Enroll in a class to improve your artistic skills", true),
+      fake_element_class.new(107, "Write a screenplay", "Draft a short screenplay or script", false)
+    ]
+  end,
+  
+  fake_slice_class.new(12, "Time Management", "#60a3bc", 55).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(108, "Plan daily schedule", "Create a daily plan to organize tasks", true),
+      fake_element_class.new(109, "Limit distractions", "Identify and reduce time-wasting activities", false),
+      fake_element_class.new(110, "Review weekly goals", "Evaluate progress on weekly objectives", true),
+      fake_element_class.new(111, "Use a time tracker", "Track how you spend your time daily", false),
+      fake_element_class.new(112, "Prioritize tasks", "Use a priority matrix to organize tasks", true),
+      fake_element_class.new(113, "Set time limits", "Allocate specific time blocks for tasks", true),
+      fake_element_class.new(114, "Delegate tasks", "Assign tasks to others when possible", false),
+      fake_element_class.new(115, "Take regular breaks", "Incorporate short breaks into your work schedule", true)
+    ]
+  end,
+  
+  fake_slice_class.new(13, "Parenting", "#fa983a", 65).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(116, "Help with homework", "Assist children with their school assignments", true),
+      fake_element_class.new(117, "Plan family outings", "Organize fun and educational activities for the family", false),
+      fake_element_class.new(118, "Have one-on-one time", "Spend quality time individually with each child", true),
+      fake_element_class.new(119, "Read bedtime stories", "Read a story to your children before bed", true),
+      fake_element_class.new(120, "Teach life skills", "Help children learn essential life skills", false),
+      fake_element_class.new(121, "Attend school events", "Participate in your children's school activities", true),
+      fake_element_class.new(122, "Create a family tradition", "Start a new family tradition or ritual", true),
+      fake_element_class.new(123, "Encourage hobbies", "Support your children in pursuing their interests", true)
+    ]
+  end
+]
+%>
+
+<style>
+/* Base Styles */
+body {
+  margin: 0;
+  padding-left: 64px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: white;
+}
+
+/* Wizard Container */
+.wizard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.wizard-step {
+  display: none;
+}
+
+.wizard-step.active {
+  display: block;
+}
+
+/* Step Headers */
+.step-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.step-description {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+/* Pie Name */
+.pie-name-display {
+  font-size: 2rem;
+  color: #333;
+  font-weight: 400;
+  margin: 20px 0;
+}
+
+/* Form Elements */
+.pie-name-input {
+  font-size: 1.5rem;
+  padding: 15px 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.pie-name-input:focus {
+  outline: none;
+  border-color: #007cba;
+}
+
+/* Category Selection */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-item:hover {
+  border-color: #007cba;
+  background: #f8f9fa;
+}
+
+.category-item.selected {
+  border-color: #007cba;
+  background: #e7f3ff;
+}
+
+.category-checkbox {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}
+
+.category-label {
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+/* Progress Sliders */
+.progress-sliders {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.slider-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.slider-label {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+  margin-right: 20px;
+}
+
+.slider-container {
+  flex: 1;
+  max-width: 200px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007cba;
+  cursor: pointer;
+}
+
+.slider-value {
+  font-weight: 600;
+  color: #007cba;
+  margin-left: 15px;
+  min-width: 40px;
+}
+
+/* Elements Selection */
+.elements-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.category-section {
+  margin-bottom: 30px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.category-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  margin-right: 15px;
+  flex: 1;
+  max-width: 100px;
+}
+
+.category-name {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  text-align: left;
+}
+
+.category-percentage {
+  font-weight: 600;
+  color: #666;
+  margin-left: 10px;
+}
+
+.expand-icon {
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.category-section.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.elements-list {
+  padding: 20px;
+  background: white;
+  display: none;
+}
+
+.category-section.expanded .elements-list {
+  display: block;
+}
+
+.element-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.element-checkbox {
+  margin-right: 12px;
+  width: 16px;
+  height: 16px;
+}
+
+.element-name {
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.element-objective {
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 28px;
+  margin-top: 4px;
+}
+
+.custom-element-form {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.custom-element-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.add-element-btn {
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.add-element-btn:hover {
+  background: #005a87;
+}
+
+/* Final Review */
+.pie-preview {
+  display: flex;
+  gap: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.pie-chart-container {
+  flex: 1;
+  text-align: center;
+}
+
+.pie-details {
+  flex: 1;
+  text-align: left;
+}
+
+.slice-summary {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.slice-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.slice-progress {
+  height: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.slice-elements {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Navigation */
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.back-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+.btn-primary {
+  background: #007cba;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #005a87;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #1e7e34;
+}
+
+.btn:disabled {
+  background: #e9ecef !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+}
+
+/* Step Indicator */
+.step-indicator {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.step-number {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pie-preview {
+    flex-direction: column;
+  }
+  
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .slider-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .slider-container {
+    max-width: 100%;
+  }
+}
+</style>
+
+<div class="wizard-container">
+  <!-- Step 1: Name Input -->
+  <div class="wizard-step active" id="step-1">
+    <div class="step-header">
+      <h1>First, let's name it...</h1>
+    </div>
+    
+    <input type="text" id="pie-name" class="pie-name-input" placeholder="My Big Life" maxlength="50">
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-primary" id="step1-next" disabled>Next Step...</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 1</div>
+      <div class="step-title">The user enters a name, then hits 'Next Step'</div>
+    </div>
+  </div>
+
+  <!-- Step 2: Category Selection -->
+  <div class="wizard-step" id="step-2">
+    <div class="step-header">
+      <h1>Great! Now, choose the categories of life that<br>are important to you...</h1>
+    </div>
+    
+    <div class="pie-name-display" id="pie-name-display"></div>
+    
+    <div class="categories-grid">
+      <% @available_categories.each do |category| %>
+        <div class="category-item" data-category-id="<%= category.id %>">
+          <input type="checkbox" class="category-checkbox" id="cat-<%= category.id %>" value="<%= category.id %>">
+          <label for="cat-<%= category.id %>" class="category-label">
+            <%= category.name %>
+          </label>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" id="step2-back">Back</button>
+        <button class="btn btn-primary" id="step2-next" disabled>Next Step...</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 2</div>
+      <div class="step-title">The name is stored and the master category<br>list is displayed. The user chooses categories<br>(slices) they want for their pie.<br>Then user hits 'Next Step'</div>
+    </div>
+  </div>
+
+  <!-- Step 3: Progress/Fulfillment Ratings -->
+  <div class="wizard-step" id="step-3">
+    <div class="step-header">
+      <h1>Perfect!<br>Now, how complete would you rate your<br>fulfillment in each category?</h1>
+    </div>
+    
+    <div class="pie-name-display" id="pie-name-display-3"></div>
+    
+    <div class="progress-sliders" id="progress-sliders">
+      <!-- Dynamic content populated by JavaScript -->
+    </div>
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" id="step3-back">Back</button>
+        <button class="btn btn-primary" id="step3-next">Next Step...</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 3</div>
+      <div class="step-title">Progress bars are shown for each of the user-chosen<br>categories/slices. This is where the user slides the progress bar to<br>set their progress estimate.<br>The user hits 'Next Step'</div>
+    </div>
+  </div>
+
+  <!-- Step 4: Elements/Actions Selection -->
+  <div class="wizard-step" id="step-4">
+    <div class="step-header">
+      <h1>Great Job! Click on any area to see the<br>elements that make up that slice of life...</h1>
+    </div>
+    
+    <div class="pie-name-display" id="pie-name-display-4"></div>
+    
+    <div class="elements-section" id="elements-section">
+      <!-- Dynamic content populated by JavaScript -->
+    </div>
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" id="step4-back">Back</button>
+        <button class="btn btn-primary" id="step4-next">Next Step...</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 4</div>
+      <div class="step-title">Progress bars no longer draggable. The user clicks on a<br>category/slice and it expands to show sample elements. The user<br>can inline-edit any of the displayed elements.<br>After doing this for a number of slices,<br>The user hits 'Next Step'</div>
+    </div>
+  </div>
+
+  <!-- Step 5: Final Review & Save -->
+  <div class="wizard-step" id="step-5">
+    <div class="step-header">
+      <h1>Perfect! Here's your completed wheel:</h1>
+    </div>
+    
+    <div class="pie-name-display" id="pie-name-display-5"></div>
+    
+    <div class="pie-preview">
+      <div class="pie-chart-container">
+        <div id="final-pie-chart">
+          <!-- Pie chart will be generated here -->
+        </div>
+      </div>
+      
+      <div class="pie-details" id="pie-details">
+        <!-- Slice summaries will be populated here -->
+      </div>
+    </div>
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" id="step5-back">Back</button>
+        <button class="btn btn-success" id="save-pie">Save Pie</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 5</div>
+      <div class="step-title">The pie is saved to the database and displayed on pies/[id]</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Available categories data
+const availableCategories = [
+  <% @available_categories.each_with_index do |category, index| %>
+  {
+    id: <%= category.id %>,
+    name: "<%= category.name %>",
+    color: "<%= category.color %>",
+    defaultPercentage: <%= category.percentage %>,
+    elements: [
+      <% category.elements.each_with_index do |element, elem_index| %>
+      {
+        id: <%= element.id %>,
+        name: "<%= element.name.gsub('"', '\\"') %>",
+        objective: "<%= element.objective.gsub('"', '\\"') %>",
+        completed: <%= element.completed? %>
+      }<%= elem_index < category.elements.length - 1 ? ',' : '' %>
+      <% end %>
+    ]
+  }<%= index < @available_categories.length - 1 ? ',' : '' %>
+  <% end %>
+];
+
+// Wizard state
+let wizardData = {
+  pieName: '',
+  selectedCategories: [],
+  categoryProgress: {},
+  selectedElements: {},
+  customElements: {}
+};
+
+// Current step
+let currentStep = 1;
+
+// Initialize wizard
+document.addEventListener('DOMContentLoaded', function() {
+  initializeStep1();
+});
+
+// Step 1: Name input
+function initializeStep1() {
+  const nameInput = document.getElementById('pie-name');
+  const nextBtn = document.getElementById('step1-next');
+  
+  nameInput.addEventListener('input', function() {
+    wizardData.pieName = this.value.trim();
+    nextBtn.disabled = wizardData.pieName === '';
+  });
+  
+  nextBtn.addEventListener('click', function() {
+    if (wizardData.pieName) {
+      goToStep(2);
+    }
+  });
+}
+
+// Step 2: Category selection
+function initializeStep2() {
+  const checkboxes = document.querySelectorAll('.category-checkbox');
+  const nextBtn = document.getElementById('step2-next');
+  const backBtn = document.getElementById('step2-back');
+  const nameDisplay = document.getElementById('pie-name-display');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Check first 8 categories by default
+  checkboxes.forEach((checkbox, index) => {
+    if (index < 8) {
+      checkbox.checked = true;
+      checkbox.closest('.category-item').classList.add('selected');
+    }
+  });
+  
+  updateSelectedCategories();
+  
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const item = this.closest('.category-item');
+      if (this.checked) {
+        item.classList.add('selected');
+      } else {
+        item.classList.remove('selected');
+      }
+      updateSelectedCategories();
+    });
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(1));
+  nextBtn.addEventListener('click', () => {
+    if (wizardData.selectedCategories.length > 0) {
+      goToStep(3);
+    }
+  });
+}
+
+function updateSelectedCategories() {
+  const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+  wizardData.selectedCategories = Array.from(checkboxes).map(cb => parseInt(cb.value));
+  
+  const nextBtn = document.getElementById('step2-next');
+  nextBtn.disabled = wizardData.selectedCategories.length === 0;
+  
+  // Initialize progress for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    if (!(catId in wizardData.categoryProgress)) {
+      const category = availableCategories.find(c => c.id === catId);
+      wizardData.categoryProgress[catId] = category ? category.defaultPercentage : 50;
+    }
+  });
+}
+
+// Step 3: Progress sliders
+function initializeStep3() {
+  const nameDisplay = document.getElementById('pie-name-display-3');
+  const slidersContainer = document.getElementById('progress-sliders');
+  const backBtn = document.getElementById('step3-back');
+  const nextBtn = document.getElementById('step3-next');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Clear existing sliders
+  slidersContainer.innerHTML = '';
+  
+  // Create sliders for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const sliderItem = document.createElement('div');
+    sliderItem.className = 'slider-item';
+    sliderItem.innerHTML = `
+      <div class="slider-label">${category.name}</div>
+      <div class="slider-container">
+        <input type="range" class="progress-slider" min="0" max="100" value="${wizardData.categoryProgress[catId]}" data-category-id="${catId}">
+      </div>
+      <div class="slider-value">${wizardData.categoryProgress[catId]}%</div>
+    `;
+    slidersContainer.appendChild(sliderItem);
+    
+    const slider = sliderItem.querySelector('.progress-slider');
+    const valueDisplay = sliderItem.querySelector('.slider-value');
+    
+    // Set slider track color
+    slider.style.background = `linear-gradient(to right, ${category.color} ${wizardData.categoryProgress[catId]}%, #e9ecef ${wizardData.categoryProgress[catId]}%)`;
+    
+    slider.addEventListener('input', function() {
+      const value = parseInt(this.value);
+      wizardData.categoryProgress[catId] = value;
+      valueDisplay.textContent = value + '%';
+      this.style.background = `linear-gradient(to right, ${category.color} ${value}%, #e9ecef ${value}%)`;
+    });
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(2));
+  nextBtn.addEventListener('click', () => goToStep(4));
+}
+
+// Step 4: Elements selection
+function initializeStep4() {
+  const nameDisplay = document.getElementById('pie-name-display-4');
+  const elementsContainer = document.getElementById('elements-section');
+  const backBtn = document.getElementById('step4-back');
+  const nextBtn = document.getElementById('step4-next');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Clear existing elements
+  elementsContainer.innerHTML = '';
+  
+  // Create sections for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const section = document.createElement('div');
+    section.className = 'category-section';
+    section.innerHTML = `
+      <div class="category-header" data-category-id="${catId}">
+        <div class="category-progress-bar" style="background: ${category.color}; width: ${wizardData.categoryProgress[catId]}%;"></div>
+        <div class="category-name">${category.name}</div>
+        <div class="category-percentage">${wizardData.categoryProgress[catId]}%</div>
+        <div class="expand-icon">▼</div>
+      </div>
+      <div class="elements-list">
+        ${category.elements.map(element => `
+          <div class="element-item">
+            <input type="checkbox" class="element-checkbox" id="elem-${element.id}" value="${element.id}" data-category-id="${catId}" ${element.completed ? 'checked' : ''}>
+            <label for="elem-${element.id}" class="element-name">${element.name}</label>
+          </div>
+          <div class="element-objective">${element.objective}</div>
+        `).join('')}
+        <div class="custom-element-form">
+          <input type="text" class="custom-element-input" placeholder="Add your own element..." data-category-id="${catId}">
+          <button class="add-element-btn" data-category-id="${catId}">Add Element</button>
+        </div>
+      </div>
+    `;
+    elementsContainer.appendChild(section);
+    
+    // Add click handler for header
+    const header = section.querySelector('.category-header');
+    header.addEventListener('click', function() {
+      section.classList.toggle('expanded');
+    });
+    
+    // Add handlers for element checkboxes
+    const checkboxes = section.querySelectorAll('.element-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        if (!wizardData.selectedElements[catId]) {
+          wizardData.selectedElements[catId] = [];
+        }
+        
+        const elementId = parseInt(this.value);
+        if (this.checked) {
+          if (!wizardData.selectedElements[catId].includes(elementId)) {
+            wizardData.selectedElements[catId].push(elementId);
+          }
+        } else {
+          wizardData.selectedElements[catId] = wizardData.selectedElements[catId].filter(id => id !== elementId);
+        }
+      });
+    });
+    
+    // Add handler for custom elements
+    const addBtn = section.querySelector('.add-element-btn');
+    const input = section.querySelector('.custom-element-input');
+    
+    addBtn.addEventListener('click', function() {
+      const text = input.value.trim();
+      if (text) {
+        if (!wizardData.customElements[catId]) {
+          wizardData.customElements[catId] = [];
+        }
+        wizardData.customElements[catId].push(text);
+        input.value = '';
+        
+        // Add to UI
+        const elementDiv = document.createElement('div');
+        elementDiv.className = 'element-item';
+        elementDiv.innerHTML = `
+          <input type="checkbox" class="element-checkbox" checked>
+          <span class="element-name">${text}</span>
+        `;
+        input.closest('.custom-element-form').before(elementDiv);
+      }
+    });
+    
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addBtn.click();
+      }
+    });
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(3));
+  nextBtn.addEventListener('click', () => goToStep(5));
+}
+
+// Step 5: Final review
+function initializeStep5() {
+  const nameDisplay = document.getElementById('pie-name-display-5');
+  const pieDetails = document.getElementById('pie-details');
+  const backBtn = document.getElementById('step5-back');
+  const saveBtn = document.getElementById('save-pie');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Generate pie chart (simplified representation)
+  generateFinalPieChart();
+  
+  // Generate details
+  pieDetails.innerHTML = '';
+  
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const selectedElements = wizardData.selectedElements[catId] || [];
+    const customElements = wizardData.customElements[catId] || [];
+    const totalElements = selectedElements.length + customElements.length;
+    
+    const section = document.createElement('div');
+    section.className = 'slice-summary';
+    section.innerHTML = `
+      <div class="slice-name">${category.name}</div>
+      <div class="slice-progress" style="background: ${category.color}; width: ${wizardData.categoryProgress[catId]}%;"></div>
+      <div class="slice-elements">${totalElements} elements selected</div>
+    `;
+    pieDetails.appendChild(section);
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(4));
+  saveBtn.addEventListener('click', savePie);
+}
+
+function generateFinalPieChart() {
+  const chartContainer = document.getElementById('final-pie-chart');
+  
+  // Create a simple visual representation
+  const total = wizardData.selectedCategories.length;
+  let cumulativePercentage = 0;
+  
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '300');
+  svg.setAttribute('height', '300');
+  svg.setAttribute('viewBox', '0 0 300 300');
+  
+  const centerX = 150;
+  const centerY = 150;
+  const radius = 120;
+  
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const percentage = wizardData.categoryProgress[catId] / 100;
+    const slicePercentage = 1 / total; // Equal slices for now
+    
+    const startAngle = (cumulativePercentage * 2 * Math.PI) - (Math.PI / 2);
+    const endAngle = ((cumulativePercentage + slicePercentage) * 2 * Math.PI) - (Math.PI / 2);
+    
+    const x1 = centerX + radius * Math.cos(startAngle);
+    const y1 = centerY + radius * Math.sin(startAngle);
+    const x2 = centerX + radius * Math.cos(endAngle);
+    const y2 = centerY + radius * Math.sin(endAngle);
+    
+    const largeArcFlag = slicePercentage > 0.5 ? 1 : 0;
+    
+    const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    path.setAttribute('fill', category.color);
+    path.setAttribute('stroke', 'white');
+    path.setAttribute('stroke-width', '2');
+    
+    svg.appendChild(path);
+    
+    cumulativePercentage += slicePercentage;
+  });
+  
+  chartContainer.innerHTML = '';
+  chartContainer.appendChild(svg);
+}
+
+function savePie() {
+  // Prepare data for submission
+  const pieData = {
+    pie: {
+      name: wizardData.pieName,
+      slices_attributes: wizardData.selectedCategories.map(catId => {
+        const category = availableCategories.find(c => c.id === catId);
+        if (!category) return null;
+        
+        const selectedElements = wizardData.selectedElements[catId] || [];
+        const customElements = wizardData.customElements[catId] || [];
+        
+        return {
+          name: category.name,
+          color: category.color,
+          percentage: wizardData.categoryProgress[catId],
+          elements_attributes: [
+            ...selectedElements.map(elemId => {
+              const element = category.elements.find(e => e.id === elemId);
+              return element ? {
+                name: element.name,
+                objective: element.objective,
+                completed: element.completed
+              } : null;
+            }).filter(Boolean),
+            ...customElements.map(name => ({
+              name: name,
+              objective: '',
+              completed: false
+            }))
+          ]
+        };
+      }).filter(Boolean)
+    }
+  };
+  
+  // Submit to server
+  fetch('/pies', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify(pieData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.id) {
+      window.location.href = `/pies/${data.id}`;
+    } else {
+      alert('Error saving pie. Please try again.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error saving pie. Please try again.');
+  });
+}
+
+// Navigation functions
+function goToStep(step) {
+  // Hide current step
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  
+  // Show target step
+  document.getElementById(`step-${step}`).classList.add('active');
+  
+  currentStep = step;
+  
+  // Initialize step
+  switch(step) {
+    case 1:
+      initializeStep1();
+      break;
+    case 2:
+      initializeStep2();
+      break;
+    case 3:
+      initializeStep3();
+      break;
+    case 4:
+      initializeStep4();
+      break;
+    case 5:
+      initializeStep5();
+      break;
+  }
+  
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+</script>

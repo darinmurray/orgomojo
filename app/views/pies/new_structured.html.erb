@@ -1,0 +1,1087 @@
+<%
+# Fabricated data for wizard - this simulates database objects
+fake_pie_class = Struct.new(:id, :name, :slices) do
+  def initialize(id, name)
+    super(id, name, [])
+  end
+end
+
+fake_slice_class = Struct.new(:id, :name, :color, :percentage, :elements) do
+  def initialize(id, name, color, percentage)
+    super(id, name, color, percentage, [])
+  end
+  
+  def any?
+    elements.any?
+  end
+end
+
+fake_element_class = Struct.new(:id, :name, :objective, :completed) do
+  def initialize(id, name, objective = nil, completed = false)
+    super(id, name, objective, completed)
+  end
+  
+  def completed?
+    completed
+  end
+end
+
+# Create available categories with dummy data
+@available_categories = [
+  fake_slice_class.new(1, "Health", "#ff6b6b", 45).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(1, "Exercise 30 min daily", "Complete a 30-minute workout routine every day", false),
+      fake_element_class.new(2, "Drink 8 glasses of water", "Consume at least 64 ounces of water daily", true),
+      fake_element_class.new(3, "Get 8 hours of sleep", "Maintain consistent sleep schedule with 8 hours nightly", false),
+      fake_element_class.new(4, "Eat 5 servings vegetables", "Include 5 servings of vegetables in daily meals", true),
+      fake_element_class.new(5, "Stretch in the morning", "Perform a 10-minute stretching routine every morning", true),
+      fake_element_class.new(6, "Take a daily walk", "Go for a 20-minute walk outdoors every day", false),
+      fake_element_class.new(7, "Limit sugar intake", "Reduce daily sugar consumption to less than 25 grams", false),
+      fake_element_class.new(8, "Practice yoga weekly", "Attend a yoga session once a week to improve flexibility", true)
+    ]
+  end,
+  
+  fake_slice_class.new(2, "Friends and Family", "#253da7ff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(9, "Call family weekly", "Schedule regular weekly calls with family members", true),
+      fake_element_class.new(10, "Date night monthly", "Plan monthly date activities with partner", false),
+      fake_element_class.new(11, "Friend meetup bi-weekly", "Organize social gatherings with friends every two weeks", true),
+      fake_element_class.new(12, "Send birthday cards", "Send personalized birthday cards to close friends and family", true),
+      fake_element_class.new(13, "Volunteer together", "Participate in a community service activity with friends or family", false),
+      fake_element_class.new(14, "Plan a family game night", "Organize a fun game night with family members", true),
+      fake_element_class.new(15, "Reconnect with an old friend", "Reach out to an old friend and catch up", false)
+    ]
+  end,
+  
+  fake_slice_class.new(3, "Career", "#4d3d78ff", 30).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(16, "Learn new skill", "Complete online course in relevant professional skill", false),
+      fake_element_class.new(17, "Network monthly", "Attend one networking event per month", true),
+      fake_element_class.new(18, "Update resume", "Revise and modernize resume with recent accomplishments", false),
+      fake_element_class.new(19, "Seek mentorship", "Connect with industry mentor for career guidance", false),
+      fake_element_class.new(20, "Improve public speaking", "Join a public speaking group to enhance skills", false),
+      fake_element_class.new(21, "Attend industry conference", "Participate in an annual industry event", true),
+      fake_element_class.new(22, "Build portfolio", "Create a portfolio showcasing your work", false),
+      fake_element_class.new(23, "Set career goals", "Define short-term and long-term career objectives", false)
+    ]
+  end,
+  
+  fake_slice_class.new(4, "Hobbies and Interests", "#f7dc6f", 80).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(24, "Photography Project", "Complete a monthly photography challenge", true),
+      fake_element_class.new(25, "Learn Guitar", "Practice guitar for 30 minutes daily", true),
+      fake_element_class.new(26, "Gardening", "Spend time tending to your garden weekly", false),
+      fake_element_class.new(27, "Cooking new recipes", "Experiment with a new recipe every week", true),
+      fake_element_class.new(28, "Join a book club", "Participate in discussions about books", true),
+      fake_element_class.new(29, "Start painting", "Create a painting every month", true),
+      fake_element_class.new(30, "Explore hiking trails", "Visit a new hiking trail every weekend", true),
+      fake_element_class.new(31, "Learn a new language", "Dedicate time to learning a foreign language", false)
+    ]
+  end,
+  
+  fake_slice_class.new(5, "Financial Health", "#bb8fce", 38).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(32, "Budget tracking", "Review and update monthly budget", true),
+      fake_element_class.new(33, "Emergency fund", "Save $500 monthly for emergency fund", false),
+      fake_element_class.new(34, "Investment research", "Research and evaluate investment options", false),
+      fake_element_class.new(35, "Track expenses", "Record daily expenses to identify spending patterns", true),
+      fake_element_class.new(36, "Pay off debt", "Focus on reducing credit card debt", false),
+      fake_element_class.new(37, "Increase savings", "Set aside 20% of income for savings", true),
+      fake_element_class.new(38, "Review insurance policies", "Ensure adequate coverage for health and assets", false),
+      fake_element_class.new(39, "Plan for retirement", "Contribute to a retirement fund regularly", false)
+    ]
+  end,
+  
+  fake_slice_class.new(6, "Self Development", "#43b845ff", 59).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(40, "Meditation practice", "Spend 10 minutes daily meditating", true),
+      fake_element_class.new(41, "Read self-help books", "Complete one self-help book per month", false),
+      fake_element_class.new(42, "Take online courses", "Enroll in courses to learn new skills", false),
+      fake_element_class.new(43, "Write a journal", "Reflect on daily experiences in a journal", true),
+      fake_element_class.new(44, "Attend workshops", "Participate in seminars for self-improvement", false),
+      fake_element_class.new(45, "Practice gratitude", "Write down three things you're grateful for daily", true),
+      fake_element_class.new(46, "Set personal goals", "Define and track progress on personal growth goals", false),
+      fake_element_class.new(47, "Learn a new skill", "Dedicate time to learning a new skill or hobby", false)
+    ]
+  end,
+  
+  fake_slice_class.new(7, "Physical Environment", "#cd4ecbff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(48, "Declutter living space", "Organize and remove unnecessary items from your home", false),
+      fake_element_class.new(49, "Create a cozy reading nook", "Set up a comfortable space for reading and relaxation", true),
+      fake_element_class.new(50, "Incorporate plants", "Add indoor plants to improve air quality and aesthetics", false),
+      fake_element_class.new(51, "Enhance lighting", "Upgrade lighting fixtures for better ambiance", false),
+      fake_element_class.new(52, "Organize workspace", "Create an efficient and inspiring work area", true),
+      fake_element_class.new(53, "Deep clean monthly", "Perform a thorough cleaning of your home monthly", false),
+      fake_element_class.new(54, "Redecorate a room", "Update the decor in one room to reflect your style", false),
+      fake_element_class.new(55, "Maintain outdoor space", "Keep your garden or balcony in good condition", true)
+    ]
+  end,
+  
+  fake_slice_class.new(8, "Romantic Relationships", "#4ecdc4", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(56, "Plan romantic getaway", "Organize a weekend trip with your partner", false),
+      fake_element_class.new(57, "Write love notes", "Leave thoughtful notes for your partner", true),
+      fake_element_class.new(58, "Cook dinner together", "Prepare a meal together to bond", false),
+      fake_element_class.new(59, "Watch movies together", "Pick a movie and enjoy a cozy night in", false),
+      fake_element_class.new(60, "Take walks together", "Go for relaxing walks and talk about your day", true),
+      fake_element_class.new(61, "Surprise with gifts", "Give your partner small, thoughtful gifts", false),
+      fake_element_class.new(62, "Have deep conversations", "Spend time discussing hopes, dreams, and feelings", true),
+      fake_element_class.new(63, "Try new activities", "Explore new hobbies or experiences together", false)
+    ]
+  end
+]
+
+# Helper method to simulate truncate
+def truncate(text, length: 30)
+  text.length > length ? text[0...length] + "..." : text
+end
+%>
+
+<style>
+/* Root variables for consistent theming */
+:root {
+  --primary-color: #007cba;
+  --primary-hover: #005a8a;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --border-radius: 8px;
+  --animation-speed: 0.3s;
+  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --lightgray: #b1b1b1ff;
+  --lightergray: #e9ecef;
+}
+
+/* Base wizard container */
+.wizard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Progressive reveal system - all content in one structure */
+.wheel-wizard {
+  position: relative;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Header that changes content based on step */
+.wizard-header {
+  padding: 40px;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.wizard-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.wizard-header .step-description {
+  font-size: 18px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Main content area with unified structure */
+.wizard-content {
+  padding: 40px;
+  min-height: 500px;
+}
+
+/* Step-based visibility control */
+.step-1 .step-2-content,
+.step-1 .step-3-content,
+.step-1 .step-4-content { display: none; }
+
+.step-2 .step-1-content,
+.step-2 .step-3-content,
+.step-2 .step-4-content { display: none; }
+
+.step-3 .step-1-content,
+.step-3 .step-2-content,
+.step-3 .step-4-content { display: none; }
+
+.step-4 .step-1-content,
+.step-4 .step-2-content,
+.step-4 .step-3-content { display: none; }
+
+/* Category items - unified structure for all steps */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.category-item {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  transition: all var(--animation-speed) ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-item:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.category-item.selected {
+  border-color: var(--primary-color);
+  background: rgba(0, 124, 186, 0.05);
+}
+
+/* Category header with color indicator */
+.category-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.category-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  margin-right: 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.category-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+/* Checkbox - visible in step 1 */
+.category-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+/* Progress elements - visible in step 2 */
+.category-progress {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all var(--animation-speed) ease;
+}
+
+.step-2 .category-progress,
+.step-3 .category-progress,
+.step-4 .category-progress {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.progress-bar-container {
+  background: var(--lightergray);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width var(--animation-speed) ease;
+}
+
+.progress-percentage {
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+/* Elements section - visible in step 3+ when expanded */
+.category-elements {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px);
+  transition: all var(--animation-speed) ease;
+  overflow: hidden;
+  border-top: 1px solid #e9ecef;
+  padding-top: 0;
+  margin-top: 15px;
+}
+
+.category-item.expanded .category-elements {
+  opacity: 1;
+  max-height: 500px;
+  transform: translateY(0);
+  padding-top: 15px;
+}
+
+.elements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.element-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  transition: all var(--animation-speed) ease;
+}
+
+.element-item:hover {
+  background: #e9ecef;
+}
+
+.element-checkbox {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.element-name {
+  flex: 1;
+  font-size: 14px;
+}
+
+.element-delete {
+  color: #dc3545;
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 2px;
+  border-radius: 2px;
+  transition: opacity var(--animation-speed) ease;
+}
+
+.element-delete:hover {
+  opacity: 1;
+}
+
+/* Custom element form */
+.custom-element-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.custom-element-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-element-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--animation-speed) ease;
+}
+
+.add-element-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Navigation footer */
+.wizard-navigation {
+  padding: 20px 40px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--animation-speed) ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+.btn-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
+/* Pie name input for step 1 */
+.pie-name-container {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.pie-name-input {
+  font-size: 24px;
+  font-weight: 600;
+  padding: 15px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: var(--border-radius);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  transition: border-color var(--animation-speed) ease;
+}
+
+.pie-name-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-down {
+  animation: slideDown var(--animation-speed) ease;
+}
+
+.fade-in {
+  animation: fadeIn var(--animation-speed) ease;
+}
+
+/* Progress indicator */
+.wizard-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--primary-color);
+  transition: width var(--animation-speed) ease;
+  z-index: 10;
+}
+
+/* Step-specific styles */
+.step-1 .wizard-progress { width: 25%; }
+.step-2 .wizard-progress { width: 50%; }
+.step-3 .wizard-progress { width: 75%; }
+.step-4 .wizard-progress { width: 100%; }
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .wizard-content {
+    padding: 20px;
+  }
+  
+  .wizard-header {
+    padding: 30px 20px;
+  }
+  
+  .wizard-navigation {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+</style>
+
+<!-- Main Wizard Container -->
+<div class="wizard-container">
+  <div class="wheel-wizard step-1" id="wheel-wizard">
+    
+    <!-- Progress indicator -->
+    <div class="wizard-progress"></div>
+    
+    <!-- Dynamic header -->
+    <div class="wizard-header">
+      <h1 id="wizard-title">Create Your Life Balance Wheel</h1>
+      <p class="step-description" id="step-description">First, give your wheel a meaningful name that reflects your personal journey.</p>
+    </div>
+    
+    <!-- Main content area -->
+    <div class="wizard-content">
+      
+      <!-- Step 1: Pie Name Input -->
+      <div class="step-1-content">
+        <div class="pie-name-container">
+          <input type="text" 
+                 id="pie-name-input" 
+                 class="pie-name-input" 
+                 placeholder="Enter your wheel name..."
+                 maxlength="50">
+        </div>
+      </div>
+      
+      <!-- Step 2+: Categories Grid (unified structure) -->
+      <div class="step-2-content">
+        <div class="categories-grid" id="categories-grid">
+          <% @available_categories.each do |category| %>
+            <div class="category-item" 
+                 data-category-id="<%= category.id %>" 
+                 data-category-name="<%= category.name %>"
+                 data-category-color="<%= category.color %>">
+              
+              <!-- Category Header (always visible) -->
+              <div class="category-header">
+                <div class="category-color" style="background-color: <%= category.color %>;"></div>
+                <h3 class="category-name"><%= category.name %></h3>
+                
+                <!-- Step 1: Checkbox for selection -->
+                <input type="checkbox" 
+                       class="category-checkbox step-1-content" 
+                       value="<%= category.id %>"
+                       data-category-name="<%= category.name %>">
+                
+                <!-- Step 2+: Progress display -->
+                <div class="category-progress">
+                  <span class="progress-percentage">0%</span>
+                </div>
+              </div>
+              
+              <!-- Step 2+: Progress bar -->
+              <div class="category-progress">
+                <div class="progress-bar-container">
+                  <div class="progress-bar" 
+                       style="background-color: <%= category.color %>; width: 0%;">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 3+: Elements section (expandable) -->
+              <div class="category-elements">
+                <div class="elements-list">
+                  <% category.elements.each do |element| %>
+                    <div class="element-item" data-element-id="<%= element.id %>">
+                      <input type="checkbox" 
+                             class="element-checkbox" 
+                             value="<%= element.id %>"
+                             <%= 'checked' if element.completed? %>>
+                      <span class="element-name"><%= element.name %></span>
+                      <span class="element-delete material-symbols-outlined" 
+                            data-element-id="<%= element.id %>"
+                            data-category-id="<%= category.id %>"
+                            title="Remove element">cancel</span>
+                    </div>
+                  <% end %>
+                  
+                  <!-- Custom element form -->
+                  <div class="custom-element-form">
+                    <input type="text" 
+                           class="custom-element-input" 
+                           placeholder="Add your own element..."
+                           data-category-id="<%= category.id %>">
+                    <button class="add-element-btn" 
+                            data-category-id="<%= category.id %>" 
+                            title="Add Element">+</button>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Navigation footer -->
+    <div class="wizard-navigation">
+      <button class="btn btn-secondary" id="back-btn" style="visibility: hidden;">← Back</button>
+      <div id="step-info">Step 1 of 4</div>
+      <button class="btn btn-primary" id="next-btn" disabled>Next Step →</button>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+// Wizard state management
+const WizardState = {
+  currentStep: 1,
+  pieName: '',
+  selectedCategories: [],
+  categoryProgress: {},
+  selectedElements: {},
+  customElements: {},
+  
+  // Available categories from server
+  availableCategories: <%= @available_categories.to_json.html_safe %>,
+  
+  // Step content mapping
+  stepContent: {
+    1: {
+      title: 'Create Your Life Balance Wheel',
+      description: 'First, give your wheel a meaningful name that reflects your personal journey.'
+    },
+    2: {
+      title: 'Choose Your Life Areas',
+      description: 'Select at least 3 categories that are important to your life balance.'
+    },
+    3: {
+      title: 'Review Your Elements',
+      description: 'Click on any category to see and customize the elements that make up that area of your life.'
+    },
+    4: {
+      title: 'Final Review',
+      description: 'Review your wheel and make any final adjustments before saving.'
+    }
+  }
+};
+
+// Main wizard controller
+class LifeWheelWizard {
+  constructor() {
+    this.wizard = document.getElementById('wheel-wizard');
+    this.initializeEventListeners();
+    this.updateUI();
+  }
+  
+  initializeEventListeners() {
+    // Navigation buttons
+    document.getElementById('back-btn').addEventListener('click', () => this.previousStep());
+    document.getElementById('next-btn').addEventListener('click', () => this.nextStep());
+    
+    // Pie name input
+    document.getElementById('pie-name-input').addEventListener('input', (e) => {
+      WizardState.pieName = e.target.value.trim();
+      this.updateNavigationState();
+    });
+    
+    // Category checkboxes (step 2)
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('category-checkbox')) {
+        this.handleCategorySelection(e.target);
+      }
+    });
+    
+    // Category headers (step 3 - expansion)
+    document.addEventListener('click', (e) => {
+      if (WizardState.currentStep >= 3 && e.target.closest('.category-header')) {
+        const categoryItem = e.target.closest('.category-item');
+        if (WizardState.selectedCategories.includes(parseInt(categoryItem.dataset.categoryId))) {
+          this.toggleCategoryExpansion(categoryItem);
+        }
+      }
+    });
+    
+    // Element checkboxes
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('element-checkbox')) {
+        this.handleElementSelection(e.target);
+      }
+    });
+    
+    // Custom element addition
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('add-element-btn')) {
+        this.addCustomElement(e.target);
+      }
+    });
+    
+    // Custom element input (Enter key)
+    document.addEventListener('keypress', (e) => {
+      if (e.target.classList.contains('custom-element-input') && e.key === 'Enter') {
+        const btn = e.target.nextElementSibling;
+        this.addCustomElement(btn);
+      }
+    });
+    
+    // Element deletion
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('element-delete')) {
+        this.deleteElement(e.target);
+      }
+    });
+  }
+  
+  // Navigation methods
+  nextStep() {
+    if (!this.canProceed()) return;
+    
+    if (WizardState.currentStep < 4) {
+      WizardState.currentStep++;
+      this.updateUI();
+    } else {
+      this.savePie();
+    }
+  }
+  
+  previousStep() {
+    if (WizardState.currentStep > 1) {
+      WizardState.currentStep--;
+      this.updateUI();
+    }
+  }
+  
+  // UI update methods
+  updateUI() {
+    this.updateWizardClass();
+    this.updateHeader();
+    this.updateNavigation();
+    this.updateCategoryDisplay();
+    this.animateTransition();
+  }
+  
+  updateWizardClass() {
+    this.wizard.className = `wheel-wizard step-${WizardState.currentStep}`;
+  }
+  
+  updateHeader() {
+    const content = WizardState.stepContent[WizardState.currentStep];
+    document.getElementById('wizard-title').textContent = content.title;
+    document.getElementById('step-description').textContent = content.description;
+  }
+  
+  updateNavigation() {
+    const backBtn = document.getElementById('back-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const stepInfo = document.getElementById('step-info');
+    
+    // Back button visibility
+    backBtn.style.visibility = WizardState.currentStep > 1 ? 'visible' : 'hidden';
+    
+    // Next button state and text
+    const canProceed = this.canProceed();
+    nextBtn.disabled = !canProceed;
+    nextBtn.textContent = WizardState.currentStep === 4 ? 'Save Wheel' : 'Next Step →';
+    
+    // Step info
+    stepInfo.textContent = `Step ${WizardState.currentStep} of 4`;
+  }
+  
+  updateCategoryDisplay() {
+    const categoryItems = document.querySelectorAll('.category-item');
+    
+    categoryItems.forEach(item => {
+      const categoryId = parseInt(item.dataset.categoryId);
+      const isSelected = WizardState.selectedCategories.includes(categoryId);
+      
+      // Update selection state
+      item.classList.toggle('selected', isSelected);
+      
+      // Update progress display
+      const percentage = WizardState.categoryProgress[categoryId] || 0;
+      const progressBar = item.querySelector('.progress-bar');
+      const progressPercentage = item.querySelector('.progress-percentage');
+      
+      if (progressBar) {
+        progressBar.style.width = percentage + '%';
+      }
+      if (progressPercentage) {
+        progressPercentage.textContent = percentage + '%';
+      }
+      
+      // Hide non-selected categories in steps 3+
+      if (WizardState.currentStep >= 3) {
+        item.style.display = isSelected ? 'block' : 'none';
+      } else {
+        item.style.display = 'block';
+      }
+    });
+  }
+  
+  animateTransition() {
+    const content = document.querySelector('.wizard-content');
+    content.classList.add('fade-in');
+    setTimeout(() => content.classList.remove('fade-in'), 300);
+  }
+  
+  // Validation methods
+  canProceed() {
+    switch (WizardState.currentStep) {
+      case 1:
+        return WizardState.pieName.length >= 3;
+      case 2:
+        return WizardState.selectedCategories.length >= 3;
+      case 3:
+      case 4:
+        return true;
+      default:
+        return false;
+    }
+  }
+  
+  updateNavigationState() {
+    this.updateNavigation();
+  }
+  
+  // Event handlers
+  handleCategorySelection(checkbox) {
+    const categoryId = parseInt(checkbox.value);
+    
+    if (checkbox.checked) {
+      if (!WizardState.selectedCategories.includes(categoryId)) {
+        WizardState.selectedCategories.push(categoryId);
+        WizardState.categoryProgress[categoryId] = 0;
+        this.initializeCategoryElements(categoryId);
+      }
+    } else {
+      WizardState.selectedCategories = WizardState.selectedCategories.filter(id => id !== categoryId);
+      delete WizardState.categoryProgress[categoryId];
+      delete WizardState.selectedElements[categoryId];
+      delete WizardState.customElements[categoryId];
+    }
+    
+    this.updateCategoryProgress(categoryId);
+    this.updateNavigationState();
+    this.updateCategoryDisplay();
+  }
+  
+  toggleCategoryExpansion(categoryItem) {
+    // Close all other expanded categories
+    document.querySelectorAll('.category-item.expanded').forEach(item => {
+      if (item !== categoryItem) {
+        item.classList.remove('expanded');
+      }
+    });
+    
+    // Toggle current category
+    categoryItem.classList.toggle('expanded');
+  }
+  
+  handleElementSelection(checkbox) {
+    const elementId = parseInt(checkbox.value);
+    const categoryId = parseInt(checkbox.closest('.category-item').dataset.categoryId);
+    
+    if (!WizardState.selectedElements[categoryId]) {
+      WizardState.selectedElements[categoryId] = [];
+    }
+    
+    if (checkbox.checked) {
+      if (!WizardState.selectedElements[categoryId].includes(elementId)) {
+        WizardState.selectedElements[categoryId].push(elementId);
+      }
+    } else {
+      WizardState.selectedElements[categoryId] = WizardState.selectedElements[categoryId].filter(id => id !== elementId);
+    }
+    
+    this.updateCategoryProgress(categoryId);
+  }
+  
+  addCustomElement(button) {
+    const input = button.previousElementSibling;
+    const categoryId = parseInt(button.dataset.categoryId);
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    // Add to state
+    if (!WizardState.customElements[categoryId]) {
+      WizardState.customElements[categoryId] = [];
+    }
+    WizardState.customElements[categoryId].push(text);
+    
+    // Add to UI
+    const elementDiv = document.createElement('div');
+    elementDiv.className = 'element-item';
+    elementDiv.innerHTML = `
+      <input type="checkbox" class="element-checkbox" checked data-custom-text="${text}">
+      <span class="element-name">${text}</span>
+      <span class="element-delete material-symbols-outlined" 
+            data-custom-element="${text}" 
+            data-category-id="${categoryId}" 
+            title="Remove element">cancel</span>
+    `;
+    
+    input.closest('.custom-element-form').before(elementDiv);
+    input.value = '';
+    
+    this.updateCategoryProgress(categoryId);
+  }
+  
+  deleteElement(deleteButton) {
+    const elementItem = deleteButton.closest('.element-item');
+    const categoryId = parseInt(deleteButton.dataset.categoryId);
+    
+    // Handle custom elements
+    if (deleteButton.dataset.customElement) {
+      const customText = deleteButton.dataset.customElement;
+      if (WizardState.customElements[categoryId]) {
+        WizardState.customElements[categoryId] = WizardState.customElements[categoryId].filter(text => text !== customText);
+      }
+    } else {
+      // Handle regular elements
+      const elementId = parseInt(deleteButton.dataset.elementId);
+      if (WizardState.selectedElements[categoryId]) {
+        WizardState.selectedElements[categoryId] = WizardState.selectedElements[categoryId].filter(id => id !== elementId);
+      }
+    }
+    
+    // Animate removal
+    elementItem.classList.add('removing');
+    setTimeout(() => {
+      elementItem.remove();
+      this.updateCategoryProgress(categoryId);
+    }, 300);
+  }
+  
+  // Helper methods
+  initializeCategoryElements(categoryId) {
+    const category = WizardState.availableCategories.find(c => c.id === categoryId);
+    if (!category) return;
+    
+    // Initialize with pre-selected elements (those marked as completed)
+    WizardState.selectedElements[categoryId] = category.elements
+      .filter(element => element.completed)
+      .map(element => element.id);
+    
+    WizardState.customElements[categoryId] = [];
+  }
+  
+  updateCategoryProgress(categoryId) {
+    const category = WizardState.availableCategories.find(c => c.id === categoryId);
+    if (!category) return;
+    
+    const selectedElements = WizardState.selectedElements[categoryId] || [];
+    const customElements = WizardState.customElements[categoryId] || [];
+    const totalElements = category.elements.length + customElements.length;
+    const completedCount = selectedElements.length + customElements.length;
+    
+    const percentage = totalElements > 0 ? Math.round((completedCount / totalElements) * 100) : 0;
+    WizardState.categoryProgress[categoryId] = percentage;
+    
+    this.updateCategoryDisplay();
+  }
+  
+  // Save functionality
+  savePie() {
+    const nextBtn = document.getElementById('next-btn');
+    const originalText = nextBtn.textContent;
+    
+    nextBtn.disabled = true;
+    nextBtn.textContent = 'Saving...';
+    
+    const pieData = this.preparePieData();
+    
+    fetch('/pies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify(pieData)
+    })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      if (data.id) {
+        window.location.href = `/pies/${data.id}`;
+      } else {
+        throw new Error('No pie ID returned');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving wheel. Please try again.');
+      nextBtn.disabled = false;
+      nextBtn.textContent = originalText;
+    });
+  }
+  
+  preparePieData() {
+    return {
+      pie: {
+        name: WizardState.pieName,
+        slices_attributes: WizardState.selectedCategories.map(catId => {
+          const category = WizardState.availableCategories.find(c => c.id === catId);
+          if (!category) return null;
+          
+          const selectedElements = WizardState.selectedElements[catId] || [];
+          const customElements = WizardState.customElements[catId] || [];
+          
+          const elementsAttributes = [
+            ...category.elements.map(element => ({
+              name: element.name,
+              objective: element.objective,
+              completed: selectedElements.includes(element.id)
+            })),
+            ...customElements.map(text => ({
+              name: text,
+              objective: `Custom element: ${text}`,
+              completed: true
+            }))
+          ];
+          
+          return {
+            name: category.name,
+            color: category.color,
+            percentage: WizardState.categoryProgress[catId] || 0,
+            elements_attributes: elementsAttributes
+          };
+        }).filter(Boolean)
+      }
+    };
+  }
+}
+
+// Initialize wizard when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  new LifeWheelWizard();
+});
+</script>

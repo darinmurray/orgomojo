@@ -1,0 +1,169 @@
+# app/views/wheel_of_life/index.html.erb
+<div data-controller="wheel-of-life">
+  
+  <script type="application/json" id="categories-data">
+    <%= @categories_data.to_json.html_safe %>
+  </script>
+  
+  <div class="container">
+    <h1>Your Wheel of Life Assessment</h1>
+    <p class="lead">Click on each area of your life to explore and improve it.</p>
+    
+    <!-- Wheel of Life Visual -->
+    <div class="wheel-container mb-5">
+      <div class="wheel">
+        <% @categories.each_with_index do |category, index| %>
+          <div class="category-slice" 
+               data-category-id="<%= category.id %>"
+               data-action="click->wheel-of-life#selectCategory"
+               style="--slice-index: <%= index %>;">
+            <span class="category-name"><%= category.name.humanize %></span>
+            <div class="satisfaction-level" data-level="<%= rand(1..10) %>"></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Category Assessment Form -->
+    <div class="assessment-section">
+      <div data-wheel-of-life-target="categoryForm" class="category-form-container">
+        <div class="empty-state text-center py-5">
+          <h4>Select a life area from the wheel above</h4>
+          <p class="text-muted">Click on any slice to begin your assessment for that area.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Display -->
+    <div data-wheel-of-life-target="resultsContainer" class="results-section mt-4">
+      <!-- Results will be populated here -->
+    </div>
+
+    <!-- Previous Assessments -->
+    <% if @user_responses.any? %>
+      <div class="previous-assessments mt-5">
+        <h3>Your Previous Assessments</h3>
+        <div class="row">
+          <% @user_responses.each do |response| %>
+            <div class="col-md-6 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <h5><%= response.life_category.name.humanize %></h5>
+                  <small class="text-muted"><%= response.created_at.strftime('%B %d, %Y') %></small>
+                </div>
+                <div class="card-body">
+                  <% if response.analysis_data %>
+                    <p><strong>Overall:</strong> <%= response.analysis_data['overall_satisfaction'] %></p>
+                    <div class="mb-2">
+                      <small class="text-success">
+                        <%= pluralize(response.analysis_data['working_well']&.length || 0, 'strength') %>
+                      </small>
+                      |
+                      <small class="text-warning">
+                        <%= pluralize(response.analysis_data['needs_improvement']&.length || 0, 'area for growth') %>
+                      </small>
+                    </div>
+                    <% if response.life_goals.any? %>
+                      <div class="goals-summary">
+                        <small class="text-primary">
+                          🎯 <%= pluralize(response.life_goals.count, 'action goal') %> created
+                        </small>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Add some basic CSS for the wheel -->
+<style>
+.wheel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wheel {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  background: conic-gradient(
+    from 0deg,
+    #ff6b6b 0deg 45deg,
+    #4ecdc4 45deg 90deg,
+    #45b7d1 90deg 135deg,
+    #96ceb4 135deg 180deg,
+    #ffeaa7 180deg 225deg,
+    #dda0dd 225deg 270deg,
+    #98d8c8 270deg 315deg,
+    #f7dc6f 315deg 360deg
+  );
+}
+
+.category-slice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  transform: translate(-50%, -50%) rotate(calc(var(--slice-index) * 45deg));
+  width: 180px;
+  height: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20px;
+  transition: all 0.3s ease;
+}
+
+.category-slice:hover {
+  transform: translate(-50%, -50%) rotate(calc(var(--slice-index) * 45deg)) scale(1.1);
+}
+
+.category-slice.active {
+  transform: translate(-50%, -50%) rotate(calc(var(--slice-index) * 45deg)) scale(1.2);
+  z-index: 10;
+}
+
+.category-name {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  transform: rotate(calc(var(--slice-index) * -45deg));
+  white-space: nowrap;
+}
+
+.goal-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  transition: transform 0.2s ease;
+}
+
+.goal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.analysis-results {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.empty-state {
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+</style>

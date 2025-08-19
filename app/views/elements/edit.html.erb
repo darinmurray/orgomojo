@@ -1,0 +1,289 @@
+<!-- app/views/elements/edit.html.erb -->
+<style>
+  :root {
+    --slice-color: <%= @slice.color %>;
+
+  }
+.form-group {
+    /* font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; */
+  }
+  #element-edit-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .element-edit-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--lightergray);
+  }
+
+  .element-edit-title {
+    color: var(--darkestgray);
+    margin-bottom: 10px;
+  }
+
+  .breadcrumb {
+    color: var(--lightgray);
+    font-size: 14px;
+  }
+
+  .breadcrumb a {
+    color: var(--slice-color);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--darkestgray);
+  }
+
+  .form-group label.inline {
+    /* display: block; */
+    margin-bottom: 0px;
+    /* font-weight: 500;
+    color: var(--darkestgray); */
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    /* width: 100%; */
+    padding: var(--inline-btn-padding);
+    font-size: 16px;
+    font-family: inherit;
+    border: 1.5px solid var(--lightergray);
+    border-radius: var(--text-input-border-radius);
+    outline: none;
+    color: #222;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--slice-color);
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+  }
+
+textarea#element_objective, input#element_name {
+  width: 100%;
+}
+
+
+
+
+
+/* element_time_needed */
+    .form-group input[type="number"] {
+        width: 50px;
+        padding: var(--inline-btn-padding);
+        font-size: 16px;
+        font-family: inherit;
+        border: 1.5px solid var(--lightergray);
+        border-radius: var(--text-input-border-radius);
+        outline: none;
+        color: #222;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+
+
+  .form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center; /* Centers items vertically */
+    gap: 10px; /* Optional: adds space between items */
+  }
+
+  .form-row .form-group {
+    display: flex;
+    align-items: center; /* Centers items vertically */
+    justify-content: flex-start;
+    margin-bottom: 0px; /* Ensures no extra space below each row */
+    gap:10px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--lightergray);
+    border-radius: 3px;
+    background: white;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .checkbox-group input[type="checkbox"]:checked {
+    background: var(--slice-color);
+    border-color: var(--slice-color);
+  }
+
+  .checkbox-group input[type="checkbox"]:checked::before {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    left: 3px;
+    top: 1px;
+    font-weight: bold;
+  }
+
+  .form-actions {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--lightergray);
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: var(--button-border-radius);
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--slice-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--slice-color) 85%, black);
+  }
+
+  .btn-secondary {
+    background: var(--lightergray);
+    color: var(--darkgray);
+  }
+
+  .btn-secondary:hover {
+    background: color-mix(in srgb, var(--lightergray) 85%, black);
+  }
+
+  .btn-danger {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #c82333;
+  }
+
+  .help-text {
+    font-size: 14px;
+    color: var(--lightgray);
+    margin-top: 5px;
+  }
+</style>
+
+<div id="element-edit-container">
+  <div class="element-edit-header">
+    <h1 class="element-edit-title">Edit Element</h1>
+    <div class="breadcrumb">
+      <%= link_to @pie.name, pie_path(@pie) %> → 
+      <%= link_to @slice.name, pie_slice_path(@pie, @slice) %> → 
+      <%= @element.name %>
+    </div>
+  </div>
+
+  <%= form_with model: [@pie, @slice, @element], local: true, class: "element-form" do |f| %>
+    <div class="form-group">
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <%= f.label :name, "Element Name" %>
+        <span class="material-symbols-outlined">wand_shine</span>
+    </div>
+
+      
+
+      <%= f.text_field :name, placeholder: "Enter element name..." %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :objective, "Objective" %>
+      <%= f.text_area :objective, placeholder: "Describe the objective for this element..." %>
+      <div class="help-text">Type "help" to get AI-generated suggestions</div>
+    </div>
+
+    <div class="form-row" id='element-time-needed-row'>
+      <!-- div class="form-group">
+        <%#= f.label :priority, "Priority" %>
+        <%#= f.select :priority, 
+            options_for_select((1..@slice.elements.count).map { |i| [i, i] }, @element.priority), 
+            { include_blank: 'Select' } %>
+
+      </div -->
+
+      <div class="form-group">
+        <%= f.label :time_needed, "I commit", class: "inline" %>
+        <%= f.number_field :time_needed, placeholder: "0", min: 0 %>
+      </div>
+
+      <div class="form-group">
+        <%#= f.label :time_scale, "Time Scale" %>
+        <%= f.select :time_scale, 
+            options_for_select([
+              ['Minutes', 'minutes'],
+              ['Hours', 'hours'], 
+              ['Days', 'days'],
+              ['Weeks', 'weeks'],
+              ['Months', 'months']
+            ], @element.time_scale), 
+            { include_blank: 'Select...' } %>
+      </div>
+
+
+    <div class="form-group">
+      <%= f.label :deadline, "to complete this by", class: "inline" %>
+      <%= f.datetime_local_field :deadline %>
+    </div>
+    </div>
+
+
+
+
+    <!-- div class="form-group">
+      <div class="checkbox-group">
+        <%#= f.check_box :completed %>
+        <%#= f.label :completed, "Mark as completed" %>
+      </div>
+    </div -->
+
+    <div class="form-actions">
+      <%= link_to "Cancel", pie_slice_path(@pie, @slice), class: "btn btn-secondary" %>
+      <%= f.submit "Update Element", class: "btn btn-primary" %>
+      <%= link_to "Delete Element", [@pie, @slice, @element], 
+            method: :delete, 
+            data: { confirm: "Are you sure you want to delete this element?" },
+            class: "btn btn-danger" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,43 @@
+<!-- app/views/elements/create.turbo_stream.erb -->
+<% if @element.persisted? %>
+  <!-- Remove "no elements" message if it exists -->
+  <%= turbo_stream.remove "slice-#{@slice.id}-no-elements" %>
+  
+  <!-- Append the new element -->
+  <%= turbo_stream.append "slice-#{@slice.id}-elements-list" do %>
+    <%= render 'pies/element_row', pie: @pie, slice: @slice, element: @element %>
+  <% end %>
+  
+  <!-- Replace the entire form to reset it -->
+  <%= turbo_stream.replace "slice-#{@slice.id}-form" do %>
+    <div id="slice-<%= @slice.id %>-form">
+      <%= render 'add_element_form', pie: @pie, slice: @slice, element: Element.new %>
+      <!-- < %= render 'element_row', pie: @pie, slice: @slice, element: @element % > --- IGNORE -->
+    </div>
+  <% end %>
+  
+  <!-- Update slice stats -->
+  <%= turbo_stream.update "slice-#{@slice.id}-stats" do %>
+    <div style="font-size: 14px; color: #666; margin-top: 2px;" class="completion-count">
+      <%= @slice.elements.where(completed: true).count %>/<%= @slice.elements.count %> elements completed
+    </div>
+  <% end %>
+  
+  <!-- Update percentage -->
+  <%= turbo_stream.update "slice-#{@slice.id}-percentage" do %>
+    <div style="font-size: 24px; font-weight: bold; color: #007cba;" class="percentage">
+      <%= @slice.percentage %>%
+    </div>
+  <% end %>
+  
+  <!-- Force complete page section reload for pie chart -->
+  <%= turbo_stream.replace "pie-section" do %>
+    <div id="pie-section">
+      <div id="pie-chart">
+        <div class="pie-chart-container" style="text-align: center; margin: 40px 0;">
+          <%= radial_pie_chart(@pie, size: 500, pinwheel: true) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

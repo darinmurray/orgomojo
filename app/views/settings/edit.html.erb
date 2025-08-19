@@ -1,0 +1,57 @@
+<h1>Edit Settings</h1>
+
+<%= form_with model: @setting, url: setting_path, method: :patch, local: true do |form| %>
+  <div>
+    <%= form.label :gender %>
+    <%= form.text_field :gender %>
+  </div>
+
+  <div>
+    <%= form.label :tone_1 %>
+    <%= form.text_field :tone_1 %>
+  </div>
+
+  <div>
+    <%= form.label :tone_2 %>
+    <%= form.text_field :tone_2 %>
+  </div>
+
+  <div>
+    <%= form.label :timespan %>
+    <%= form.text_field :timespan %>
+  </div>
+
+  <div>
+    <%= form.label :pie_objective_length %>
+    <%= form.number_field :pie_objective_length %>
+  </div>
+
+  <div>
+    <%= form.label :slice_objective_length %>
+    <%= form.number_field :slice_objective_length %>
+  </div>
+
+  <div>
+    <%= form.label :slice_element_length %>
+    <%= form.number_field :slice_element_length %>
+  </div>
+
+  <div>
+    <%= form.label :element_objective_length %>
+    <%= form.number_field :element_objective_length %>
+  </div>
+
+  <div>
+    <%= form.label :task_length %>
+    <%= form.number_field :task_length %>
+  </div>
+
+  <div>
+    <%= form.label :task_outcome_length %>
+    <%= form.number_field :task_outcome_length %>
+  </div>
+
+  <div>
+    <%= form.submit 'Save Settings' %>
+  </div>
+<% end %>

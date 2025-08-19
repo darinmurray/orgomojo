@@ -1,0 +1,2354 @@
+<%
+# Fabricated data for wizard - this simulates database objects
+fake_pie_class = Struct.new(:id, :name, :slices) do
+  def initialize(id, name)
+    super(id, name, [])
+  end
+end
+
+fake_slice_class = Struct.new(:id, :name, :color, :percentage, :elements) do
+  def initialize(id, name, color, percentage)
+    super(id, name, color, percentage, [])
+  end
+  
+  def any?
+    elements.any?
+  end
+end
+
+fake_element_class = Struct.new(:id, :name, :objective, :completed) do
+  def initialize(id, name, objective = nil, completed = false)
+    super(id, name, objective, completed)
+  end
+  
+  def completed?
+    completed
+  end
+end
+
+# Create available categories with dummy data
+@available_categories = [
+  fake_slice_class.new(1, "Health", "#ff6b6b", 45).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(1, "Exercise 30 min daily", "Complete a 30-minute workout routine every day", false),
+      fake_element_class.new(2, "Drink 8 glasses of water", "Consume at least 64 ounces of water daily", true),
+      fake_element_class.new(3, "Get 8 hours of sleep", "Maintain consistent sleep schedule with 8 hours nightly", false),
+      fake_element_class.new(4, "Eat 5 servings vegetables", "Include 5 servings of vegetables in daily meals", true),
+      fake_element_class.new(5, "Stretch in the morning", "Perform a 10-minute stretching routine every morning", true),
+      fake_element_class.new(6, "Take a daily walk", "Go for a 20-minute walk outdoors every day", false),
+      fake_element_class.new(7, "Limit sugar intake", "Reduce daily sugar consumption to less than 25 grams", false),
+      fake_element_class.new(8, "Practice yoga weekly", "Attend a yoga session once a week to improve flexibility", true)
+    ]
+  end,
+  
+  fake_slice_class.new(2, "Friends and Family", "#253da7ff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(9, "Call family weekly", "Schedule regular weekly calls with family members", true),
+      fake_element_class.new(10, "Date night monthly", "Plan monthly date activities with partner", false),
+      fake_element_class.new(11, "Friend meetup bi-weekly", "Organize social gatherings with friends every two weeks", true),
+      fake_element_class.new(12, "Send birthday cards", "Send personalized birthday cards to close friends and family", true),
+      fake_element_class.new(13, "Volunteer together", "Participate in a community service activity with friends or family", false),
+      fake_element_class.new(14, "Plan a family game night", "Organize a fun game night with family members", true),
+      fake_element_class.new(15, "Reconnect with an old friend", "Reach out to an old friend and catch up", false)
+    ]
+  end,
+  
+  fake_slice_class.new(3, "Career", "#4d3d78ff", 30).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(16, "Learn new skill", "Complete online course in relevant professional skill", false),
+      fake_element_class.new(17, "Network monthly", "Attend one networking event per month", true),
+      fake_element_class.new(18, "Update resume", "Revise and modernize resume with recent accomplishments", false),
+      fake_element_class.new(19, "Seek mentorship", "Connect with industry mentor for career guidance", false),
+      fake_element_class.new(20, "Improve public speaking", "Join a public speaking group to enhance skills", false),
+      fake_element_class.new(21, "Attend industry conference", "Participate in an annual industry event", true),
+      fake_element_class.new(22, "Build portfolio", "Create a portfolio showcasing your work", false),
+      fake_element_class.new(23, "Set career goals", "Define short-term and long-term career objectives", false),
+      fake_element_class.new(24, "Learn coding", "Complete a coding bootcamp or course", false),
+      fake_element_class.new(25, "Write a blog", "Start a professional blog to share insights", true)
+    ]
+  end,
+  
+  fake_slice_class.new(4, "Hobbies and Interests", "#f7dc6f", 80).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(26, "Photography Project", "Complete a monthly photography challenge", true),
+      fake_element_class.new(27, "Learn Guitar", "Practice guitar for 30 minutes daily", true),
+      fake_element_class.new(28, "Gardening", "Spend time tending to your garden weekly", false),
+      fake_element_class.new(29, "Cooking new recipes", "Experiment with a new recipe every week", true),
+      fake_element_class.new(30, "Join a book club", "Participate in discussions about books", true),
+      fake_element_class.new(31, "Start painting", "Create a painting every month", true),
+      fake_element_class.new(32, "Explore hiking trails", "Visit a new hiking trail every weekend", true),
+      fake_element_class.new(33, "Learn a new language", "Dedicate time to learning a foreign language", false),
+      fake_element_class.new(34, "Play board games", "Host a board game night with friends", true),
+      fake_element_class.new(35, "Try pottery", "Attend a pottery class to create something unique", false)
+    ]
+  end,
+  
+  fake_slice_class.new(5, "Financial Health", "#bb8fce", 38).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(36, "Budget tracking", "Review and update monthly budget", true),
+      fake_element_class.new(37, "Emergency fund", "Save $500 monthly for emergency fund", false),
+      fake_element_class.new(38, "Investment research", "Research and evaluate investment options", false),
+      fake_element_class.new(39, "Track expenses", "Record daily expenses to identify spending patterns", true),
+      fake_element_class.new(40, "Pay off debt", "Focus on reducing credit card debt", false),
+      fake_element_class.new(41, "Increase savings", "Set aside 20% of income for savings", true),
+      fake_element_class.new(42, "Review insurance policies", "Ensure adequate coverage for health and assets", false),
+      fake_element_class.new(43, "Plan for retirement", "Contribute to a retirement fund regularly", false),
+      fake_element_class.new(44, "Cut unnecessary expenses", "Identify and eliminate wasteful spending", true),
+      fake_element_class.new(45, "Start a side hustle", "Generate additional income through a side project", false)
+    ]
+  end,
+  
+  fake_slice_class.new(6, "Self Development", "#43b845ff", 59).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(46, "Mud Track Racing", "Get down and dirty!", true),
+      fake_element_class.new(47, "Engine Building", "Build and customize your own engine", false),
+      fake_element_class.new(48, "Local Exploration", "Research and explore local attractions", true),
+      fake_element_class.new(49, "Meditation practice", "Spend 10 minutes daily meditating", true),
+      fake_element_class.new(50, "Read self-help books", "Complete one self-help book per month", false),
+      fake_element_class.new(51, "Take online courses", "Enroll in courses to learn new skills", true),
+      fake_element_class.new(52, "Write a journal", "Reflect on daily experiences in a journal", true),
+      fake_element_class.new(53, "Attend personal growth workshops", "Participate in seminars for self-improvement", false),
+      fake_element_class.new(54, "Practice gratitude", "Write down three things you're grateful for daily", true),
+      fake_element_class.new(55, "Learn public speaking", "Join a Toastmasters group to improve speaking skills", false)
+    ]
+  end,
+  
+  fake_slice_class.new(7, "Physical Environment", "#cd4ecbff", 60).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(66, "Declutter living space", "Organize and remove unnecessary items from your home", true),
+      fake_element_class.new(67, "Create a cozy reading nook", "Set up a comfortable space for reading and relaxation", true),
+      fake_element_class.new(68, "Incorporate plants", "Add indoor plants to improve air quality and aesthetics", false),
+      fake_element_class.new(69, "Enhance lighting", "Upgrade lighting fixtures for better ambiance", true),
+      fake_element_class.new(70, "Reorganize furniture", "Arrange furniture to optimize space and functionality", true)
+    ]
+  end,
+  
+  fake_slice_class.new(8, "Personal Growth", "#ff9f43", 50).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(76, "Read self-improvement book", "Complete a book on personal development", true),
+      fake_element_class.new(77, "Practice mindfulness", "Spend 10 minutes daily on mindfulness exercises", true),
+      fake_element_class.new(78, "Set personal goals", "Define and track progress on personal growth goals", false),
+      fake_element_class.new(79, "Attend a workshop", "Participate in a personal growth workshop or seminar", false),
+      fake_element_class.new(80, "Develop a new habit", "Focus on building a positive habit for 30 days", true),
+      fake_element_class.new(81, "Write a gratitude journal", "List three things you're grateful for daily", true),
+      fake_element_class.new(82, "Learn a new skill", "Dedicate time to learning a new skill or hobby", false),
+      fake_element_class.new(83, "Seek feedback", "Ask for constructive feedback from a mentor or peer", false)
+    ]
+  end,
+  
+  fake_slice_class.new(9, "Spirituality", "#6a89cc", 40).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(85, "Attend spiritual gathering", "Participate in a weekly spiritual or religious event", false),
+      fake_element_class.new(86, "Reflect on values", "Journal about personal values and their meaning", false),
+      fake_element_class.new(87, "Read spiritual texts", "Read a chapter from a spiritual or religious book", true),
+      fake_element_class.new(88, "Practice gratitude", "Express gratitude for three things daily", true),
+      fake_element_class.new(89, "Connect with nature", "Spend time outdoors to feel connected to the world", false),
+      fake_element_class.new(90, "Volunteer for a cause", "Help a cause that aligns with your spiritual values", false),
+      fake_element_class.new(91, "Create a vision board", "Visualize your spiritual goals and aspirations", false)
+    ]
+  end,
+  
+  fake_slice_class.new(10, "Community", "#78e08f", 35).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(92, "Volunteer monthly", "Contribute time to a local charity or cause", false),
+      fake_element_class.new(93, "Join a civic group", "Participate in a community or civic organization", false),
+      fake_element_class.new(94, "Organize a neighborhood event", "Plan a gathering to connect with neighbors", true),
+      fake_element_class.new(95, "Support a local business", "Shop or promote a small local business", true),
+      fake_element_class.new(96, "Attend town meetings", "Participate in local government or town hall meetings", false),
+      fake_element_class.new(97, "Mentor someone", "Offer guidance to someone in your community", true),
+      fake_element_class.new(98, "Clean a public space", "Organize or join a cleanup event for a park or street", false),
+      fake_element_class.new(99, "Donate to a cause", "Contribute to a charity or community project", false)
+    ]
+  end,
+  
+  fake_slice_class.new(11, "Creativity", "#e55039", 70).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(100, "Paint weekly", "Create a new painting or artwork each week", true),
+      fake_element_class.new(101, "Write a poem", "Compose a poem or short story", true),
+      fake_element_class.new(102, "Learn a new instrument", "Dedicate time to learning a musical instrument", false),
+      fake_element_class.new(103, "Design a craft project", "Complete a DIY craft project", true),
+      fake_element_class.new(104, "Take a photography walk", "Capture creative photos during a walk", true),
+      fake_element_class.new(105, "Experiment with cooking", "Try creating a new recipe or dish", true),
+      fake_element_class.new(106, "Join an art class", "Enroll in a class to improve your artistic skills", true),
+      fake_element_class.new(107, "Write a screenplay", "Draft a short screenplay or script", false)
+    ]
+  end,
+  
+  fake_slice_class.new(12, "Time Management", "#60a3bc", 55).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(108, "Plan daily schedule", "Create a daily plan to organize tasks", true),
+      fake_element_class.new(109, "Limit distractions", "Identify and reduce time-wasting activities", false),
+      fake_element_class.new(110, "Review weekly goals", "Evaluate progress on weekly objectives", true),
+      fake_element_class.new(111, "Use a time tracker", "Track how you spend your time daily", false),
+      fake_element_class.new(112, "Prioritize tasks", "Use a priority matrix to organize tasks", true),
+      fake_element_class.new(113, "Set time limits", "Allocate specific time blocks for tasks", true),
+      fake_element_class.new(114, "Delegate tasks", "Assign tasks to others when possible", false),
+      fake_element_class.new(115, "Take regular breaks", "Incorporate short breaks into your work schedule", true)
+    ]
+  end,
+  
+  fake_slice_class.new(13, "Parenting", "#fa983a", 65).tap do |slice|
+    slice.elements = [
+      fake_element_class.new(116, "Help with homework", "Assist children with their school assignments", true),
+      fake_element_class.new(117, "Plan family outings", "Organize fun and educational activities for the family", false),
+      fake_element_class.new(118, "Have one-on-one time", "Spend quality time individually with each child", true),
+      fake_element_class.new(119, "Read bedtime stories", "Read a story to your children before bed", true),
+      fake_element_class.new(120, "Teach life skills", "Help children learn essential life skills", false),
+      fake_element_class.new(121, "Attend school events", "Participate in your children's school activities", true),
+      fake_element_class.new(122, "Create a family tradition", "Start a new family tradition or ritual", true),
+      fake_element_class.new(123, "Encourage hobbies", "Support your children in pursuing their interests", true)
+    ]
+  end
+]
+%>
+
+<style>
+/* Base Styles */
+body {
+  margin: 0;
+  padding-left: 64px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: white;
+}
+
+/* Wizard Container */
+.wizard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.wizard-step {
+  display: none;
+}
+
+.wizard-step.active {
+  display: block;
+}
+
+/* Step Headers */
+.step-header {
+  background-color: #ffffc6ff;
+  padding: 20px 0px;
+  margin-bottom: 30px;
+  border-radius: 18px;
+  max-height: 150px;
+  overflow: hidden;
+}
+/* Step Headers */
+.step-header h1 {
+  /* font-size: 2.5rem; */
+  color: #333;
+  margin: 0px 0;
+  font-weight: 300;
+}
+
+/* Step Headers */
+/*RESTYLE OR DELETE - DTM */
+/*RESTYLE OR DELETE - DTM */
+/*RESTYLE OR DELETE - DTM */
+.step-description {
+ 
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 40px;
+  line-height: 1.5;
+}
+
+/* Pie Name */
+.pie-name-display {
+  /* font-size: 2rem; */
+  color: #333;
+  /* font-weight: 400; */
+  margin: 20px 0;
+}
+
+/* Form Elements */
+.pie-name-input {
+  font-size: 1.5rem;
+  padding: 15px 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.pie-name-input:focus {
+  outline: none;
+  border-color: #007cba;
+}
+
+/* Category Selection */
+.categories-grid {
+  /* display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px; */
+  max-width: 350px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  /* padding: 12px 16px; */
+  /* border: 2px solid #e9ecef; */
+  /* border-radius: 8px; */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-item:hover {
+  border-color: #007cba;
+  background: #f8f9fa;
+}
+
+.category-item.selected {
+  /* border-color: #007cba; */
+  /* background: #e7f3ff; */
+}
+
+.category-checkbox {
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+}
+
+.category-label {
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+/* Progressive Category Design */
+.category-item-progressive {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.category-item-progressive:hover {
+  border-color: #007cba;
+  background: #f8f9fa;
+}
+
+.category-item-progressive.selected {
+  border-color: #007cba;
+  background: #e7f3ff;
+}
+
+/* Checkbox container - visible in step 2 */
+.category-checkbox-container {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.category-checkbox-container.fade-out {
+  opacity: 0;
+}
+
+.category-checkbox-container.hidden {
+  display: none;
+}
+
+/* Progress container - hidden in step 2, visible in step 3+ */
+.category-progress-container {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.category-progress-container.slide-down {
+  opacity: 1;
+  max-height: 100px;
+  display: block !important;
+}
+
+/* Elements container - hidden until step 4 */
+.category-elements-container {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.category-elements-container.slide-down {
+  opacity: 1;
+  max-height: 500px;
+  display: block !important;
+}
+
+.category-elements-container .category-section {
+  /* border: 1px solid #007cba; */
+  margin-bottom: 0;
+}
+
+/* Make category items clickable in elements phase */
+.category-item-progressive.elements-phase {
+  cursor: pointer;
+  /* border: 2px solid #007cba; */
+}
+
+.category-item-progressive.elements-phase:hover {
+  /* background: #f0f8ff; */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 124, 186, 0.15);
+}
+
+/* Progress Sliders */
+.progress-sliders {
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+.slider-item {
+  /* display: flex; */
+  align-items: center;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.slider-label {
+  /* flex: 1; */
+  font-weight: 500;
+  color: #333;
+  /* margin-right: 20px; */
+}
+
+.slider-container {
+  /* flex: 1; */
+  /* width: 350px; */
+}
+
+.progress-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e9ecef;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007cba;
+  cursor: pointer;
+}
+
+.slider-value {
+  font-weight: 600;
+  color: #007cba;
+  margin-left: 15px;
+  min-width: 40px;
+}
+
+/* Elements Selection */
+.elements-section {
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.category-section {
+  margin-bottom: 5px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  /* padding: 10px 20px; */
+  background: #f8f9fa;
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.category-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  margin-right: 15px;
+  flex: 1;
+  max-width: 100px;
+}
+
+.category-name {
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  text-align: left;
+}
+
+.category-percentage {
+  font-weight: 600;
+  color: #666;
+  margin-left: 10px;
+}
+
+.expand-icon {
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.category-section.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.elements-list {
+  padding: 20px;
+  background: white;
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.category-section.expanded .elements-list {
+  display: block;
+}
+
+.element-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  text-align: left;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.element-item.removing {
+  opacity: 0;
+  transform: translateX(-20px);
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.element-checkbox {
+  margin-right: 12px;
+  width: 16px;
+  height: 16px;
+}
+
+.element-name {
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.element-delete {
+  color: var(--lightergray);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.element-delete:hover {
+  /* background: #f8f9fa; */
+  color: var(--red);
+}
+
+.element-objective {
+  font-size: 0.9rem;
+  color: var(--lightgray);
+  margin-left: 28px;
+  margin-top: 4px;
+}
+
+.custom-element-form {
+  padding-left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-element-input {
+  max-width: 225px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.add-element-btn {
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: all 0.2s ease;
+}
+
+.add-element-btn:hover {
+  background: #005a87;
+  transform: scale(1.1);
+}
+
+/* Final Review */
+.pie-preview {
+  display: flex;
+  gap: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+.pie-chart-container {
+  flex: 1;
+  text-align: center;
+}
+
+.pie-details {
+  flex: 1;
+  text-align: left;
+}
+
+.slice-summary {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.slice-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.slice-progress {
+  height: 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.slice-elements {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Navigation */
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.back-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+.btn-primary {
+  background: #007cba;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #005a87;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #1e7e34;
+}
+
+.btn:disabled {
+  background: #e9ecef !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+}
+
+/* Step Indicator */
+/* DELETE THIS OR RESTYLE IT - DTM */
+/* DELETE THIS OR RESTYLE IT - DTM */
+/* DELETE THIS OR RESTYLE IT - DTMÍ */
+.step-indicator {
+ 
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.step-number {
+
+  font-size: 3rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 10px;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    padding-left: 0;
+  }
+  
+  .wizard-container {
+    /* padding: 20px 15px; */
+  }
+  
+  .step-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .pie-preview {
+    flex-direction: column;
+  }
+  
+  .categories-grid {
+    /* grid-template-columns: 1fr;
+    gap: 12px; */
+  }
+  
+  .category-item {
+    padding: 15px 16px;
+  }
+  
+  .slider-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .slider-container {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .progress-slider {
+    height: 12px;
+  }
+  
+  .progress-slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .wizard-navigation {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .nav-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .btn {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+  }
+}
+
+
+ .slice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+  }
+
+  .slice-header-container {
+    padding: 0 10px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+    border-radius: var(--text-input-border-radius);
+    transition: all 0.2s ease;
+  }
+  
+  /* Only apply hover and cursor effects in elements phase */
+  .category-item-progressive.elements-phase .slice-header-container {
+    cursor: pointer;
+  }
+  
+  .category-item-progressive.elements-phase .slice-header-container:hover {
+    background-color: #f0f8ff;
+  }
+  
+  .category-item-progressive.elements-phase .slice-header-container.expanded {
+    background-color: #e7f3ff;
+    border-color: #007cba;
+  }
+  .slice-percentage {
+    font-size: 13px;
+    font-weight: normal;
+    color: var(--lightgray);
+  }
+
+
+
+
+
+</style>
+
+<div class="wizard-container">
+  <!-- Step 1: Name Input -->
+  <div class="wizard-step active" id="step-1">
+    <div class="step-header">
+      <h1>First, let's name it...</h1>
+    </div>
+    
+    <input type="text" id="pie-name" class="pie-name-input" placeholder="My Big Life" maxlength="50">
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link">← Back to my Wheels</a>
+      <div class="nav-buttons">
+        <button class="btn btn-primary" id="step1-next" disabled>Next Step...</button>
+      </div>
+    </div>
+    
+    <div class="step-indicator">
+      <div class="step-number">Step 1</div>
+      <div class="step-title">The user enters a name, then hits 'Next Step'</div>
+    </div>
+  </div>
+
+  <!-- Step 2: Progressive Category Selection with Reveals -->
+  <div class="wizard-step" id="step-2">
+    <div class="step-header">
+      <h1>Great! Now, choose the categories of life that<br>are important to you...</h1>
+    </div>
+    
+    <div class="step-description">
+      Choose at least 3 categories to create a meaningful life wheel.
+    </div>
+    
+    <h1 class="pie-name-display" id="pie-name-display"></h1>
+    
+    <div class="categories-progressive-container">
+      <!-- Categories Grid with Progressive Elements -->
+      <div class="categories-grid">
+        <% @available_categories.each do |category| %>
+          <div class="category-item-progressive" data-category-id="<%= category.id %>">
+            <!-- Checkbox (visible in step 2, hidden in steps 3+) -->
+            <div class="category-checkbox-container">
+              <input type="checkbox" class="category-checkbox" id="cat-<%= category.id %>" value="<%= category.id %>">
+              <label for="cat-<%= category.id %>" class="category-label">
+                <%= category.name %>
+              </label>
+            </div>
+            
+            <!-- Progress Slider (hidden in step 2, visible in step 3+) -->
+            <div class="category-progress-container" style="display: none;">
+              <div class="slice-header-container">
+                <div class="slice-header">
+                  <div class="slider-label"><%= category.name %></div>
+                  <div class="slice-percentage">50%</div>
+                </div>
+                <div class="slider-container">
+                  <input type="range" class="progress-slider" min="0" max="100" value="50" data-category-id="<%= category.id %>">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Elements Accordion (hidden until step 4) -->
+            <div class="category-elements-container" >
+              <div class="category-section">
+                <div class="category-header" data-category-id="<%= category.id %>">
+
+                </div>
+                <div class="elements-list">
+                  <% category.elements.each do |element| %>
+                    <div class="element-item" data-element-id="<%= element.id %>">
+                      <input type="checkbox" class="element-checkbox" id="elem-<%= element.id %>" value="<%= element.id %>" data-category-id="<%= category.id %>" data-original-completed="<%= element.completed? %>">
+                      <label for="elem-<%= element.id %>" class="element-name"><%= element.name %></label>
+                      <span class="element-delete material-icons" data-element-id="<%= element.id %>" data-category-id="<%= category.id %>" title="Remove element">cancel</span>
+                    </div>
+                  <% end %>
+                  <div class="custom-element-form">
+                    <input type="text" class="custom-element-input" placeholder="Add your own element..." data-category-id="<%= category.id %>">
+                    <button class="add-element-btn" data-category-id="<%= category.id %>" title="Add Element">
+                      <span class="material-symbols-outlined">add</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="wizard-navigation">
+      <a href="/pies" class="back-link" id="back-to-wheels" style="display: none;">← Back to my Wheels</a>
+      <div class="nav-buttons" id="nav-buttons">
+        <button class="btn btn-secondary" id="step2-back">Back</button>
+        <button class="btn btn-primary" id="step2-next" disabled>Next Step...</button>
+      </div>
+    </div>
+    
+    <!-- DEBUG INDICATOR - Shows current step and substep -->
+    <div style="position: fixed; top: 10px; right: 10px; background: #fff; border: 2px solid #007cba; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; z-index: 9999;">
+      <strong>DEBUG:</strong><br>
+      Step: <span id="debug-step">2</span><br>
+      Substep: <span id="debug-substep">categories</span>
+    </div>
+    
+    <div class="step-indicator" id="step-indicator">
+      <div class="step-number">Step 2</div>
+      <div class="step-title">The name is stored and the master category<br>list is displayed. The user chooses categories<br>(slices) they want for their pie.<br>Then user hits 'Next Step'</div>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<script>
+// Available categories data
+const availableCategories = <%= raw @available_categories.map { |category| 
+  {
+    id: category.id,
+    name: category.name,
+    color: category.color,
+    defaultPercentage: category.percentage,
+    elements: category.elements.map { |element|
+      {
+        id: element.id,
+        name: element.name,
+        objective: element.objective,
+        completed: element.completed?
+      }
+    }
+  }
+}.to_json %>;
+
+// Wizard state
+let wizardData = {
+  pieName: '',
+  selectedCategories: [],
+  categoryProgress: {},
+  selectedElements: {},
+  customElements: {}
+};
+
+// Current step and substep tracking
+let currentStep = 1;
+let currentSubStep = 'categories'; // 'categories', 'progress', 'elements'
+
+// Update debug indicators
+function updateDebugIndicators() {
+  const stepIndicator = document.getElementById('debug-step');
+  const substepIndicator = document.getElementById('debug-substep');
+  
+  if (stepIndicator) {
+    stepIndicator.textContent = currentStep;
+  }
+  if (substepIndicator) {
+    substepIndicator.textContent = currentSubStep;
+  }
+  
+  console.log('🔍 DEBUG UPDATE: Step', currentStep, 'Substep', currentSubStep);
+}
+
+// Initialize wizard
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 DOMContentLoaded - Initializing wizard');
+  updateDebugIndicators();
+  initializeStep1();
+  
+  // Add keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const activeStep = document.querySelector('.wizard-step.active');
+      const nextBtn = activeStep.querySelector('.btn-primary:not(:disabled)');
+      if (nextBtn && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        nextBtn.click();
+      }
+    }
+  });
+});
+
+// Also initialize immediately if DOM is already ready
+if (document.readyState === 'loading') {
+  console.log('📄 Document still loading, waiting for DOMContentLoaded');
+} else {
+  console.log('📄 Document already ready, initializing immediately');
+  updateDebugIndicators();
+  initializeStep1();
+}
+
+// Step 1: Name input
+function initializeStep1() {
+  console.log('🚀 Initializing Step 1...');
+  
+  const nameInput = document.getElementById('pie-name');
+  const nextBtn = document.getElementById('step1-next');
+  
+  if (!nameInput) {
+    console.error('❌ Could not find pie-name input');
+    return;
+  }
+  
+  if (!nextBtn) {
+    console.error('❌ Could not find step1-next button');
+    return;
+  }
+  
+  console.log('✅ Found Step 1 elements, attaching listeners');
+  
+  // Check for existing value and set initial state accordingly
+  const existingValue = nameInput.value.trim();
+  wizardData.pieName = existingValue;
+  nextBtn.disabled = wizardData.pieName === '';
+  
+  console.log('🔍 Initial value check:', existingValue);
+  console.log('🎯 Initial button disabled state:', nextBtn.disabled);
+  
+  // Force explicit attribute handling for initial state
+  if (wizardData.pieName === '') {
+    nextBtn.setAttribute('disabled', 'disabled');
+    nameInput.style.borderColor = '#ddd';
+  } else {
+    nextBtn.removeAttribute('disabled');
+    nameInput.style.borderColor = '#28a745';
+  }
+  
+  console.log('✅ Initial attribute state - disabled:', nextBtn.hasAttribute('disabled'));
+  
+  // Double-check state after a brief delay in case of auto-population or timing issues
+  setTimeout(function() {
+    const delayedValue = nameInput.value.trim();
+    if (delayedValue !== wizardData.pieName) {
+      console.log('⏰ Delayed check found different value:', delayedValue);
+      wizardData.pieName = delayedValue;
+      nextBtn.disabled = wizardData.pieName === '';
+      console.log('🎯 Updated button disabled state:', nextBtn.disabled);
+      
+      if (wizardData.pieName === '') {
+        nextBtn.setAttribute('disabled', 'disabled');
+        nameInput.style.borderColor = '#ddd';
+      } else {
+        nextBtn.removeAttribute('disabled');
+        nameInput.style.borderColor = '#28a745';
+      }
+      console.log('✅ Delayed attribute state - disabled:', nextBtn.hasAttribute('disabled'));
+    }
+  }, 100);
+  
+  nameInput.addEventListener('input', function() {
+    console.log('📝 Name input changed:', this.value);
+    wizardData.pieName = this.value.trim();
+    nextBtn.disabled = wizardData.pieName === '';
+    
+    console.log('🎯 Button disabled state:', nextBtn.disabled);
+    console.log('🔍 Button disabled attribute:', nextBtn.getAttribute('disabled'));
+    console.log('🔍 Button hasAttribute disabled:', nextBtn.hasAttribute('disabled'));
+    
+    // Force attribute removal/addition to ensure DOM sync
+    if (wizardData.pieName === '') {
+      nextBtn.setAttribute('disabled', 'disabled');
+      this.style.borderColor = '#ddd';
+    } else {
+      nextBtn.removeAttribute('disabled');
+      this.style.borderColor = '#28a745';
+    }
+    
+    console.log('✅ After manual attribute handling - disabled:', nextBtn.hasAttribute('disabled'));
+  });
+  
+  nextBtn.addEventListener('click', function() {
+    console.log('⏭️ Next button clicked, pieName:', wizardData.pieName);
+    if (wizardData.pieName) {
+      goToStep(2);
+    }
+  });
+  
+  // Focus on the input for better UX
+  nameInput.focus();
+  
+  console.log('✅ Step 1 initialization complete');
+}
+
+// Debug function to manually test button state
+window.testStep1Button = function() {
+  const nameInput = document.getElementById('pie-name');
+  const nextBtn = document.getElementById('step1-next');
+  
+  console.log('🧪 Manual Test Results:');
+  console.log('📄 Input value:', nameInput.value);
+  console.log('🔒 Button disabled property:', nextBtn.disabled);
+  console.log('🏷️ Button disabled attribute:', nextBtn.getAttribute('disabled'));
+  console.log('❓ Button hasAttribute disabled:', nextBtn.hasAttribute('disabled'));
+  
+  // Force enable the button for testing
+  nextBtn.disabled = false;
+  nextBtn.removeAttribute('disabled');
+  
+  console.log('✅ After force enable:');
+  console.log('🔓 Button disabled property:', nextBtn.disabled);
+  console.log('❌ Button hasAttribute disabled:', nextBtn.hasAttribute('disabled'));
+  
+  return {
+    inputValue: nameInput.value,
+    buttonDisabled: nextBtn.disabled,
+    hasDisabledAttr: nextBtn.hasAttribute('disabled')
+  };
+};
+
+// Debug function to manually test elements reveal
+window.testElementsReveal = function() {
+  console.log('🧪 Testing Elements Reveal...');
+  currentSubStep = 'elements';
+  initializeElementsReveal();
+};
+
+// Debug function to check current wizard state
+window.checkWizardState = function() {
+  console.log('🔍 Current wizard state:');
+  console.log('  - currentStep:', currentStep);
+  console.log('  - currentSubStep:', currentSubStep);
+  console.log('  - selectedCategories:', wizardData.selectedCategories);
+  console.log('  - categoryProgress:', wizardData.categoryProgress);
+  
+  // Also check what categories are actually on the page
+  const categoryItems = document.querySelectorAll('.category-item-progressive');
+  console.log('  - Category items on page:', categoryItems.length);
+  categoryItems.forEach((item, index) => {
+    const catId = item.getAttribute('data-category-id');
+    const hasElementsPhase = item.classList.contains('elements-phase');
+    console.log(`    ${index + 1}. Category ${catId}, elements-phase: ${hasElementsPhase}`);
+  });
+};
+
+// Step 2: Progressive Category Selection with Reveals
+function initializeStep2() {
+  console.log('🎯 ========================================');
+  console.log('🎯 Initializing Progressive Step 2 - Substep:', currentSubStep);
+  console.log('🎯 Current step:', currentStep);
+  console.log('🎯 ========================================');
+  
+  updateDebugIndicators();
+  
+  const checkboxes = document.querySelectorAll('.category-checkbox');
+  const backBtn = document.getElementById('step2-back');
+  const nextBtn = document.getElementById('step2-next');
+  const nameDisplay = document.getElementById('pie-name-display');
+  const stepIndicator = document.getElementById('step-indicator');
+  const navButtons = document.getElementById('nav-buttons');
+  
+  console.log('🎯 Found elements:', {
+    checkboxes: checkboxes.length,
+    backBtn: !!backBtn,
+    nextBtn: !!nextBtn,
+    nameDisplay: !!nameDisplay,
+    stepIndicator: !!stepIndicator,
+    navButtons: !!navButtons
+  });
+  
+  if (nameDisplay) {
+    nameDisplay.textContent = wizardData.pieName;
+  }
+  
+  // Initialize based on current substep
+  console.log('🎯 Initializing substep:', currentSubStep);
+  switch(currentSubStep) {
+    case 'categories':
+      console.log('🎯 -> Calling initializeCategorySelection()');
+      initializeCategorySelection();
+      break;
+    case 'progress':
+      console.log('🎯 -> Calling initializeProgressReveal()');
+      initializeProgressReveal();
+      break;
+    case 'elements':
+      console.log('🎯 -> Calling initializeElementsReveal()');
+      initializeElementsReveal();
+      break;
+    default:
+      console.log('🚫 Unknown substep:', currentSubStep);
+  }
+  
+  // Set up navigation event listeners (but not for elements phase)
+  if (currentSubStep !== 'elements') {
+    console.log('🎯 Setting up progressive navigation for substep:', currentSubStep);
+    setupProgressiveNavigation();
+  } else {
+    console.log('🎯 Skipping progressive navigation setup for elements phase');
+  }
+  
+  console.log('🎯 ======================================');
+  console.log('🎯 Step 2 initialization complete');
+  console.log('🎯 ======================================');
+}
+
+function initializeCategorySelection() {
+  console.log('📋 Initializing Category Selection Phase');
+  
+  const checkboxes = document.querySelectorAll('.category-checkbox');
+  const stepIndicator = document.getElementById('step-indicator');
+  
+  // Check first 8 categories by default
+  checkboxes.forEach((checkbox, index) => {
+    if (index < 8) {
+      checkbox.checked = true;
+      checkbox.closest('.category-item-progressive').classList.add('selected');
+    }
+  });
+  
+  updateSelectedCategories();
+  
+  // Add event listeners for checkboxes
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const item = this.closest('.category-item-progressive');
+      if (this.checked) {
+        item.classList.add('selected');
+      } else {
+        item.classList.remove('selected');
+      }
+      updateSelectedCategories();
+    });
+  });
+  
+  // Update step indicator
+  stepIndicator.innerHTML = `
+    <div class="step-number">Step 2</div>
+    <div class="step-title">Choose the categories (slices) you want for your life wheel.<br>Then click 'Next Step'</div>
+  `;
+}
+
+function initializeProgressReveal() {
+  console.log('📊 ========================================');
+  console.log('📊 Initializing Progress Reveal Phase');
+  console.log('📊 Current step:', currentStep, 'substep:', currentSubStep);
+  console.log('📊 ========================================');
+  
+  const stepIndicator = document.getElementById('step-indicator');
+  
+  // Fade out checkboxes and slide down progress sliders
+  console.log('📊 About to call revealProgressSliders()');
+  revealProgressSliders();
+  
+  // Update step indicator
+  stepIndicator.innerHTML = `
+    <div class="step-number">Step 3</div>
+    <div class="step-title">Rate your fulfillment in each category using the sliders.<br>Then click 'Next Step'</div>
+  `;
+  console.log('📊 Updated step indicator to Step 3');
+  console.log('📊 ========================================');
+  console.log('📊 Progress Reveal initialization complete');
+  console.log('📊 ========================================');
+}
+
+function initializeElementsReveal() {
+  console.log('🎯 Initializing Elements Reveal Phase');
+  console.log('🎯 Selected categories:', wizardData.selectedCategories);
+  console.log('🎯 Available categories count:', availableCategories.length);
+  console.log('🎯 Current step:', currentStep, 'Current substep:', currentSubStep);
+  
+  const stepIndicator = document.getElementById('step-indicator');
+  const navButtons = document.getElementById('nav-buttons');
+  const backToWheels = document.getElementById('back-to-wheels');
+  
+  console.log('🎯 BEFORE NAVIGATION UPDATE - navButtons content:', navButtons.innerHTML);
+  
+  // Show elements sections and set up accordion behavior
+  revealElementsSections();
+  
+  // Update navigation to show save button
+  navButtons.innerHTML = `
+    <button class="btn btn-secondary" id="elements-back">Back to Progress</button>
+    <button class="btn btn-success" id="elements-save">Save Pie</button>
+  `;
+  
+  console.log('🎯 AFTER NAVIGATION UPDATE - navButtons content:', navButtons.innerHTML);
+  
+  // Show "Back to Wheels" link
+  backToWheels.style.display = 'inline';
+  
+  // Update step indicator
+  stepIndicator.innerHTML = `
+    <div class="step-number">Step 4</div>
+    <div class="step-title">Click on categories to expand and select elements to track.<br>When ready, click 'Save Pie'</div>
+  `;
+  
+  // Set up new navigation handlers
+  const elementsBackBtn = document.getElementById('elements-back');
+  const elementsSaveBtn = document.getElementById('elements-save');
+  
+  console.log('🎯 Found elements-back button:', elementsBackBtn);
+  console.log('🎯 Found elements-save button:', elementsSaveBtn);
+  
+  if (elementsBackBtn) {
+    elementsBackBtn.addEventListener('click', () => {
+      console.log('🔥 ELEMENTS BACK BUTTON CLICKED!');
+      console.log('🔥 Current state - step:', currentStep, 'substep:', currentSubStep);
+      console.log('🔥 Transitioning from elements to progress...');
+      
+      currentSubStep = 'progress';
+      console.log('🔥 Updated substep to:', currentSubStep);
+      updateDebugIndicators();
+      
+      // Call the function to hide elements and show progress
+      hideElementsSections();
+      
+      // Then reinitialize step 2 with progress substep
+      setTimeout(() => {
+        initializeStep2();
+      }, 100);
+    });
+    console.log('🎯 Added click listener to elements-back button');
+  } else {
+    console.error('❌ Could not find elements-back button after creating it!');
+  }
+  
+  if (elementsSaveBtn) {
+    elementsSaveBtn.addEventListener('click', () => {
+      console.log('🔥 ELEMENTS SAVE BUTTON CLICKED!');
+      savePie();
+    });
+    console.log('🎯 Added click listener to elements-save button');
+  } else {
+    console.error('❌ Could not find elements-save button after creating it!');
+  }
+}
+
+function setupProgressiveNavigation() {
+  console.log('🔧 ========================================');
+  console.log('🔧 Setting up Progressive Navigation');
+  console.log('🔧 Current substep:', currentSubStep);
+  console.log('🔧 ========================================');
+  
+  const backBtn = document.getElementById('step2-back');
+  const nextBtn = document.getElementById('step2-next');
+  
+  console.log('🔧 Found navigation buttons:', {
+    backBtn: !!backBtn,
+    nextBtn: !!nextBtn
+  });
+  
+  if (!backBtn || !nextBtn) {
+    console.error('❌ Could not find step2-back or step2-next buttons!');
+    return;
+  }
+  
+  // Remove existing listeners by cloning elements
+  const newBackBtn = backBtn.cloneNode(true);
+  const newNextBtn = nextBtn.cloneNode(true);
+  backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+  nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+  
+  console.log('🔧 Cloned and replaced navigation buttons');
+  
+  // Add new listeners based on current substep
+  newBackBtn.addEventListener('click', () => {
+    console.log('🔥 PROGRESSIVE BACK BUTTON CLICKED!');
+    console.log('🔥 Current substep:', currentSubStep);
+    
+    if (currentSubStep === 'categories') {
+      console.log('🔥 Going back to Step 1');
+      goToStep(1);
+    } else if (currentSubStep === 'progress') {
+      console.log('🔥 Going back to categories substep');
+      currentSubStep = 'categories';
+      updateDebugIndicators();
+      hideProgressSliders();
+      initializeStep2();
+    } else if (currentSubStep === 'elements') {
+      console.log('🔥 Going back to progress substep from elements');
+      currentSubStep = 'progress';
+      updateDebugIndicators();
+      hideElementsSections();
+      initializeStep2();
+    }
+  });
+  
+  newNextBtn.addEventListener('click', () => {
+    console.log('🔥 PROGRESSIVE NEXT BUTTON CLICKED!');
+    console.log('🔥 Current substep:', currentSubStep);
+    console.log('🔥 Selected categories:', wizardData.selectedCategories.length);
+    
+    if (currentSubStep === 'categories' && wizardData.selectedCategories.length >= 3) {
+      console.log('🔥 TRANSITIONING: categories -> progress');
+      currentSubStep = 'progress';
+      updateDebugIndicators();
+      initializeStep2();
+    } else if (currentSubStep === 'progress') {
+      console.log('🔥 TRANSITIONING: progress -> elements');
+      currentSubStep = 'elements';
+      updateDebugIndicators();
+      initializeStep2();
+    } else {
+      console.log('🚫 Navigation blocked');
+      console.log('🚫 Current substep:', currentSubStep);
+      console.log('🚫 Selected categories:', wizardData.selectedCategories.length);
+    }
+  });
+  
+  console.log('🔧 Added event listeners to navigation buttons');
+  console.log('🔧 ========================================');
+  console.log('🔧 Progressive navigation setup complete');
+  console.log('🔧 ========================================');
+}
+
+function updateSelectedCategories() {
+  const checkboxes = document.querySelectorAll('.category-checkbox:checked');
+  wizardData.selectedCategories = Array.from(checkboxes).map(cb => parseInt(cb.value));
+  
+  const nextBtn = document.getElementById('step2-next');
+  const isValid = wizardData.selectedCategories.length >= 3;
+  nextBtn.disabled = !isValid;
+  
+  // Add visual feedback
+  const description = document.querySelector('#step-2 .step-description');
+  if (wizardData.selectedCategories.length === 0) {
+    description.style.color = '#666';
+    description.textContent = 'Choose at least 3 categories to create a meaningful life wheel.';
+  } else if (wizardData.selectedCategories.length < 3) {
+    description.style.color = '#e74c3c';
+    description.textContent = `Choose ${3 - wizardData.selectedCategories.length} more categories (${wizardData.selectedCategories.length} selected).`;
+  } else {
+    description.style.color = '#28a745';
+    description.textContent = `Perfect! ${wizardData.selectedCategories.length} categories selected.`;
+  }
+  
+  // Initialize progress for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    if (!(catId in wizardData.categoryProgress)) {
+      const category = availableCategories.find(c => c.id === catId);
+      wizardData.categoryProgress[catId] = category ? category.defaultPercentage : 50;
+    }
+  });
+}
+
+// Progressive Reveal Animation Functions
+function revealProgressSliders() {
+  console.log('🎬 Revealing progress sliders');
+  
+  // First, hide non-selected category items completely
+  const allCategoryItems = document.querySelectorAll('.category-item-progressive');
+  allCategoryItems.forEach(categoryItem => {
+    const catId = parseInt(categoryItem.getAttribute('data-category-id'));
+    if (!wizardData.selectedCategories.includes(catId)) {
+      categoryItem.style.display = 'none';
+    } else {
+      categoryItem.style.display = 'block';
+    }
+  });
+  
+  // First, fade out checkboxes but keep space
+  const checkboxContainers = document.querySelectorAll('.category-checkbox-container');
+  checkboxContainers.forEach(container => {
+    container.classList.add('fade-out');
+  });
+  
+  // After fade out, show progress sliders for selected categories
+  setTimeout(() => {
+    wizardData.selectedCategories.forEach(catId => {
+      const categoryItem = document.querySelector(`[data-category-id="${catId}"]`);
+      if (categoryItem) {
+        const progressContainer = categoryItem.querySelector('.category-progress-container');
+        const slider = progressContainer.querySelector('.progress-slider');
+        const valueDisplay = progressContainer.querySelector('.slice-percentage');
+        const category = availableCategories.find(c => c.id === catId);
+        
+        // Set initial values
+        const initialValue = wizardData.categoryProgress[catId];
+        slider.value = initialValue;
+        valueDisplay.textContent = initialValue + '%';
+        
+        // Set slider track color
+        if (category) {
+          slider.style.background = `linear-gradient(to right, ${category.color} ${initialValue}%, #e9ecef ${initialValue}%)`;
+        }
+        
+        // Add event listener for slider changes
+        slider.addEventListener('input', function() {
+          const value = parseInt(this.value);
+          wizardData.categoryProgress[catId] = value;
+          valueDisplay.textContent = value + '%';
+          if (category) {
+            this.style.background = `linear-gradient(to right, ${category.color} ${value}%, #e9ecef ${value}%)`;
+          }
+        });
+        
+        // Animate reveal
+        progressContainer.style.display = 'block';
+        progressContainer.classList.add('slide-down');
+      }
+    });
+    
+    // Hide checkboxes completely after animation
+    setTimeout(() => {
+      checkboxContainers.forEach(container => {
+        container.classList.add('hidden');
+      });
+    }, 300);
+  }, 300);
+}
+
+function hideProgressSliders() {
+  console.log('🎬 Hiding progress sliders');
+  
+  // Reset header back to categories step
+  const stepHeader = document.querySelector('#step-2 .step-header h1');
+  stepHeader.innerHTML = 'Great! Now, choose the categories of life that<br>are important to you...';
+  
+  // Show all category items again (in case some were hidden)
+  const allCategoryItems = document.querySelectorAll('.category-item-progressive');
+  allCategoryItems.forEach(categoryItem => {
+    categoryItem.style.display = 'block';
+  });
+  
+  // Hide progress sliders
+  const progressContainers = document.querySelectorAll('.category-progress-container');
+  progressContainers.forEach(container => {
+    container.classList.remove('slide-down');
+    setTimeout(() => {
+      container.style.display = 'none';
+    }, 300);
+  });
+  
+  // Show checkboxes again
+  const checkboxContainers = document.querySelectorAll('.category-checkbox-container');
+  checkboxContainers.forEach(container => {
+    container.classList.remove('hidden', 'fade-out');
+  });
+}
+
+function revealElementsSections() {
+  console.log('🎬 Revealing elements sections');
+  
+  // Update header
+  const stepHeader = document.querySelector('#step-2 .step-header h1');
+  stepHeader.textContent = 'Great Job! Click on any area to see the elements that make up that slice of life...';
+  
+  // Hide progress sliders since we'll show the category info in the accordion headers
+  const progressContainers = document.querySelectorAll('.category-progress-container');
+  progressContainers.forEach(container => {
+    container.style.display = 'none';
+  });
+  
+  // Show elements sections for selected categories with accordion behavior
+  wizardData.selectedCategories.forEach(catId => {
+    const categoryItem = document.querySelector(`.category-item-progressive[data-category-id="${catId}"]`);
+    if (categoryItem) {
+      const elementsContainer = categoryItem.querySelector('.category-elements-container');
+      const category = availableCategories.find(c => c.id === catId);
+      
+      console.log(`🎯 Setting up category ${catId} (${category.name}) for clicking`);
+      
+      // Add elements-phase class to make it clear it's clickable
+      categoryItem.classList.add('elements-phase');
+      
+      // Make the entire category item visually clickable
+      categoryItem.style.cursor = 'pointer';
+      categoryItem.title = 'Click to expand objectives';
+      
+      // Update progress bar and percentage in elements view
+      if (elementsContainer) {
+        const progressBar = elementsContainer.querySelector('.category-progress-bar');
+        const percentageDisplay = elementsContainer.querySelector('.category-percentage');
+        const currentProgress = wizardData.categoryProgress[catId];
+        
+        if (progressBar && category) {
+          progressBar.style.width = currentProgress + '%';
+          progressBar.style.background = category.color;
+        }
+        if (percentageDisplay) {
+          percentageDisplay.textContent = currentProgress + '%';
+        }
+        
+        // Show the elements container
+        elementsContainer.style.display = 'block';
+        elementsContainer.classList.add('slide-down');
+        
+        // Make sure elements list is initially hidden (will show on click)
+        const elementsList = elementsContainer.querySelector('.elements-list');
+        const categorySection = elementsContainer.querySelector('.category-section');
+        if (elementsList) {
+          elementsList.style.display = 'none';
+        }
+        if (categorySection) {
+          categorySection.classList.remove('expanded');
+        }
+      }
+      
+      // Remove any existing click listeners
+      const newCategoryItem = categoryItem.cloneNode(true);
+      categoryItem.parentNode.replaceChild(newCategoryItem, categoryItem);
+      
+      // Re-query the new element
+      const refreshedCategoryItem = document.querySelector(`.category-item-progressive[data-category-id="${catId}"]`);
+      const refreshedElementsContainer = refreshedCategoryItem.querySelector('.category-elements-container');
+      
+      // Set up click handler on the slice header for accordion behavior NO!!!! NOt on the -container, ONLY on the header
+      refreshedCategoryItem.addEventListener('click', function(e) {
+        // Only respond to clicks on the header area (slice-header, slice-header-container, or category-header)
+        // if (e.target.closest('.slice-header') || e.target.closest('.slice-header-container') || e.target.closest('.category-header')) {
+        if (e.target.closest('.slice-header') || e.target.closest('.slice-header') || e.target.closest('.category-header')) {
+          console.log(`🎯 Clicked category ${catId} header - toggling objectives`);
+          
+          const categorySection = refreshedElementsContainer.querySelector('.category-section');
+          const elementsList = refreshedElementsContainer.querySelector('.elements-list');
+          const isCurrentlyExpanded = categorySection && categorySection.classList.contains('expanded');
+          
+          // Close all other expanded sections first (accordion behavior)
+          wizardData.selectedCategories.forEach(otherCatId => {
+            if (otherCatId !== catId) {
+              const otherCategoryItem = document.querySelector(`.category-item-progressive[data-category-id="${otherCatId}"]`);
+              const otherElementsContainer = otherCategoryItem.querySelector('.category-elements-container');
+              const otherCategorySection = otherElementsContainer.querySelector('.category-section');
+              const otherElementsList = otherElementsContainer.querySelector('.elements-list');
+              
+              if (otherCategorySection && otherCategorySection.classList.contains('expanded')) {
+                otherCategorySection.classList.remove('expanded');
+                otherCategoryItem.classList.remove('expanded');
+                if (otherElementsList) {
+                  otherElementsList.style.display = 'none';
+                }
+                console.log(`🎯 Collapsed category ${otherCatId}`);
+              }
+            }
+          });
+          
+          // Toggle current section
+          if (!isCurrentlyExpanded && categorySection) {
+            categorySection.classList.add('expanded');
+            refreshedCategoryItem.classList.add('expanded');
+            if (elementsList) {
+              elementsList.style.display = 'block';
+            }
+            console.log(`🎯 Expanded category ${catId}`);
+          } else if (categorySection) {
+            categorySection.classList.remove('expanded');
+            refreshedCategoryItem.classList.remove('expanded');
+            if (elementsList) {
+              elementsList.style.display = 'none';
+            }
+            console.log(`🎯 Collapsed category ${catId}`);
+          }
+        }
+      });
+      
+      // Set up element checkboxes and delete buttons
+      setupElementInteractions(refreshedElementsContainer, catId);
+    }
+  });
+}
+
+function hideElementsSections() {
+  console.log('🎬 Hiding elements sections');
+  console.log('🎬 Current state - step:', currentStep, 'substep:', currentSubStep);
+  
+  // Update header back
+  const stepHeader = document.querySelector('#step-2 .step-header h1');
+  console.log('🎬 Found step header:', stepHeader);
+  stepHeader.innerHTML = 'Perfect! Now, how complete would you rate your fulfillment in each category?';
+  console.log('🎬 Updated header text to progress step');
+  
+  // Remove elements-phase class and reset clickable styling from category items
+  const categoryItems = document.querySelectorAll('.category-item-progressive');
+  console.log('🎬 Found', categoryItems.length, 'category items to reset');
+  categoryItems.forEach((item, index) => {
+    console.log(`🎬 Resetting category item ${index + 1}`);
+    item.classList.remove('elements-phase', 'expanded');
+    item.style.cursor = '';
+    item.title = '';
+  });
+  
+  // Hide elements sections
+  const elementsContainers = document.querySelectorAll('.category-elements-container');
+  console.log('🎬 Found', elementsContainers.length, 'elements containers to hide');
+  elementsContainers.forEach((container, index) => {
+    console.log(`🎬 Hiding elements container ${index + 1}`);
+    container.classList.remove('slide-down');
+    setTimeout(() => {
+      container.style.display = 'none';
+    }, 300);
+  });
+  
+  // Show progress sliders again
+  const progressContainers = document.querySelectorAll('.category-progress-container');
+  console.log('🎬 Found', progressContainers.length, 'progress containers to show');
+  progressContainers.forEach((container, index) => {
+    console.log(`🎬 Showing progress container ${index + 1}`);
+    container.style.display = 'block';
+    container.classList.add('slide-down');
+  });
+  
+  // Hide back to wheels link
+  const backToWheels = document.getElementById('back-to-wheels');
+  console.log('🎬 Hiding back to wheels link');
+  backToWheels.style.display = 'none';
+  
+  // Reset navigation buttons
+  const navButtons = document.getElementById('nav-buttons');
+  console.log('🎬 BEFORE resetting nav buttons:', navButtons.innerHTML);
+  navButtons.innerHTML = `
+    <button class="btn btn-secondary" id="step2-back">Back</button>
+    <button class="btn btn-primary" id="step2-next">Next Step...</button>
+  `;
+  console.log('🎬 AFTER resetting nav buttons:', navButtons.innerHTML);
+}
+
+// Step 3: Progress sliders
+function initializeStep3() {
+  const nameDisplay = document.getElementById('pie-name-display-3');
+  const slidersContainer = document.getElementById('progress-sliders');
+  const backBtn = document.getElementById('step3-back');
+  const nextBtn = document.getElementById('step3-next');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Clear existing sliders
+  slidersContainer.innerHTML = '';
+  
+  // Create sliders for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const sliderItem = document.createElement('div');
+    sliderItem.className = 'slider-item';
+    sliderItem.innerHTML = `
+    <div class="slice-header-container">
+      <div class="slice-header">
+        <div class="slider-label">${category.name}</div>
+        <div class="slider-value">${wizardData.categoryProgress[catId]}%</div>
+      </div>
+
+      <div class="slider-container">
+        <input type="range" class="progress-slider" min="0" max="100" value="${wizardData.categoryProgress[catId]}" data-category-id="${catId}">
+      </div>
+      </div>
+      
+    `;
+    slidersContainer.appendChild(sliderItem);
+    
+    const slider = sliderItem.querySelector('.progress-slider');
+    const valueDisplay = sliderItem.querySelector('.slider-value');
+    
+    // Set slider track color
+    slider.style.background = `linear-gradient(to right, ${category.color} ${wizardData.categoryProgress[catId]}%, #e9ecef ${wizardData.categoryProgress[catId]}%)`;
+    
+    slider.addEventListener('input', function() {
+      const value = parseInt(this.value);
+      wizardData.categoryProgress[catId] = value;
+      valueDisplay.textContent = value + '%';
+      this.style.background = `linear-gradient(to right, ${category.color} ${value}%, #e9ecef ${value}%)`;
+    });
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(2));
+  nextBtn.addEventListener('click', () => goToStep(4));
+}
+
+// Step 4: Elements selection
+function initializeStep4() {
+  const nameDisplay = document.getElementById('pie-name-display-4');
+  const elementsContainer = document.getElementById('elements-section');
+  const backBtn = document.getElementById('step4-back');
+  const saveBtn = document.getElementById('step4-save');
+  
+  nameDisplay.textContent = wizardData.pieName;
+  
+  // Debug logging
+  console.log('Step 4 - wizardData.categoryProgress:', wizardData.categoryProgress);
+  console.log('Step 4 - selectedCategories:', wizardData.selectedCategories);
+  
+  // Clear existing elements
+  elementsContainer.innerHTML = '';
+  
+  // Create sections for selected categories
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) return;
+    
+    const section = document.createElement('div');
+    section.className = 'category-section';
+    
+    console.log(`🏗️ BUILDING CATEGORY ${category.name}:`);
+    console.log(`   - Category ID: ${catId}`);
+    console.log(`   - Elements available: ${category.elements.length}`);
+    category.elements.forEach((elem, i) => {
+      console.log(`     ${i+1}. "${elem.name}" (ID: ${elem.id}, completed: ${elem.completed})`);
+    });
+    
+    section.innerHTML = `
+      <div class="category-header" data-category-id="${catId}">
+        <div class="category-progress-bar" style="background: ${category.color}; width: ${wizardData.categoryProgress[catId]}%;"></div>
+        <div class="category-name">${category.name}</div>
+        <div class="category-percentage">${wizardData.categoryProgress[catId]}%</div>
+
+        <span class="expand-icon material-symbols-outlined">
+keyboard_arrow_down
+</span>
+      </div>
+      <div class="elements-list">
+        ${category.elements.map(element => `
+          <div class="element-item" data-element-id="${element.id}">
+            <input type="checkbox" class="element-checkbox" id="elem-${element.id}" value="${element.id}" data-category-id="${catId}" data-original-completed="${element.completed}">
+            <label for="elem-${element.id}" class="element-name">${element.name}</label>
+            <span class="element-delete material-icons" data-element-id="${element.id}" data-category-id="${catId}" title="Remove element">cancel</span>
+          </div>
+          
+        `).join('')}
+        <div class="custom-element-form">
+          <input type="text" class="custom-element-input" placeholder="Add your own element..." data-category-id="${catId}">
+          <button class="add-element-btn" data-category-id="${catId}" title="Add Element">
+            <span class="material-symbols-outlined">add</span>
+          </button>
+        </div>
+      </div>
+    `;
+    elementsContainer.appendChild(section);
+    
+    // Add click handler for header
+    // const header = section.querySelector('.category-header');
+    const header = section.querySelector('.slice-header');
+    header.addEventListener('click', function() {
+      // Close all other expanded sections first
+      const allSections = elementsContainer.querySelectorAll('.category-section');
+      allSections.forEach(otherSection => {
+        if (otherSection !== section) {
+          otherSection.classList.remove('expanded');
+        }
+      });
+      
+      // Toggle current section
+      section.classList.toggle('expanded');
+    });
+    
+    // Add handlers for element checkboxes - AFTER adding to DOM
+    const checkboxes = section.querySelectorAll('.element-checkbox');
+    console.log(`🔧 ATTACHING LISTENERS to ${checkboxes.length} checkboxes in ${category.name}`);
+    
+    checkboxes.forEach((checkbox, index) => {
+      console.log(`   - Checkbox ${index + 1}: ID=${checkbox.id}, value=${checkbox.value}`);
+      
+      // Initialize selected elements for checked items
+      if (checkbox.checked) {
+        if (!wizardData.selectedElements[catId]) {
+          wizardData.selectedElements[catId] = [];
+        }
+        const elementId = parseInt(checkbox.value);
+        if (!wizardData.selectedElements[catId].includes(elementId)) {
+          wizardData.selectedElements[catId].push(elementId);
+        }
+      }
+      
+      checkbox.addEventListener('change', function() {
+        if (!wizardData.selectedElements[catId]) {
+          wizardData.selectedElements[catId] = [];
+        }
+        
+        const elementId = parseInt(this.value);
+        console.log(`🔥 CHECKBOX CHANGED: Category ${catId}, Element ID ${elementId}, Checked: ${this.checked}`);
+        
+        if (this.checked) {
+          if (!wizardData.selectedElements[catId].includes(elementId)) {
+            wizardData.selectedElements[catId].push(elementId);
+            console.log(`✅ ADDED element ${elementId} to category ${catId}. Now selected:`, wizardData.selectedElements[catId]);
+          }
+        } else {
+          wizardData.selectedElements[catId] = wizardData.selectedElements[catId].filter(id => id !== elementId);
+          console.log(`❌ REMOVED element ${elementId} from category ${catId}. Now selected:`, wizardData.selectedElements[catId]);
+        }
+        
+        // Log full state
+        console.log(`🎯 FULL SELECTION STATE:`, JSON.stringify(wizardData.selectedElements, null, 2));
+      });
+      
+      console.log(`   ✅ Event listener attached to checkbox ${checkbox.id}`);
+    });
+    
+    // Add handlers for delete buttons
+    const deleteButtons = section.querySelectorAll('.element-delete');
+    console.log(`🗑️ ATTACHING DELETE LISTENERS to ${deleteButtons.length} delete buttons in ${category.name}`);
+    
+    deleteButtons.forEach(deleteBtn => {
+      deleteBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent triggering checkbox or other events
+        
+        const elementId = parseInt(this.getAttribute('data-element-id'));
+        const categoryId = parseInt(this.getAttribute('data-category-id'));
+        const elementItem = this.closest('.element-item');
+        
+        console.log(`🗑️ DELETE CLICKED: Element ID ${elementId} in Category ${categoryId}`);
+        
+        // Remove from selected elements if it was selected
+        if (wizardData.selectedElements[categoryId]) {
+          wizardData.selectedElements[categoryId] = wizardData.selectedElements[categoryId].filter(id => id !== elementId);
+          console.log(`🗑️ Removed element ${elementId} from selectedElements for category ${categoryId}`);
+        }
+        
+        // Smooth removal animation
+        elementItem.classList.add('removing');
+        
+        setTimeout(() => {
+          elementItem.remove();
+          console.log(`🗑️ Element ${elementId} removed from DOM`);
+          
+          // Update category data by removing this element
+          const categoryIndex = availableCategories.findIndex(cat => cat.id === categoryId);
+          if (categoryIndex !== -1) {
+            availableCategories[categoryIndex].elements = availableCategories[categoryIndex].elements.filter(elem => elem.id !== elementId);
+            console.log(`🗑️ Removed element ${elementId} from availableCategories data`);
+          }
+        }, 300);
+      });
+    });
+    
+    // Add handler for custom elements
+    const addBtn = section.querySelector('.add-element-btn');
+    const input = section.querySelector('.custom-element-input');
+    
+    addBtn.addEventListener('click', function() {
+      const text = input.value.trim();
+      if (text) {
+        if (!wizardData.customElements[catId]) {
+          wizardData.customElements[catId] = [];
+        }
+        wizardData.customElements[catId].push(text);
+        input.value = '';
+        
+        // Add to UI
+        const elementDiv = document.createElement('div');
+        elementDiv.className = 'element-item';
+        elementDiv.innerHTML = `
+          <input type="checkbox" class="element-checkbox" checked>
+          <span class="element-name">${text}</span>
+          <span class="element-delete material-icons" data-custom-element="${text}" data-category-id="${catId}" title="Remove element">cancel</span>
+        `;
+        
+        // Add delete handler for custom element
+        const deleteBtn = elementDiv.querySelector('.element-delete');
+        deleteBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          
+          const customElementName = this.getAttribute('data-custom-element');
+          const categoryId = parseInt(this.getAttribute('data-category-id'));
+          
+          console.log(`🗑️ DELETE CUSTOM ELEMENT: "${customElementName}" in Category ${categoryId}`);
+          
+          // Remove from custom elements array
+          if (wizardData.customElements[categoryId]) {
+            wizardData.customElements[categoryId] = wizardData.customElements[categoryId].filter(name => name !== customElementName);
+            console.log(`🗑️ Removed custom element "${customElementName}" from customElements`);
+          }
+          
+          // Smooth removal animation
+          elementDiv.classList.add('removing');
+          
+          setTimeout(() => {
+            elementDiv.remove();
+            console.log(`🗑️ Custom element "${customElementName}" removed from DOM`);
+          }, 300);
+        });
+        
+        input.closest('.custom-element-form').before(elementDiv);
+      }
+    });
+    
+    input.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addBtn.click();
+      }
+    });
+  });
+  
+  backBtn.addEventListener('click', () => goToStep(3));
+  saveBtn.addEventListener('click', savePie);
+}
+
+// Calculate actual percentages based on selected elements and their completion status
+function calculateActualPercentages() {
+  const percentages = {};
+  
+  wizardData.selectedCategories.forEach(catId => {
+    const category = availableCategories.find(c => c.id === catId);
+    if (!category) {
+      percentages[catId] = 0;
+      return;
+    }
+    
+    const selectedElements = wizardData.selectedElements[catId] || [];
+    const customElements = wizardData.customElements[catId] || [];
+    
+    // Calculate percentage based on ALL elements in the category (not just selected ones)
+    const totalElementsInCategory = category.elements.length + customElements.length;
+    const completedCount = selectedElements.length + customElements.length; // User checked elements + custom elements
+    
+    if (totalElementsInCategory === 0) {
+      percentages[catId] = 0;
+      return;
+    }
+    
+    const calculatedPercentage = Math.round((completedCount / totalElementsInCategory) * 100);
+    
+    // Debug logging
+    console.log(`Category ${category.name}: ${completedCount} completed out of ${totalElementsInCategory} total = ${calculatedPercentage}%`);
+    console.log(`   - User checked: ${selectedElements.length} elements`);
+    console.log(`   - User added: ${customElements.length} custom elements`);
+    console.log(`   - Total in category: ${category.elements.length} + ${customElements.length} = ${totalElementsInCategory}`);
+    
+    percentages[catId] = calculatedPercentage;
+  });
+  
+  return percentages;
+}
+
+function savePie() {
+  // Get the save button - could be from step 4 or step 5 (if we keep it)
+  const saveBtn = document.getElementById('step4-save') || document.getElementById('save-pie');
+  const originalText = saveBtn.textContent;
+  
+  // Show loading state
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+  
+  // Calculate actual percentages based on selected elements
+  const calculatedPercentages = calculateActualPercentages();
+  
+  // Debug logging
+  console.log('Saving pie with data:', {
+    selectedCategories: wizardData.selectedCategories,
+    selectedElements: wizardData.selectedElements,
+    customElements: wizardData.customElements,
+    calculatedPercentages: calculatedPercentages
+  });
+  
+  // Prepare data for submission
+  const pieData = {
+    pie: {
+      name: wizardData.pieName,
+      slices_attributes: wizardData.selectedCategories.map(catId => {
+        const category = availableCategories.find(c => c.id === catId);
+        if (!category) return null;
+        
+        const selectedElements = wizardData.selectedElements[catId] || [];
+        const customElements = wizardData.customElements[catId] || [];
+        
+        console.log(`🎯 PREPARING SLICE for category ${category.name}:`);
+        console.log(`   - Selected element IDs (checked boxes):`, selectedElements);
+        console.log(`   - Custom elements:`, customElements);
+        console.log(`   - Total elements available in category:`, category.elements.length);
+        
+        // Save ALL elements in this category, not just the selected ones
+        const elementsAttributes = [
+          // Include ALL elements from the category, with completion based on whether user checked them
+          ...category.elements.map(element => {
+            const isUserSelected = selectedElements.includes(element.id);
+            console.log(`   - Element: ${element.name} (originally completed: ${element.completed}, user checked: ${isUserSelected})`);
+            
+            return {
+              name: element.name,
+              objective: element.objective,
+              completed: isUserSelected  // Set completed based on what user actually checked, not dummy data
+            };
+          }),
+          // Add any custom elements user added
+          ...customElements.map(name => {
+            console.log(`   - Adding custom element: ${name} (completed: true - user added it)`);
+            return {
+              name: name,
+              objective: '',
+              completed: true  // Custom elements that user added are considered "selected"
+            };
+          })
+        ];
+        
+        console.log(`   - Final elements_attributes:`, elementsAttributes);
+        
+        return {
+          name: category.name,
+          color: category.color,
+          percentage: calculatedPercentages[catId] || 0,
+          elements_attributes: elementsAttributes
+        };
+      }).filter(Boolean)
+    }
+  };
+  
+  // 🚨 FINAL DEBUG SUMMARY
+  console.log(`🚀 SENDING PIE DATA:`);
+  console.log(`   - Pie name: ${pieData.pie.name}`);
+  console.log(`   - Number of slices: ${pieData.pie.slices_attributes.length}`);
+  
+  pieData.pie.slices_attributes.forEach((slice, index) => {
+    console.log(`   - Slice ${index + 1}: ${slice.name}`);
+    console.log(`     * Percentage: ${slice.percentage}%`);
+    console.log(`     * Elements count: ${slice.elements_attributes.length}`);
+    slice.elements_attributes.forEach((elem, elemIndex) => {
+      console.log(`       - Element ${elemIndex + 1}: "${elem.name}" (completed: ${elem.completed})`);
+    });
+  });
+
+  // Submit to server
+  console.log('📤 Full JSON payload:', JSON.stringify(pieData, null, 2));
+  fetch('/pies', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify(pieData)
+  })
+  .then(response => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Response data:', data);
+    if (data.id) {
+      window.location.href = `/pies/${data.id}`;
+    } else {
+      throw new Error('No pie ID returned: ' + JSON.stringify(data));
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error saving pie. Please try again.');
+    
+    // Reset button state
+    saveBtn.disabled = false;
+    saveBtn.textContent = originalText;
+  });
+}
+
+// Navigation functions
+function goToStep(step) {
+  // Hide current step
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+  
+  // Show target step
+  document.getElementById(`step-${step}`).classList.add('active');
+  
+  currentStep = step;
+  updateDebugIndicators();
+  
+  // Initialize step
+  switch(step) {
+    case 1:
+      initializeStep1();
+      break;
+    case 2:
+      initializeStep2();
+      break;
+    case 3:
+      initializeStep3();
+      break;
+    case 4:
+      initializeStep4();
+      break;
+  }
+  
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+function setupElementInteractions(elementsContainer, catId) {
+  console.log(`🔧 Setting up element interactions for category ${catId}`);
+  
+  const checkboxes = elementsContainer.querySelectorAll('.element-checkbox');
+  const deleteButtons = elementsContainer.querySelectorAll('.element-delete');
+  const addBtn = elementsContainer.querySelector('.add-element-btn');
+  const input = elementsContainer.querySelector('.custom-element-input');
+  const category = availableCategories.find(c => c.id === catId);
+  
+  // Initialize selected elements array
+  if (!wizardData.selectedElements[catId]) {
+    wizardData.selectedElements[catId] = [];
+  }
+  
+  // Set up element checkboxes
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const elementId = parseInt(this.value);
+      
+      if (this.checked) {
+        if (!wizardData.selectedElements[catId].includes(elementId)) {
+          wizardData.selectedElements[catId].push(elementId);
+        }
+      } else {
+        wizardData.selectedElements[catId] = wizardData.selectedElements[catId].filter(id => id !== elementId);
+      }
+      
+      // Update calculated percentage
+      updateCalculatedPercentage(catId);
+    });
+  });
+  
+  // Set up delete buttons
+  deleteButtons.forEach(deleteBtn => {
+    deleteBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      const elementId = parseInt(this.getAttribute('data-element-id'));
+      const elementItem = this.closest('.element-item');
+      
+      // Remove from selected elements if selected
+      if (wizardData.selectedElements[catId]) {
+        wizardData.selectedElements[catId] = wizardData.selectedElements[catId].filter(id => id !== elementId);
+      }
+      
+      // Smooth removal animation
+      elementItem.classList.add('removing');
+      setTimeout(() => {
+        elementItem.remove();
+        updateCalculatedPercentage(catId);
+      }, 300);
+    });
+  });
+  
+  // Set up custom element addition
+  addBtn.addEventListener('click', function() {
+    const text = input.value.trim();
+    if (text) {
+      if (!wizardData.customElements[catId]) {
+        wizardData.customElements[catId] = [];
+      }
+      wizardData.customElements[catId].push(text);
+      input.value = '';
+      
+      // Add to UI
+      const elementDiv = document.createElement('div');
+      elementDiv.className = 'element-item';
+      elementDiv.innerHTML = `
+        <input type="checkbox" class="element-checkbox custom-element" checked data-custom-text="${text}">
+        <label class="element-name">${text}</label>
+        <span class="element-delete material-icons" data-custom-element="${text}" data-category-id="${catId}" title="Remove element">cancel</span>
+      `;
+      
+      // Add delete handler for custom element
+      const deleteBtn = elementDiv.querySelector('.element-delete');
+      deleteBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const customText = this.getAttribute('data-custom-element');
+        
+        // Remove from custom elements array
+        if (wizardData.customElements[catId]) {
+          wizardData.customElements[catId] = wizardData.customElements[catId].filter(text => text !== customText);
+        }
+        
+        elementDiv.classList.add('removing');
+        setTimeout(() => {
+          elementDiv.remove();
+          updateCalculatedPercentage(catId);
+        }, 300);
+      });
+      
+      input.closest('.custom-element-form').before(elementDiv);
+      updateCalculatedPercentage(catId);
+    }
+  });
+  
+  input.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      addBtn.click();
+    }
+  });
+}
+
+function updateCalculatedPercentage(catId) {
+  const category = availableCategories.find(c => c.id === catId);
+  if (!category) return;
+  
+  const selectedElements = wizardData.selectedElements[catId] || [];
+  const customElements = wizardData.customElements[catId] || [];
+  const totalElementsInCategory = category.elements.length + customElements.length;
+  const completedCount = selectedElements.length + customElements.length;
+  
+  if (totalElementsInCategory === 0) return;
+  
+  const calculatedPercentage = Math.round((completedCount / totalElementsInCategory) * 100);
+  wizardData.categoryProgress[catId] = calculatedPercentage;
+  
+  // Update UI
+  const categoryItem = document.querySelector(`[data-category-id="${catId}"]`);
+  if (categoryItem) {
+    const progressBar = categoryItem.querySelector('.category-progress-bar');
+    const percentageDisplay = categoryItem.querySelector('.category-percentage');
+    
+    if (progressBar) {
+      progressBar.style.width = calculatedPercentage + '%';
+    }
+    if (percentageDisplay) {
+      percentageDisplay.textContent = calculatedPercentage + '%';
+    }
+  }
+  
+  console.log(`Updated category ${category.name} to ${calculatedPercentage}%`);
+}
+</script>
+
+
+
+
+

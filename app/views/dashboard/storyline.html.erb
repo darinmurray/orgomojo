@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storyline Diagram</title>
+    <style>
+        :root {
+            --storyline-base-color: #8d8d8dff;
+            --storyline-accent-color: #06b6d4;
+            --storyline-accent-color-darker: #0398b8;
+            --storyline-generate-btn: #8d8d8dff;
+            --storyline-generate-btn-hover: #06b6d4;
+            --storyline-expand-btn: #8d8d8dff;
+            --storyline-expand-btn-hover: #8d8d8dff;
+            --storyline-oval-stroke: #06b6d4;
+            --storyline-oval-stroke-width: 2px;
+            /* --storyline-btn-padding: 6px 12px;  MOVED TO ROOT */
+            --storyline-first-degree-stroke: #bbbbbbff;
+            --storyline-first-degree-stroke-width: 2px;
+            --storyline-second-degree-stroke: #06b6d4;
+            --storyline-second-degree-stroke-width: 2px;
+            --storyline-connection-stroke: #cccccc;
+            --storyline-connection-stroke-width: 1px;
+            --storyline-background: #ffffff;
+            --storyline-text-color: #06b6d4;
+            --storyline-first-degree-text: #bbbbbbff;
+            --storyline-second-degree-text: #06b6d4;
+            --storyline-defocus-opacity: 0.3;
+        }
+
+        body {
+            /* margin: 0;
+            padding: 40px; */
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .storyline-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            background: var(--storyline-background);
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        .storyline-svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+.focus-oval {
+    fill: var(--storyline-oval-stroke); /* Black fill */
+    stroke: var(--storyline-oval-stroke);
+    stroke-width: var(--storyline-oval-stroke-width);
+    transition: all 0.3s ease;
+}
+
+.focus-oval:hover {
+    stroke-width: 3px;
+    cursor: pointer;
+}
+
+/* Focus text - make it white */
+.focus-text {
+    fill: white; /* Changed from var(--storyline-text-color) to white */
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* First degree ovals - keep existing style when not selected */
+.first-degree-oval {
+    fill: var(--storyline-background);
+    stroke: var(--storyline-first-degree-stroke);
+    stroke-width: var(--storyline-first-degree-stroke-width);
+    transition: all 0.3s ease;
+}
+
+.first-degree-oval:hover {
+    stroke-width: 3px;
+    cursor: pointer;
+}
+
+/* Keep existing styles for non-selected text */
+.first-degree-text {
+    fill: var(--storyline-first-degree-text);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    alignment-baseline: middle;
+    pointer-events: none;
+    user-select: none;
+}
+
+        .connection-line {
+            stroke: var(--storyline-connection-stroke);
+            stroke-width: var(--storyline-connection-stroke-width);
+            fill: none;
+        }
+
+ /* Second degree ovals - keep existing style when not selected */
+.second-degree-oval {
+    fill: var(--storyline-background);
+    stroke: var(--storyline-second-degree-stroke);
+    stroke-width: var(--storyline-second-degree-stroke-width);
+    transition: all 0.3s ease;
+}
+
+.second-degree-oval:hover {
+    stroke-width: 3px;
+    cursor: pointer;
+}
+
+/* Second degree oval when selected - white text on solid colored circle */
+.second-degree-oval.selected {
+    fill: var(--storyline-second-degree-stroke); /* Solid color fill */
+    stroke: var(--storyline-second-degree-stroke);
+    stroke-width: 4px;
+}
+
+
+.second-degree-text {
+    fill: var(--storyline-second-degree-text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    alignment-baseline: middle;
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* Second degree text when selected - white text */
+.second-degree-text.selected {
+    fill: white; /* White text */
+    font-weight: 600; /* Make it slightly bolder */
+}
+
+        .input-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            /* padding: 20px; */
+            position: relative;
+            z-index: 10;
+        }
+
+         .first-degree-second-step {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 15px;
+            /* margin-bottom: 30px; */
+            /* padding: 20px; */
+            position: relative;
+            z-index: 10;
+        }
+
+        #first-degree-second-step {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #first-degree-second-step.input-has-content {
+            opacity: 1;
+        }
+
+        #input-container-first-degree {
+            opacity: var(--storyline-defocus-opacity);
+            transition: opacity 0.3s ease;
+        }
+
+        #input-container-first-degree:hover {
+            opacity: 1;
+        }
+
+        #input-container-first-degree.input-empty {
+            opacity: 1;
+        }
+
+        #input-container-first-degree.no-diagram {
+            opacity: 1;
+        }
+
+        #strength-container-second-degree {
+            opacity: var(--storyline-defocus-opacity);
+            transition: opacity 0.3s ease;
+        }
+
+        #strength-container-second-degree:hover {
+            opacity: 1;
+        }
+
+        #strength-container-second-degree.no-second-degree {
+            opacity: 1;
+        }
+
+        #focus-input {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            width: 150px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+        }
+        #focus-input {
+border-color: var(--storyline-oval-stroke);
+        }
+
+
+
+
+
+/* Dropdown selects  */
+/* Dropdown selects  */
+
+        .small-select {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            transition: border-color 0.3s ease;
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .small-select:focus {
+            border-color: var(--storyline-oval-stroke);
+        }
+            /* border-color: var(--storyline-oval-stroke);
+        } */
+
+
+
+
+
+
+        #generate-btn {
+            padding: var(--inline-btn-padding);
+            font-size: 16px;
+            font-weight: 600;
+            background: var(--storyline-accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+        }
+
+        #generate-btn:hover {
+            background: var(--storyline-accent-color-darker);
+            transform: translateY(-1px);
+        }
+
+        #expand-btn {
+            padding: var(--inline-btn-padding);
+            font-size: 16px;
+            font-weight: 600;
+            background: var(--storyline-accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 11;
+            pointer-events: auto;
+        }
+
+        #expand-btn:hover {
+            background: var(--storyline-accent-color-darker);
+            transform: translateY(-1px);
+        }
+
+        #expand-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+            /* background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--storyline-text-color);
+            font-size: 24px;
+            font-weight: 600;
+        } */
+
+
+
+.storyline-display-container {
+
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.5s ease;
+    /* display: none; */
+}
+
+.storyline-display-container.slide-in {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.storyline-display-container h3 {
+    margin: 0 0 10px 0;
+    color: var(--storyline-second-degree-stroke);
+    font-size: 18px;
+}
+
+
+.storyline-text-container {
+        margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid var(--storyline-second-degree-stroke);
+}
+
+
+
+.storyline-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--storyline-text-color);
+    margin: 0;
+}
+
+.storyline-meta {
+    display: none;
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.strength-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.strength-container .storyline-meta {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+#storyline-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--storyline-second-degree-stroke);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 11;
+    pointer-events: auto;
+    display: none;
+}
+
+#storyline-btn:hover {
+    background: #0891b2;
+    transform: translateY(-1px);
+}
+
+#storyline-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+#strength-container-second-degree {
+    display: flex;
+    flex-direction: row
+
+}
+
+
+
+
+
+
+
+
+        #story-parameters-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin: 0 25px;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            gap:15px;
+            color: var(--storyline-text-color);
+            border: 1px solid var(--lightgray, #e1e5e9);
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            border-top: transparent;
+        }
+        #word-count-slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* margin-top: 20px;
+            margin-bottom: 20px; */
+            margin-right: 10px;
+        }
+
+        
+        #word-count-slider {
+            width: 150px;
+            margin: 0 10px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            vertical-align: middle;
+        }
+
+input[type="range" i] {
+    appearance: auto;
+    cursor: default;
+    color: light-dark(rgba(164, 33, 33, 1), rgba(37, 119, 195, 1));
+    padding: initial;
+    border: initial;
+    margin: 2px;
+}
+
+
+
+
+ #word-count-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--storyline-accent-color);
+  cursor: pointer;
+  margin-top: -4px; /* <-- This centers the thumb over a 3px track */
+}
+
+#word-count-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--storyline-accent-color);
+  cursor: pointer;
+  margin-top: -8.5px; /* Try this, but Firefox usually centers naturally */
+}
+
+
+#word-count-slider::-webkit-slider-runnable-track {
+    height: 1px;
+    background: var(--storyline-accent-color, #06b6d4); /* fallback color */
+    border-radius: 4px;
+}
+#word-count-slider::-moz-range-track {
+    height: 1px;
+    background: var(--storyline-accent-color, #06b6d4);
+    border-radius: 4px;
+}
+#word-count-slider::-ms-fill-lower,
+#word-count-slider::-ms-fill-upper {
+    height: 3px;
+    background: var(--light-gray, #06b6d4);
+    border-radius: 4px;
+}
+
+.slider-minus, .slider-plus {
+    color: var(--lightgray, #e1e5e9);
+}
+
+
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+<div class="input-container" id="input-container-first-degree">
+    Use the word
+        <input type="text" id="focus-input" placeholder="Enter a focus word..." />
+<span id="first-degree-second-step" class="first-degree-second-step">
+        and create 5 words with a 
+        <div class="strength-container"> 
+                <select id="strength-select" class="small-select">
+                        <option value="1">Random</option>
+                        <option value="2" selected>Loose</option>
+                        <option value="3">Moderate</option>
+                        <option value="4">Close</option>
+                        <option value="5">Clinical</option>
+                </select>
+        </div>
+        Association. 
+        <button id="generate-btn" onclick="generateStoryline()">Go</button>
+</span>
+</div>
+ <div class="input-container" id="strength-container-second-degree" style="display: none;">  
+Now, create 3 words with a 
+
+    <select id="second-strength-select" class="small-select"style="display: none;">
+        <option value="1">Random</option>
+        <option value="2" selected>Loose</option>
+        <option value="3">Moderate</option>
+        <option value="4">Close</option>
+        <option value="5">Clinical</option>
+    </select>
+    association to each of those... 
+    <button id="expand-btn" onclick="expandToSecondDegree()" style="disp lay: none;">Go</button>
+    <!-- button id="storyline-btn" onclick="generateStorylineIdea()" >Storyline</button -->
+
+</div>
+
+
+<!-- Add this storyline display area after your storyline-container -->
+<div class="storyline-display-container" id="storyline-display">
+
+    <div class="storyline-text-container">
+        <p class="storyline-text" id="storyline-text">Enter a focus word and click Generate</p>
+        <p class="storyline-meta" id="storyline-meta"></p>
+    </div>
+
+
+<div id="story-parameters-container">
+
+
+
+    <select id="phrase-type-select" class="small-select">
+        <option value="1">Persona Brand Slogan</option>
+        <option value="2">Product Tagline</option>
+        <option value="3">Novel Plot</option>
+        <option value="4" selected>Marketing Ploy</option>
+        <option value="5">Episodic Show</option>
+        <option value="6">Stand-up Idea</option>
+    </select>
+
+
+
+<div id="word-count-slider-container">
+    <span class="material-symbols-outlined slider-minus">remove</span>
+    <input type="range" id="word-count-slider" min="10" max="50" value="20" step="1" />          
+    <span class="material-symbols-outlined slider-plus">add</span>
+</div>
+ words from a 
+          <select id="age-strength-select" class="small-select">
+        <option value="1">Spirit</option>
+        <option value="2">Toddler</option>
+        <option value="3" selected>Child</option>
+        <option value="4">Teenager</option>
+        <option value="5">Young Adult</option>
+        <option value="6">Middle Aged</option>
+        <option value="7">Senior Citizen</option>
+        <option value="8">Alien</option>
+    </select>
+
+     <select id="perspective-strength-select" class="small-select">
+        <option value="1">Stoner</option>
+        <option value="2">Comedian</option>
+        <option value="3">Airhead</option>
+        <option value="4" selected>Amateur</option>
+        <option value="5">Professional</option>
+        <option value="6">Expert</option>
+        <option value="7">Highly Technical Expert</option>
+    </select>
+
+</div>
+
+
+</div>
+
+
+    
+    <div class="storyline-container" id="storyline-container" style="display: none;">
+        <svg class="storyline-svg" width="800" height="800" viewBox="0 0 800 800">            
+            <!-- Focus oval in center -->
+            <circle 
+                class="focus-oval" 
+                cx="400" 
+                cy="400" 
+                r="50"
+                data-focus="milk"
+            />
+            
+            <!-- Focus text -->
+            <text 
+                class="focus-text" 
+                x="380" 
+                y="405"
+                id="focus-text"
+            >
+                Milk
+            </text>
+
+            <!-- First degree ovals and lines will be generated dynamically -->
+        </svg>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <script>
+        // Storyline diagram configuration
+        const storylineConfig = {
+            focus: "Milk",
+            firstDegree: ["White", "Cow", "Cerial", "Bone"],
+            secondDegreeLinks: {
+                "bone": ["skeleton", "strength"],
+                "white": ["house", "paint"],
+                "cow": ["milk", "pasture"],
+                "cerial": ["breakfast", "grain"]
+            },
+            centerX: 400,
+            centerY: 400,
+            circleRadius: 50,
+            firstDegreeRadius: 150,
+            firstDegreeCircleRadius: 50,
+            secondDegreeRadius: 280,
+            secondDegreeCircleRadius: 40
+        };
+
+        // Track selected second degree word for storyline
+        let selectedSecondDegreeWord = null;
+
+        // Calculate positions for first degree ovals in a circle
+        function calculateFirstDegreePositions() {
+            const positions = [];
+            const angleStep = (2 * Math.PI) / storylineConfig.firstDegree.length;
+            const startAngle = -Math.PI / 2; // Start at top (12 o'clock)
+
+            storylineConfig.firstDegree.forEach((word, index) => {
+                const angle = startAngle + (index * angleStep);
+                const x = storylineConfig.centerX + Math.cos(angle) * storylineConfig.firstDegreeRadius;
+                const y = storylineConfig.centerY + Math.sin(angle) * storylineConfig.firstDegreeRadius;
+                
+                positions.push({
+                    word: word.toLowerCase(),
+                    x: x,
+                    y: y,
+                    angle: angle
+                });
+            });
+
+            return positions;
+        }
+
+        // Calculate positions for second degree circles
+        function calculateSecondDegreePositions() {
+            const positions = [];
+            const firstDegreePositions = calculateFirstDegreePositions();
+
+            firstDegreePositions.forEach(firstDegreePos => {
+                const secondDegreeWords = storylineConfig.secondDegreeLinks[firstDegreePos.word];
+                if (secondDegreeWords && secondDegreeWords.length > 0) {
+                    
+                    // Calculate angle spread for multiple second degree items
+                    const angleSpread = Math.PI / 6; // 30 degrees spread
+                    const startOffset = secondDegreeWords.length > 1 ? -angleSpread / 2 : 0;
+                    const angleStep = secondDegreeWords.length > 1 ? angleSpread / (secondDegreeWords.length - 1) : 0;
+
+                    secondDegreeWords.forEach((word, index) => {
+                        const offsetAngle = startOffset + (index * angleStep);
+                        const finalAngle = firstDegreePos.angle + offsetAngle;
+                        
+                        const x = storylineConfig.centerX + Math.cos(finalAngle) * storylineConfig.secondDegreeRadius;
+                        const y = storylineConfig.centerY + Math.sin(finalAngle) * storylineConfig.secondDegreeRadius;
+                        
+                        positions.push({
+                            word: word,
+                            x: x,
+                            y: y,
+                            angle: finalAngle,
+                            parentWord: firstDegreePos.word,
+                            parentX: firstDegreePos.x,
+                            parentY: firstDegreePos.y,
+                            parentAngle: firstDegreePos.angle
+                        });
+                    });
+                }
+            });
+
+            return positions;
+        }
+        // Calculate connection line endpoints
+        function calculateConnectionPoints() {
+            const focusX = storylineConfig.centerX;
+            const focusY = storylineConfig.centerY;
+            const focusRadius = storylineConfig.circleRadius;
+
+            // First degree connections
+            const firstDegreePositions = calculateFirstDegreePositions();
+            firstDegreePositions.forEach(pos => {
+                const focusEdgeX = focusX + Math.cos(pos.angle) * focusRadius;
+                const focusEdgeY = focusY + Math.sin(pos.angle) * focusRadius;
+                const firstDegreeEdgeX = pos.x - Math.cos(pos.angle) * storylineConfig.firstDegreeCircleRadius;
+                const firstDegreeEdgeY = pos.y - Math.sin(pos.angle) * storylineConfig.firstDegreeCircleRadius;
+
+                const line = document.getElementById(`line-to-${pos.word}`);
+                if (line) {
+                    line.setAttribute('x1', focusEdgeX);
+                    line.setAttribute('y1', focusEdgeY);
+                    line.setAttribute('x2', firstDegreeEdgeX);
+                    line.setAttribute('y2', firstDegreeEdgeY);
+                }
+            });
+
+            // Second degree connections
+            const secondDegreePositions = calculateSecondDegreePositions();
+            secondDegreePositions.forEach(pos => {
+                // Calculate the angle from parent to second degree position
+                const parentToSecondAngle = Math.atan2(pos.y - pos.parentY, pos.x - pos.parentX);
+                
+                // Calculate connection points using the actual angle between parent and child
+                const firstDegreeEdgeX = pos.parentX + Math.cos(parentToSecondAngle) * storylineConfig.firstDegreeCircleRadius;
+                const firstDegreeEdgeY = pos.parentY + Math.sin(parentToSecondAngle) * storylineConfig.firstDegreeCircleRadius;
+                const secondDegreeEdgeX = pos.x - Math.cos(parentToSecondAngle) * storylineConfig.secondDegreeCircleRadius;
+                const secondDegreeEdgeY = pos.y - Math.sin(parentToSecondAngle) * storylineConfig.secondDegreeCircleRadius;
+
+                const line = document.getElementById(`line-second-${pos.parentWord}-${pos.word}`);
+                if (line) {
+                    line.setAttribute('x1', firstDegreeEdgeX);
+                    line.setAttribute('y1', firstDegreeEdgeY);
+                    line.setAttribute('x2', secondDegreeEdgeX);
+                    line.setAttribute('y2', secondDegreeEdgeY);
+                }
+            });
+        }
+
+        // Initialize the storyline diagram
+        function initializeStoryline() {
+            console.log('Initializing storyline diagram with focus:', storylineConfig.focus);
+            
+            // Update focus text
+            const focusText = document.getElementById('focus-text');
+            if (focusText) {
+                focusText.textContent = storylineConfig.focus;
+            }
+
+            // Generate first degree ovals dynamically
+            generateFirstDegreeOvals();
+
+            // Calculate and update connection line positions
+            calculateConnectionPoints();
+
+            // Add click handler to focus oval
+            const focusOval = document.querySelector('.focus-oval');
+            if (focusOval) {
+                focusOval.addEventListener('click', function() {
+                    console.log('Focus oval clicked:', storylineConfig.focus);
+                    alert('Focus: ' + storylineConfig.focus);
+                });
+
+                focusOval.addEventListener('mouseenter', function() {
+                    console.log('Hovering over focus:', storylineConfig.focus);
+                });
+            }
+
+            // Add click handlers to all ovals with a small delay to ensure DOM is ready
+            setTimeout(() => {
+                addEventListeners();
+            }, 100);
+        }
+
+        // Generate first degree ovals and lines dynamically
+        function generateFirstDegreeOvals() {
+            console.log('🔄 Generating first degree ovals...');
+            const svg = document.querySelector('.storyline-svg');
+            const positions = calculateFirstDegreePositions();
+
+            // Remove existing first degree elements
+            svg.querySelectorAll('.connection-line, .first-degree-oval, .first-degree-text, .second-degree-oval, .second-degree-text').forEach(el => el.remove());
+
+            positions.forEach(pos => {
+                // Create connection line
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('class', 'connection-line');
+                line.setAttribute('id', `line-to-${pos.word}`);
+                svg.insertBefore(line, svg.querySelector('.focus-oval'));
+
+                // Create oval
+                const oval = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                oval.setAttribute('class', 'first-degree-oval');
+                oval.setAttribute('cx', pos.x);
+                oval.setAttribute('cy', pos.y);
+                oval.setAttribute('r', storylineConfig.firstDegreeCircleRadius);
+                oval.setAttribute('data-word', pos.word);
+                oval.style.cursor = 'pointer';
+                oval.style.pointerEvents = 'all';
+                console.log('Created first degree oval:', pos.word);
+                svg.appendChild(oval);
+
+                // Create text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'first-degree-text');
+                text.setAttribute('x', pos.x);
+                text.setAttribute('y', pos.y + 5); // Adjust for proper centering
+                text.style.pointerEvents = 'none'; // Ensure text doesn't block clicks
+                text.textContent = pos.word.charAt(0).toUpperCase() + pos.word.slice(1);
+                svg.appendChild(text);
+            });
+
+            // Generate second degree ovals
+            generateSecondDegreeOvals();
+            console.log('✅ First degree ovals generated');
+        }
+
+        // Generate second degree ovals and lines dynamically
+        function generateSecondDegreeOvals() {
+            console.log('🔄 Generating second degree ovals...');
+            const svg = document.querySelector('.storyline-svg');
+            const positions = calculateSecondDegreePositions();
+
+            positions.forEach(pos => {
+                // Create connection line from first degree to second degree
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('class', 'connection-line');
+                line.setAttribute('id', `line-second-${pos.parentWord}-${pos.word}`);
+                svg.insertBefore(line, svg.querySelector('.focus-oval'));
+
+                // Create circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('class', 'second-degree-oval');
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
+                circle.setAttribute('r', storylineConfig.secondDegreeCircleRadius);
+                circle.setAttribute('data-word', pos.word);
+                circle.setAttribute('data-parent', pos.parentWord);
+                circle.style.cursor = 'pointer';
+                circle.style.pointerEvents = 'all';
+                console.log('Created second degree oval:', pos.word);
+                svg.appendChild(circle);
+
+                // Create text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('class', 'second-degree-text');
+                text.setAttribute('x', pos.x);
+                text.setAttribute('y', pos.y + 3); // Adjust for proper centering
+                text.style.pointerEvents = 'none'; // Ensure text doesn't block clicks
+                text.textContent = pos.word.charAt(0).toUpperCase() + pos.word.slice(1);
+                svg.appendChild(text);
+            });
+            console.log('✅ Second degree ovals generated');
+            
+            // Update storyline display since second degree ovals are now present
+            updateStorylineDisplayClass();
+        }
+
+        // Add event listeners to dynamically created ovals
+        function addEventListeners() {
+            console.log('🔧 Adding event listeners...');
+            
+            // Reset selected word when adding new listeners
+            selectedSecondDegreeWord = null;
+            const storylineBtn = document.getElementById('storyline-btn');
+            if (storylineBtn) {
+                storylineBtn.textContent = 'Storyline';
+            }
+
+            // Debug: Check what elements exist
+            const firstDegreeOvals = document.querySelectorAll('.first-degree-oval');
+            const secondDegreeOvals = document.querySelectorAll('.second-degree-oval');
+            console.log('Found first degree ovals:', firstDegreeOvals.length);
+            console.log('Found second degree ovals:', secondDegreeOvals.length);
+
+            // First degree ovals
+            firstDegreeOvals.forEach(function(oval, index) {
+                console.log('Adding listeners to first degree oval', index, oval.getAttribute('data-word'));
+                
+                oval.style.cursor = 'pointer';
+                oval.addEventListener('click', function(e) {
+                    console.log('🎯 First degree oval clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const word = this.getAttribute('data-word');
+                    console.log('First degree oval clicked:', word);
+                    alert('First degree: ' + word);
+                });
+
+                oval.addEventListener('mouseenter', function() {
+                    console.log('🖱️ Hovering first degree');
+                    const word = this.getAttribute('data-word');
+                    console.log('Hovering over first degree:', word);
+                    this.style.strokeWidth = '3px';
+                });
+
+                oval.addEventListener('mouseleave', function() {
+                    this.style.strokeWidth = '';
+                });
+            });
+
+            // Second degree ovals - UPDATED for storyline selection and inline editing
+            secondDegreeOvals.forEach(function(oval, index) {
+                console.log('Adding listeners to second degree oval', index, oval.getAttribute('data-word'));
+                
+                oval.style.cursor = 'pointer';
+                
+                // Track long press
+                let longPressTimer = null;
+                let isLongPress = false;
+                
+                // Mouse/touch start - start long press timer
+                oval.addEventListener('mousedown', function(e) {
+                    isLongPress = false;
+                    longPressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        startInlineEdit(this);
+                    }, 800); // 800ms for long press
+                });
+                
+                oval.addEventListener('touchstart', function(e) {
+                    isLongPress = false;
+                    longPressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        startInlineEdit(this);
+                    }, 800);
+                }, { passive: true });
+                
+                // Mouse/touch end - clear timer
+                oval.addEventListener('mouseup', function(e) {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                });
+                
+                oval.addEventListener('touchend', function(e) {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                }, { passive: true });
+                
+                // Mouse leave - clear timer
+                oval.addEventListener('mouseleave', function(e) {
+                    if (longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                });
+                
+                oval.addEventListener('click', function(e) {
+                    // Prevent normal click if it was a long press
+                    if (isLongPress) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                    
+                    console.log('🎯 Second degree oval clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const word = this.getAttribute('data-word');
+                    const parent = this.getAttribute('data-parent');
+                    
+                    console.log('Second degree oval clicked:', word, '(parent:', parent + ')');
+                    
+// Remove previous selection styling
+document.querySelectorAll('.second-degree-oval, .second-degree-text').forEach(el => {
+    el.classList.remove('selected');
+});
+
+// Add selection styling
+this.classList.add('selected');
+// Find matching text element
+const ovalX = this.getAttribute('cx');
+const ovalY = this.getAttribute('cy');
+document.querySelectorAll('.second-degree-text').forEach(textEl => {
+    if (Math.abs(parseFloat(textEl.getAttribute('x')) - parseFloat(ovalX)) < 5) {
+        textEl.classList.add('selected');
+    }
+});
+                    
+                    // Store selected word
+                    selectedSecondDegreeWord = word;
+                    
+                    console.log('Second degree oval selected for storyline:', word, '(parent:', parent + ')');
+                    console.log('selectedSecondDegreeWord is now:', selectedSecondDegreeWord);
+                    
+                    // Update storyline button text to show selected word
+                    // const storylineBtn = document.getElementById('storyline-btn');
+                    // if (storylineBtn) {
+                    //     storylineBtn.textContent = `Storyline (${word})`;
+                    // }
+// Auto-generate storyline immediately
+if (storylineConfig.focus) {
+    // Show loading state
+    const storylineText = document.getElementById('storyline-text');
+    if (storylineText) {
+        storylineText.textContent = 'Thinking...';
+    }
+    // Get CSRF token safely
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken.getAttribute('content');
+    }
+
+    // Call Rails backend to generate storyline
+    fetch('/ai_text_rewriter/generate_storyline', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+            focus_word: storylineConfig.focus,
+            second_degree_word: word,
+            storyline_length: document.getElementById('word-count-slider').value || '10',
+            perspective: document.getElementById('perspective-strength-select').value || '3',
+            age: document.getElementById('age-strength-select').value || '3',
+            phrase_type: document.getElementById('phrase-type-select').value || '3'
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Received storyline data:', data);
+        
+        // Display the storyline
+        const storylineDisplay = document.getElementById('storyline-display');
+        const storylineText = document.getElementById('storyline-text');
+        const storylineMeta = document.getElementById('storyline-meta');
+        
+        if (storylineDisplay && storylineText && storylineMeta) {
+            storylineText.textContent = data.storyline;
+            storylineMeta.textContent = `Using: "${data.focus_word}" + "${data.second_degree_word}"`;
+            
+            storylineDisplay.style.display = 'block';
+            
+            // Scroll to storyline display
+            storylineDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    })
+    .catch(error => {
+        console.error('Error generating storyline:', error);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+                });
+
+                oval.addEventListener('mouseenter', function() {
+                    console.log('🖱️ Hovering second degree');
+                    const word = this.getAttribute('data-word');
+                    const parent = this.getAttribute('data-parent');
+                    console.log('Hovering over second degree:', word, '(parent:', parent + ')');
+                    if (!this.style.strokeWidth || this.style.strokeWidth !== '4px') {
+                        this.style.strokeWidth = '3px';
+                    }
+                });
+
+                oval.addEventListener('mouseleave', function() {
+                    if (!this.style.strokeWidth || this.style.strokeWidth !== '4px') {
+                        this.style.strokeWidth = '';
+                    }
+                });
+
+                // updateSecondDegreeSelection(this, word);
+
+
+            });
+            
+            console.log('✅ Event listeners added');
+        }
+
+        // Function to start inline editing of second degree text
+        function startInlineEdit(oval) {
+            console.log('🖊️ Starting inline edit for oval:', oval.getAttribute('data-word'));
+            
+            // Find the corresponding text element
+            const ovalX = parseFloat(oval.getAttribute('cx'));
+            const ovalY = parseFloat(oval.getAttribute('cy'));
+            const textElement = Array.from(document.querySelectorAll('.second-degree-text')).find(textEl => {
+                return Math.abs(parseFloat(textEl.getAttribute('x')) - ovalX) < 5;
+            });
+            
+            if (!textElement) {
+                console.warn('Could not find text element for oval');
+                return;
+            }
+            
+            const currentText = textElement.textContent;
+            const parentWord = oval.getAttribute('data-parent');
+            
+            // Create foreign object to hold HTML input
+            const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+            foreignObject.setAttribute('x', ovalX - 30); // Center the input
+            foreignObject.setAttribute('y', ovalY - 10);
+            foreignObject.setAttribute('width', '60');
+            foreignObject.setAttribute('height', '20');
+            foreignObject.setAttribute('class', 'inline-edit-container');
+            
+            // Create the input element
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = 'inline-edit-input';
+            input.style.cssText = `
+                width: 100%;
+                height: 18px;
+                border: 1px solid var(--storyline-second-degree-stroke);
+                border-radius: 3px;
+                background: white;
+                color: var(--storyline-second-degree-text);
+                font-size: 12px;
+                font-family: inherit;
+                text-align: center;
+                padding: 0;
+                margin: 0;
+                outline: none;
+            `;
+            
+            foreignObject.appendChild(input);
+            
+            // Hide the original text and add the input
+            textElement.style.display = 'none';
+            textElement.parentNode.appendChild(foreignObject);
+            
+            // Focus and select the text
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 10);
+            
+            // Function to finish editing
+            function finishEdit(save = true) {
+                if (save && input.value.trim() !== '') {
+                    const newText = input.value.trim();
+                    
+                    // Update the text element
+                    textElement.textContent = newText.charAt(0).toUpperCase() + newText.slice(1).toLowerCase();
+                    
+                    // Update the oval's data attribute
+                    oval.setAttribute('data-word', newText.toLowerCase());
+                    
+                    // Update the storyline config
+                    if (storylineConfig.secondDegreeLinks && storylineConfig.secondDegreeLinks[parentWord]) {
+                        const links = storylineConfig.secondDegreeLinks[parentWord];
+                        const oldIndex = links.findIndex(word => word.toLowerCase() === currentText.toLowerCase());
+                        if (oldIndex !== -1) {
+                            links[oldIndex] = newText.toLowerCase();
+                        }
+                    }
+                    
+                    console.log('✅ Updated word from', currentText, 'to', newText);
+                }
+                
+                // Remove the input and show the text
+                foreignObject.remove();
+                textElement.style.display = '';
+            }
+            
+            // Event listeners for finishing edit
+            input.addEventListener('blur', () => finishEdit(true));
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    finishEdit(true);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    finishEdit(false);
+                }
+            });
+        }
+
+        // Function to update focus (for future use)
+        function updateFocus(newFocus) {
+            storylineConfig.focus = newFocus;
+            const focusText = document.getElementById('focus-text');
+            if (focusText) {
+                focusText.textContent = newFocus;
+            }
+            console.log('Focus updated to:', newFocus);
+        }
+
+        // Generate storyline based on user input
+        function generateStoryline() {
+            const focusInput = document.getElementById('focus-input');
+            const generateBtn = document.getElementById('generate-btn');
+            const focusWord = focusInput.value.trim();
+
+            
+            if (!focusWord) {
+                alert('Please enter a focus word');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.textContent = 'Generating...';
+            generateBtn.disabled = true;
+
+
+
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken.getAttribute('content');
+            }
+
+            // Debug: Check if strength-select element exists and get its value
+            const strengthSelectElement = document.getElementById('strength-select');
+            console.log('strength-select element:', strengthSelectElement);
+            console.log('strength-select value:', strengthSelectElement ? strengthSelectElement.value : 'element not found');
+            console.log('strength-select options count:', strengthSelectElement ? strengthSelectElement.options.length : 'N/A');
+            
+            let strengthValue = 2; // default to 2 (Loose)
+            if (strengthSelectElement && strengthSelectElement.value) {
+                strengthValue = parseInt(strengthSelectElement.value);
+                if (isNaN(strengthValue)) {
+                    strengthValue = 2; // fallback if parsing fails
+                }
+            }
+            console.log('final strength value:', strengthValue);
+
+            // Call Rails backend to generate first degree words
+            fetch('/ai_text_rewriter/generate_first_degree', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    focus_word: focusWord,
+                    association_strength: strengthValue
+                })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                
+                // Update configuration with user input and AI-generated words
+                storylineConfig.focus = focusWord;
+                
+                if (data.first_degree_words && Array.isArray(data.first_degree_words)) {
+                    storylineConfig.firstDegree = data.first_degree_words;
+                } else {
+                    console.warn('No first_degree_words in response, using fallback');
+                    storylineConfig.firstDegree = ['related', 'concept', 'idea', 'theme', 'topic'];
+                }
+                
+                // Clear second degree links since we're only generating first degree
+                storylineConfig.secondDegreeLinks = {};
+                
+                console.log('Updated config:', storylineConfig);
+                
+
+
+
+
+
+
+
+
+                // Show the diagram container
+                const container = document.getElementById('storyline-container');
+                container.style.display = 'flex';
+                
+                // Remove no-diagram class since diagram is now visible
+                const firstDegreeContainer = document.getElementById('input-container-first-degree');
+                if (firstDegreeContainer) {
+                    firstDegreeContainer.classList.remove('no-diagram');
+                }
+                
+
+                // Update storyline message
+const storylineText = document.getElementById('storyline-text');
+if (storylineText) {
+    storylineText.textContent = "Almost there...";
+}
+
+
+                // Show the expand button and second strength selector
+                const expandContainer = document.getElementById('strength-container-second-degree');
+                const expandBtn = document.getElementById('expand-btn');
+                const secondStrengthSelect = document.getElementById('second-strength-select');
+                expandContainer.style.display = 'flex ';
+                expandBtn.style.display = 'inline-block';
+                secondStrengthSelect.style.display = 'inline-block';
+                
+                // Initialize the diagram
+                initializeStoryline();
+            })
+            .catch(error => {
+                console.error('Error generating storyline:', error);
+                alert('Failed to generate storyline. Using fallback words.');
+                
+                // Use fallback words if API fails
+                storylineConfig.focus = focusWord;
+                storylineConfig.firstDegree = ['related', 'concept', 'idea', 'theme', 'topic'];
+                storylineConfig.secondDegreeLinks = {};
+                
+                // Show the diagram container
+                const container = document.getElementById('storyline-container');
+                container.style.display = 'flex';
+                
+                // Show the expand button and second strength selector
+                const expandBtn = document.getElementById('expand-btn');
+                const secondStrengthSelect = document.getElementById('second-strength-select');
+                expandBtn.style.display = 'inline-block';
+                secondStrengthSelect.style.display = 'inline-block';
+                
+                // Initialize the diagram
+                initializeStoryline();
+            })
+            .finally(() => {
+                // Reset button state
+                generateBtn.textContent = 'Go Again';
+                generateBtn.disabled = false;
+            });
+        }
+
+
+
+
+
+
+
+        // Expand to second degree functionality - UPDATED to show storyline button
+        function expandToSecondDegree() {
+            const expandBtn = document.getElementById('expand-btn');
+            
+            if (!storylineConfig.firstDegree || storylineConfig.firstDegree.length === 0) {
+                alert('Please generate first degree words first');
+                return;
+            }
+
+            // Show loading state
+            expandBtn.textContent = 'Adding Details...';
+            expandBtn.disabled = true;
+
+
+
+
+
+
+// // Show waiting message in storyline area
+// const storylineText = document.getElementById('storyline-text');
+// const storylineDisplay = document.getElementById('storyline-display');
+// if (storylineText && storylineDisplay) {
+//     // Check if second degree words have been generated
+//     const hasSecondDegree = storylineConfig.secondDegreeLinks && 
+//                            Object.keys(storylineConfig.secondDegreeLinks).length > 0;
+    
+//     console.log('hasSecondDegree:', hasSecondDegree);
+    
+//     if (hasSecondDegree) {
+//         storylineText.textContent = 'Waiting... Click on a word.';
+//         console.log('Set message: Click on a word');
+//     } else {
+//         storylineText.textContent = "Waiting... Click 'Expand' to generate second degree connections.";
+//         console.log('Set message: Click Expand');
+//     }
+//     storylineDisplay.style.display = 'block';
+// }
+
+
+
+
+
+
+
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken.getAttribute('content');
+            }
+
+            // Call Rails backend to generate second degree words
+            fetch('/ai_text_rewriter/generate_second_degree', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    first_degree_words: storylineConfig.firstDegree,
+                    focus_word: storylineConfig.focus,
+                    association_strength: parseInt(document.getElementById('second-strength-select').value)
+                })
+            })
+            .then(response => {
+                console.log('Second degree response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received second degree data:', data);
+                
+                // Update configuration with second degree links
+                if (data.second_degree_links) {
+                    storylineConfig.secondDegreeLinks = data.second_degree_links;
+                } else {
+                    console.warn('No second_degree_links in response');
+                    storylineConfig.secondDegreeLinks = {};
+                }
+                
+                console.log('Updated config with second degree:', storylineConfig);
+                
+                // Re-initialize for new elements
+                console.log('🔄 Re-initializing for new elements');
+                initializeStoryline();
+                
+                // Update storyline display animation after second degree ovals are generated
+                setTimeout(() => {
+                    updateStorylineDisplayClass();
+                }, 100);
+                
+                // Remove no-second-degree class since second degree ovals are now present
+                const secondDegreeContainer = document.getElementById('strength-container-second-degree');
+                if (secondDegreeContainer) {
+                    secondDegreeContainer.classList.remove('no-second-degree');
+                }
+                
+                // Hide the expand button and second strength selector
+                // expandBtn.style.display = 'none';
+                // const secondStrengthSelect = document.getElementById('second-strength-select');
+                // secondStrengthSelect.style.display = 'none';
+                
+                // Show the storyline button - NEW CODE
+                const storylineBtn = document.getElementById('storyline-btn');
+                if (storylineBtn) {
+                    storylineBtn.style.display = 'inline-block';
+                }
+
+                
+            })
+            .catch(error => {
+                console.error('Error generating second degree words:', error);
+                alert('Failed to generate second degree words. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                expandBtn.textContent = 'Go Again';
+                expandBtn.disabled = false;
+
+
+
+            // Update storyline message
+const storylineText = document.getElementById('storyline-text');
+if (storylineText) {
+    storylineText.textContent = 'Click on a word to generate a storyline.';
+}
+
+            });
+        }
+
+        // NEW FUNCTION: Generate storyline idea - COMMENTED OUT (duplicate functionality)
+        /*
+        function generateStorylineIdea() {
+            const storylineBtn = document.getElementById('storyline-btn');
+            
+            if (!selectedSecondDegreeWord) {
+                alert('Please click on a second degree word first to select it for the storyline');
+                return;
+            }
+            
+            if (!storylineConfig.focus) {
+                alert('Focus word is required');
+                return;
+            }
+
+            // Show loading state
+            const originalText = storylineBtn.textContent;
+            storylineBtn.textContent = 'Creating...';
+            storylineBtn.disabled = true;
+
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken.getAttribute('content');
+            }
+
+            // Call Rails backend to generate storyline
+            fetch('/ai_text_rewriter/generate_storyline', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    focus_word: storylineConfig.focus,
+                    second_degree_word: selectedSecondDegreeWord
+                })
+            })
+            .then(response => {
+                console.log('Storyline response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received storyline data:', data);
+                
+                // Display the storyline
+                const storylineDisplay = document.getElementById('storyline-display');
+                const storylineText = document.getElementById('storyline-text');
+                const storylineMeta = document.getElementById('storyline-meta');
+                
+                if (storylineDisplay && storylineText && storylineMeta) {
+                    storylineText.textContent = data.storyline;
+                    storylineMeta.textContent = `Using: "${data.focus_word}" + "${data.second_degree_word}"`;
+                    
+                    storylineDisplay.style.display = 'block';
+                    
+                    // Scroll to storyline display
+                    storylineDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            })
+            .catch(error => {
+                console.error('Error generating storyline:', error);
+                alert('Failed to generate storyline. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                storylineBtn.textContent = originalText;
+                storylineBtn.disabled = false;
+            });
+        }
+        */
+
+        // Function to check if second degree ovals exist and slide in display
+        function updateStorylineDisplayClass() {
+            const storylineDisplay = document.getElementById('storyline-display');
+            if (storylineDisplay) {
+                const secondDegreeOvals = document.querySelectorAll('.second-degree-oval');
+                
+                if (secondDegreeOvals.length > 0) {
+                    storylineDisplay.classList.add('slide-in');
+                } else {
+                    storylineDisplay.classList.remove('slide-in');
+                }
+            }
+        }
+
+        // Function to initialize focus input functionality
+        function initializeFocusInput() {
+            const focusInput = document.getElementById('focus-input');
+            const firstDegreeContainer = document.getElementById('input-container-first-degree');
+            const secondDegreeContainer = document.getElementById('strength-container-second-degree');
+            
+            if (!focusInput || !firstDegreeContainer) {
+                console.log('Focus input elements not found, retrying...');
+                return false;
+            }
+            
+            // Check if already initialized
+            if (focusInput.hasAttribute('data-initialized')) {
+                console.log('Focus input already initialized');
+                return true;
+            }
+            
+            console.log('Initializing focus input functionality...');
+            focusInput.setAttribute('data-initialized', 'true');
+            
+            // Function to check if input is empty and update opacity class
+            function updateOpacityClass() {
+                const firstDegreeSecondStep = document.getElementById('first-degree-second-step');
+                
+                if (focusInput.value.trim() === '') {
+                    firstDegreeContainer.classList.add('input-empty');
+                    if (firstDegreeSecondStep) {
+                        firstDegreeSecondStep.classList.remove('input-has-content');
+                    }
+                } else {
+                    firstDegreeContainer.classList.remove('input-empty');
+                    if (firstDegreeSecondStep) {
+                        firstDegreeSecondStep.classList.add('input-has-content');
+                    }
+                }
+            }
+            
+            // Function to check if diagram exists
+            function updateDiagramClass() {
+                const storylineSvg = document.querySelector('.storyline-svg');
+                const storylineContainer = document.getElementById('storyline-container');
+                
+                if (!storylineSvg || (storylineContainer && storylineContainer.style.display === 'none')) {
+                    firstDegreeContainer.classList.add('no-diagram');
+                } else {
+                    firstDegreeContainer.classList.remove('no-diagram');
+                }
+            }
+            
+            // Function to check if second degree ovals exist
+            function updateSecondDegreeClass() {
+                if (secondDegreeContainer) {
+                    const secondDegreeOvals = document.querySelectorAll('.second-degree-oval');
+                    
+                    if (secondDegreeOvals.length === 0) {
+                        secondDegreeContainer.classList.add('no-second-degree');
+                    } else {
+                        secondDegreeContainer.classList.remove('no-second-degree');
+                    }
+                }
+            }
+            
+            // Initial checks
+            updateOpacityClass();
+            updateDiagramClass();
+            updateSecondDegreeClass();
+            updateStorylineDisplayClass();
+            
+            // Listen for input changes
+            focusInput.addEventListener('input', updateOpacityClass);
+            focusInput.addEventListener('change', updateOpacityClass);
+            
+            // Handle Enter key
+            focusInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    generateStoryline();
+                }
+            });
+            
+            console.log('Focus input functionality initialized successfully');
+            return true;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded event fired');
+            initializeFocusInput();
+        });
+
+        // Initialize immediately if DOM is already ready
+        if (document.readyState === 'loading') {
+            console.log('Document still loading, waiting for DOMContentLoaded');
+        } else {
+            console.log('Document ready, initializing immediately');
+            initializeFocusInput();
+        }
+
+        // Initialize on Turbo events (for Rails) - only if diagram is visible
+        document.addEventListener('turbo:load', function() {
+            console.log('Turbo:load event fired');
+            initializeFocusInput();
+            
+            const container = document.getElementById('storyline-container');
+            if (container && container.style.display !== 'none') {
+                initializeStoryline();
+            }
+        });
+        
+        document.addEventListener('turbo:render', function() {
+            console.log('Turbo:render event fired');
+            initializeFocusInput();
+            
+            const container = document.getElementById('storyline-container');
+            if (container && container.style.display !== 'none') {
+                initializeStoryline();
+            }
+        });
+
+        // Also try turbo:frame-load for compatibility
+        document.addEventListener('turbo:frame-load', function() {
+            console.log('Turbo:frame-load event fired');
+            initializeFocusInput();
+        });
+
+
+
+
+        
+    </script>

@@ -1,0 +1,572 @@
+<div class="ways-container">
+  <div class="header">
+    <h1>How I Meet The 6 Human Needs</h1>
+    <!-- <p class="subtitle">How I get my needs met</p> -->
+<span class="material-symbols-outlined needs-icon">security</span>
+<span class="material-symbols-outlined needs-icon">shield_question</span>
+<span class="material-symbols-outlined needs-icon">trophy</span>
+<span class="material-symbols-outlined needs-icon">person_heart</span>
+<span class="material-symbols-outlined needs-icon">self_improvement</span>
+<span class="material-symbols-outlined needs-icon">volunteer_activism</span>
+
+The greatfullness of life comes from knowing how great the fullness of life is 
+
+Experiece of the great fullness of life. When it's so full, its virtually overflowing. It overflowsi int a fountain of life. 
+
+When it's overflowing, you are greatfull that its overflowingonto other appreaciting beings, and it just make syou wna to enjoy the great, fullness of life that much more, the fullness 
+
+Wealthe = wellbeing, each of us have a well of being. 
+
+  </div> 
+
+  <div class="needs-grid">
+    <% @six_human_needs.each do |need| %>
+      <div class="need-card">
+        <div class="need-header">
+          <h2><%= need.name %></h2>
+          <p class="need-description"><%= need.description %></p>
+        </div>
+        
+        <div class="ways-section">
+
+          
+          <div class="ways-content">
+            <div class="ways-intro-line">
+              <span class="ways-intro">I experience <%= need.name %> anytime I</span>
+              
+              <div class="ways-list">
+                <% user_ways = @ways_by_need[need] || [] %>
+                <% if user_ways.any? %>
+                  <% user_ways.each_with_index do |way, index| %>
+                    <div class="way-item" data-way-id="<%= way.id %>">
+                      <span class="way-text editable-way" data-way-id="<%= way.id %>"><%= way.description %></span>
+                      <input type="text" class="way-edit-input" style="display: none;" value="<%= way.description %>" data-way-id="<%= way.id %>">
+                      <div class="way-actions">
+
+                        <%= link_to way_path(way), 
+                            data: { 
+                              turbo_method: :delete,
+                              turbo_confirm: "Are you sure you want to delete this way?" 
+                            }, 
+                            class: "delete-btn" do %>
+                          <span class="material-symbols-outlined">delete</span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div class="no-ways">
+                    <span class="placeholder-text">(give yourself a few simple ways to meet this need)</span>
+                    <%#= link_to "Add your first way", new_way_path(six_human_need_id: need.id), 
+                        class: "add-first-way-link" %>
+                  </div>
+                <% end %>
+                
+                <div class="add-way-bottom">
+                  <div class="inline-add-way" style="display: none;">
+                    <%= form_with model: Way.new, 
+                        local: true, 
+                        class: "inline-way-form",
+                        data: { six_human_need_id: need.id } do |form| %>
+                      <%= form.hidden_field :six_human_need_id, value: need.id %>
+                      <%= form.text_field :description, 
+                          placeholder: "Enter your way...", 
+                          class: "inline-way-input",
+                          autofocus: true %>
+                      <%= form.submit "Save", class: "inline-save-btn" %>
+                      <button type="button" class="inline-cancel-btn">Cancel</button>
+                    <% end %>
+                  </div>
+                  <button class="add-way-btn-bottom show-inline-form" data-need-id="<%= need.id %>">
+                    <span class="material-symbols-outlined">add_circle</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+.ways-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 16px;
+}
+
+.needs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    flex-direction: column;
+  /* display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px; */
+}
+
+.need-card {
+  background: white;
+  padding: 0 24px;
+  /* border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0; */
+}
+
+.need-header h2 {
+  color: #007cba;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+.need-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  /* margin-bottom: 24px; */
+}
+
+.ways-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.add-way-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #007cba;
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.add-way-btn:hover {
+  background: #005a85;
+}
+
+.add-way-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.ways-content {
+  line-height: 1.8;
+}
+
+.ways-intro-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ways-intro {
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ways-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.way-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+  padding: 0px 0;
+}
+
+.way-item:first-child {
+  /* margin-left: 8px; */
+}
+
+.way-text {
+  color: #333;
+  font-size: 18px;
+  line-height: 1.4;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--text-input-border-radius);
+  border: 1px solid transparent;
+  transition: background-color 0.2s;
+}
+
+.way-text:hover {
+  /* background-color: #f8f9fa;*/
+  border: 1px solid var(--focus); 
+}
+
+.way-text.editing {
+  display: none;
+}
+
+.way-edit-input {
+  color: #333;
+  font-size: 18px;
+  line-height: 1.4;
+  padding: 2px 4px;
+  border: 1px solid #007cba;
+  border-radius: 3px;
+  background: white;
+  font-family: inherit;
+  min-width: 200px;
+}
+
+.way-edit-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.way-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.way-item:hover .way-actions {
+  opacity: 1;
+}
+
+
+
+.add-way-btn-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  background: transparent;
+  color: var(--lightgray );
+  text-decoration: none;
+  transition: background 0.2s;
+  width: fit-content;
+  border: none;
+  cursor: pointer;
+}
+
+.add-way-btn-bottom:hover {
+  color: var(--accent);
+}
+
+
+
+.inline-way-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inline-way-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 300px;
+  font-family: inherit;
+}
+
+.inline-way-input:focus {
+  outline: none;
+  border-color: #007cba;
+  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.inline-save-btn {
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.inline-save-btn:hover {
+  background: #005a85;
+}
+
+.inline-cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.inline-cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+
+
+.delete-btn {
+  /* background: #fee; */
+  color: var(--lightgray);
+}
+
+.delete-btn:hover {
+  color: var(--red);
+  /* background: #fdd; */
+}
+
+
+.delete-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.no-ways {
+  color: #999;
+  font-size: 18px;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.placeholder-text {
+  font-style: italic;
+}
+
+.add-first-way-link {
+  color: #007cba;
+  text-decoration: underline;
+  margin-left: 8px;
+  font-size: 18px;
+}
+
+.add-first-way-link:hover {
+  color: #005a85;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle inline editing of way text
+  document.querySelectorAll('.editable-way').forEach(span => {
+    span.addEventListener('click', function() {
+      const wayItem = this.closest('.way-item');
+      const input = wayItem.querySelector('.way-edit-input');
+      
+      // Hide span, show input
+      this.style.display = 'none';
+      input.style.display = 'inline';
+      input.focus();
+      input.select();
+    });
+  });
+  
+  // Handle saving inline edits
+  document.querySelectorAll('.way-edit-input').forEach(input => {
+    input.addEventListener('blur', function() {
+      saveInlineEdit(this);
+    });
+    
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        this.blur(); // Trigger save
+      }
+      if (e.key === 'Escape') {
+        cancelInlineEdit(this);
+      }
+    });
+  });
+  
+  function saveInlineEdit(input) {
+    const wayId = input.dataset.wayId;
+    const newValue = input.value.trim();
+    const wayItem = input.closest('.way-item');
+    const span = wayItem.querySelector('.editable-way');
+    
+    if (newValue === '' || newValue === span.textContent) {
+      // Cancel if empty or unchanged
+      cancelInlineEdit(input);
+      return;
+    }
+    
+    // Send AJAX request to update
+    fetch(`/ways/${wayId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        way: { description: newValue }
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update the span text and show it
+        span.textContent = newValue;
+        input.style.display = 'none';
+        span.style.display = 'inline';
+      } else {
+        alert('Error updating way: ' + (data.error || 'Unknown error'));
+        cancelInlineEdit(input);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error updating way');
+      cancelInlineEdit(input);
+    });
+  }
+  
+  function cancelInlineEdit(input) {
+    const wayItem = input.closest('.way-item');
+    const span = wayItem.querySelector('.editable-way');
+    
+    // Reset input value and hide it, show span
+    input.value = span.textContent;
+    input.style.display = 'none';
+    span.style.display = 'inline';
+  }
+  
+  // Prevent edit button from navigating when using inline editing
+  document.querySelectorAll('.manual-edit').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const wayItem = this.closest('.way-item');
+      const span = wayItem.querySelector('.editable-way');
+      span.click(); // Trigger inline edit instead
+    });
+  });
+
+  // Handle showing inline form
+  document.querySelectorAll('.show-inline-form').forEach(button => {
+    button.addEventListener('click', function() {
+      const addWayBottom = this.parentElement;
+      const inlineForm = addWayBottom.querySelector('.inline-add-way');
+      const input = inlineForm.querySelector('.inline-way-input');
+      
+      // Hide button, show form
+      this.style.display = 'none';
+      inlineForm.style.display = 'block';
+      input.focus();
+    });
+  });
+  
+  // Handle cancel button
+  document.querySelectorAll('.inline-cancel-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const addWayBottom = this.closest('.add-way-bottom');
+      const inlineForm = addWayBottom.querySelector('.inline-add-way');
+      const showButton = addWayBottom.querySelector('.show-inline-form');
+      const input = inlineForm.querySelector('.inline-way-input');
+      
+      // Clear input, hide form, show button
+      input.value = '';
+      inlineForm.style.display = 'none';
+      showButton.style.display = 'flex';
+    });
+  });
+  
+  // Handle Enter key to submit
+  document.querySelectorAll('.inline-way-input').forEach(input => {
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        this.closest('form').submit();
+      }
+      if (e.key === 'Escape') {
+        const cancelBtn = this.closest('.inline-add-way').querySelector('.inline-cancel-btn');
+        cancelBtn.click();
+      }
+    });
+  });
+});
+</script>

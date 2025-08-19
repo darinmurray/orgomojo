@@ -1,0 +1,10 @@
+<%= form_with model: [@pie, @slice, Element.new], local: false, class: "add-element-form", id: "add-element-form" do |f| %>
+  <div class="form-row">
+    <%= f.text_field :name, placeholder: "Add new element...", class: "element-input", id: "new-element-name" %>
+    <%= f.number_field :priority, placeholder: "Priority", class: "element-input" %>
+    <%= f.number_field :time_needed, placeholder: "Time Needed", class: "element-input" %>
+    <%= f.text_field :time_scale, placeholder: "Time Scale", class: "element-input" %>
+    <%= f.datetime_field :deadline, placeholder: "Deadline", class: "element-input" %>
+    <%= f.submit "Add Element", class: "add-button" %>
+  </div>
+<% end %>

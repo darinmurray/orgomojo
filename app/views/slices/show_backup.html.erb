@@ -1,0 +1,440 @@
+<!-- app/views/slices/show.html.erb -->
+<style>
+  .slice-header {
+    display: flex;
+    background: #ffffffff;
+    padding-top: 20px;
+    padding-left: 0px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  .slice-title-row {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .slice-title {
+    margin: 0;
+  }
+
+  .slice-percentage {
+    margin-left: auto;
+    font-size: 32px;
+    font-weight: bold;
+    color: #007cba;
+  }
+
+  .slice-objective {
+    margin-left: 0px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #5f5f5fff;
+  }
+
+  .progress-bar-container {
+    background: #e9ecef;
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .element-item {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .element-item.completed {
+    background: #ffffffff; /* nice green #f8fff8; */
+    border: 0px solid #ddd;
+      padding: 5px;
+  }
+
+  .element-item.incomplete {
+    background: #feffe1;
+  }
+
+  .element-item.editing {
+    background: #f0f8ff;
+    border: 2px solid #007cba;
+  }
+
+  .element-top-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .element-form {
+    margin: 0;
+  }
+
+  .element-checkbox {
+    margin-right: 15px;
+    transform: scale(1.5);
+  }
+
+  .element-name {
+    flex: 1;
+    padding: 4px;
+    border-radius: 3px;
+    cursor: text;
+  }
+
+  .element-name:hover {
+    background: #f8f9fa;
+  }
+
+  .element-name.editing {
+    background: white;
+    border: 1px solid #007cba;
+    outline: none;
+  }
+
+  .element-name.completed {
+    /* text-decoration: line-through; */
+    color: #666;
+  }
+
+  .element-objective {
+    margin-left: 45px;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+    padding: 4px;
+    border-radius: 3px;
+    cursor: text;
+    min-height: 20px;
+  }
+
+  .element-objective:hover {
+    background: #f8f9fa;
+  }
+
+  .element-objective.editing {
+    background: white;
+    border: 1px solid #007cba;
+    outline: none;
+    font-style: normal;
+  }
+
+  .element-objective.empty {
+    color: #999;
+  }
+
+  .add-element-form {
+    margin-top: 20px;
+    /* padding: 15px;
+    border: 2px dashed #ddd;
+    border-radius: 8px; */
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .element-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .add-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .bottom-actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .delete-slice-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+
+  .back-link {
+    color: #666;
+    text-decoration: none;
+    margin-left: 10px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+
+  #pie-chart {
+display: flex;
+  }
+
+  #slice-info {
+    flex: 1;
+
+  }
+</style>
+
+<div class="slice-header">
+
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center;">
+        <%= radial_pie_chart(@pie, size: 120, pinwheel: false) %>
+      </div>
+    </div>
+
+
+
+
+  <div id="slice-info">
+  <div class="slice-title-row">
+    <h1 class="slice-title" 
+        contenteditable="true" 
+        data-field="name" 
+        data-original="<%= @slice.name %>"
+        data-type="slice">
+      <%= @slice.name %>
+    </h1>
+    <div class="slice-percentage">
+      <%= @slice.percentage %>%
+    </div>
+  </div>
+
+  <div class="slice-objective <%= 'empty' unless @slice.objective.present? %>" 
+       contenteditable="true" 
+       data-field="objective" 
+       data-original="<%= @slice.objective %>"
+       data-type="slice">
+    <% if @slice.objective.present? %>
+      <%= @slice.objective %>
+    <% else %>
+      <em>Click to add objective...</em>
+    <% end %>
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" style="background: <%= @slice.color %>; width: <%= @slice.percentage %>%;"></div>
+  </div>
+
+
+
+</div>
+</div>
+
+<h3>Elements of <%= @slice.name %></h3>
+<div id="elements-list">
+  <% @elements.each do |element| %>
+    <div class="element-item <%= element.completed? ? 'completed' : 'incomplete' %>" data-element-id="<%= element.id %>">
+      
+      <!-- Top row: checkbox, name, and buttons -->
+      <div class="element-top-row">
+        <%= form_with model: [@pie, @slice, element], url: toggle_pie_slice_element_path(@pie, @slice, element), method: :patch, local: true, class: "element-form" do |f| %>
+          <%= f.check_box :completed, { 
+            checked: element.completed, 
+            onchange: "this.form.submit();",
+            class: "element-checkbox"
+          }, true, false %>
+        <% end %>
+        
+        <!-- Element name display/edit -->
+        <div class="element-name <%= 'completed' if element.completed? %>" 
+             contenteditable="true" 
+             data-field="name" 
+             data-original="<%= element.name %>">
+          <%= element.name %>
+        </div>
+        
+        <div class="element-actions">
+
+
+          <%= link_to [@pie, @slice, element], method: :delete, data: { confirm: "Are you sure?" }, class: "delete-link" do %>
+            <span class="material-symbols-outlined">delete</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Bottom row: objective display/edit -->
+      <div class="element-objective <%= 'empty' unless element.objective.present? %>" 
+           contenteditable="true" 
+           data-field="objective" 
+           data-original="<%= element.objective %>">
+        <% if element.objective.present? %>
+          <%= element.objective %>
+        <% else %>
+          <em>Click to add objective...</em>
+        <% end %>
+      </div>
+      
+    </div>
+  <% end %>
+</div>
+
+<%= form_with model: [@pie, @slice, Element.new], local: true, class: "add-element-form" do |f| %>
+  <div class="form-row">
+    <%= f.text_field :name, placeholder: "Add new element...", class: "element-input" %>
+    <%= f.submit "Add Element", class: "add-button" %>
+  </div>
+<% end %>
+
+<div class="bottom-actions">
+  <%= link_to "Delete Slice", [@pie, @slice], 
+      method: :delete, 
+      data: { 
+        confirm: "Are you sure you want to delete this slice? This will also delete all elements within it.",
+        turbo_method: :delete
+      },
+      class: "btn btn-danger delete-slice-btn" %>
+  
+  <%= link_to "← Back to Life Balance Wheel", pie_path(@pie), class: "back-link" %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle contenteditable elements
+  document.querySelectorAll('[contenteditable="true"]').forEach(function(element) {
+    let originalValue = element.dataset.original || '';
+    
+    // Handle focus - select placeholder text if empty
+    element.addEventListener('focus', function() {
+      this.classList.add('editing');
+      if (this.classList.contains('empty')) {
+        this.innerHTML = '';
+        this.classList.remove('empty');
+      }
+    });
+    
+    // Handle blur - save changes
+    element.addEventListener('blur', function() {
+      this.classList.remove('editing');
+      let newValue = this.innerText.trim();
+      
+      // For objective, check if it contains placeholder text
+      if (this.dataset.field === 'objective' && newValue === 'Click to add objective...') {
+        newValue = '';
+      }
+      
+      if (newValue !== originalValue) {
+        saveField(this, newValue);
+      } else if (newValue === '' && this.dataset.field === 'objective') {
+        // Reset to placeholder if objective is empty
+        this.innerHTML = '<em>Click to add objective...</em>';
+        this.classList.add('empty');
+      }
+    });
+    
+    // Handle Enter key
+    element.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (this.dataset.field === 'name') {
+          // For name field, Enter saves and exits
+          e.preventDefault();
+          this.blur();
+        }
+        // For objective field, Enter creates new line (default behavior)
+      }
+      
+      if (e.key === 'Escape') {
+        // Restore original value and exit
+        if (this.dataset.field === 'objective') {
+          if (originalValue === '') {
+            this.innerHTML = '<em>Click to add objective...</em>';
+            this.classList.add('empty');
+          } else {
+            this.innerText = originalValue;
+          }
+        } else {
+          this.innerText = originalValue;
+        }
+        this.blur();
+      }
+    });
+  });
+
+  function saveField(element, newValue) {
+    const fieldName = element.dataset.field;
+    const dataType = element.dataset.type;
+    
+    let url, formData;
+    
+    if (dataType === 'slice') {
+      // Save slice fields
+      url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>`;
+      formData = new FormData();
+      formData.append('_method', 'PATCH');
+      formData.append(`slice[${fieldName}]`, newValue);
+    } else {
+      // Save element fields
+      const elementItem = element.closest('.element-item');
+      const elementId = elementItem.dataset.elementId;
+      url = `/pies/<%= @pie.id %>/slices/<%= @slice.id %>/elements/${elementId}`;
+      formData = new FormData();
+      formData.append('_method', 'PATCH');
+      formData.append(`element[${fieldName}]`, newValue);
+    }
+    
+    // Add CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      formData.append('authenticity_token', csrfToken.getAttribute('content'));
+    }
+    
+    // Show saving indicator
+    const originalContent = element.innerHTML;
+    element.style.opacity = '0.6';
+    
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        // Update the original value for future comparisons
+        element.dataset.original = newValue;
+        
+        // Update display for empty objectives
+        if (fieldName === 'objective' && newValue === '') {
+          element.innerHTML = '<em>Click to add objective...</em>';
+          element.classList.add('empty');
+        }
+        
+        return response.text();
+      }
+      throw new Error(`Network response was not ok: ${response.status}`);
+    })
+    .catch(error => {
+      console.error('Fetch error:', error);
+      alert('Failed to save changes. Please try again.');
+      // Restore original content on error
+      element.innerHTML = originalContent;
+    })
+    .finally(() => {
+      element.style.opacity = '1';
+    });
+  }
+});
+</script>

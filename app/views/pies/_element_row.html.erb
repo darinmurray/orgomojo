@@ -1,0 +1,20 @@
+
+
+<!-- app/views/pies/_element_row.html.erb -->
+<div id="element-<%= element.id %>" class="element-row">
+  <%= form_with model: [pie, slice, element], 
+      url: toggle_pie_slice_element_path(pie, slice, element), 
+      method: :patch, 
+      local: false do |f| %>
+
+    <span class="<%= element.completed? ? 'element-completed-list-view' : 'element-list-view' %>" 
+          style="flex: 1; cursor: pointer;" 
+          onclick="this.closest('form').submit();">
+      <span class="material-symbols-outlined inline-small <%= element.completed? ? '' : 'check-mark-space' %>"><%= element.completed? ? 'check_circle' : '' %></span>
+      <%= truncate(element.name, length: 30) %> 
+    </span>
+
+    <!-- Hidden field to send the toggle value -->
+    <%= f.hidden_field :completed, value: !element.completed %>
+  <% end %>
+</div>

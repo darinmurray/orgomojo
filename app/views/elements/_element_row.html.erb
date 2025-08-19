@@ -1,0 +1,30 @@
+<!-- app/views/pies/_element_row.html.erb -->
+<div id="element-<%= element.id %>" style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+  <%= form_with model: [pie, slice, element], 
+      url: toggle_pie_slice_element_path(pie, slice, element), 
+      method: :patch, 
+      local: false,
+      style: "margin: 0; display: flex; align-items: center; width: 100%;" do |f| %>
+    <%= f.check_box :completed, { 
+      checked: element.completed, 
+      onchange: "this.form.submit();",
+      style: "margin-right: 12px; transform: scale(1.3);" 
+    }, true, false %>
+    
+    <span style="flex: 1; <%= element.completed? ? 'text-decoration: line-through; color: #666;' : 'color: #333;' %>">
+      <%= element.name %>
+    </span>
+    
+    <div style="margin-left: 15px;">
+      <%= link_to "Edit", edit_pie_slice_element_path(pie, slice, element), 
+          style: "color: #007cba; text-decoration: none; font-size: 12px; margin-right: 8px;" %>
+      <%= link_to "Delete", [pie, slice, element], 
+          method: :delete, 
+          data: { 
+            confirm: "Are you sure?",
+            turbo_method: :delete
+          },
+          style: "color: #dc3545; text-decoration: none; font-size: 12px;" %>
+    </div>
+  <% end %>
+</div>

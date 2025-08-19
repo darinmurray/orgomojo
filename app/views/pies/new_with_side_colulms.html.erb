@@ -1,0 +1,2020 @@
+<%
+# Fabricated data for preview - this simulates database objects
+# Use local variables with Struct.new to avoid constant assignment issues
+fake_pie_class = Struct.new(:id, :name, :slices) do
+  def initialize(id, name)
+    super(id, name, [])
+  end
+end
+
+fake_slice_class = Struct.new(:id, :name, :color, :percentage, :elements) do
+  def initialize(id, name, color, percentage)
+    super(id, name, color, percentage, [])
+  end
+  
+  def any?
+    elements.any?
+  end
+end
+
+fake_element_class = Struct.new(:id, :name, :objective, :completed) do
+  def initialize(id, name, objective = nil, completed = false)
+    super(id, name, objective, completed)
+  end
+  
+  def completed?
+    completed
+  end
+end
+
+# Create fabricated pie with slices and elements
+@pie = fake_pie_class.new(999, "Life Balance Preview")
+
+# Create slices
+health_slice = fake_slice_class.new(1, "Health", "#ff6b6b", 45)
+health_slice.elements = [
+  fake_element_class.new(1, "Exercise 30 min daily", "Complete a 30-minute workout routine every day", false),
+  fake_element_class.new(2, "Drink 8 glasses of water", "Consume at least 64 ounces of water daily", true),
+  fake_element_class.new(3, "Get 8 hours of sleep", "Maintain consistent sleep schedule with 8 hours nightly", false),
+  fake_element_class.new(4, "Eat 5 servings vegetables", "Include 5 servings of vegetables in daily meals", false)
+]
+
+friends_and_family_slice = fake_slice_class.new(2, "Friends and Family", "#253da7ff", 60)
+friends_and_family_slice.elements = [
+  fake_element_class.new(5, "Call family weekly", "Schedule regular weekly calls with family members", true),
+  fake_element_class.new(6, "Date night monthly", "Plan monthly date activities with partner", false),
+  fake_element_class.new(7, "Friend meetup bi-weekly", "Organize social gatherings with friends every two weeks", false),
+  fake_element_class.new(8, "Send birthday cards", "Send personalized birthday cards to close friends and family", true),
+  fake_element_class.new(9, "Volunteer together", "Participate in a community service activity with friends or family", false),
+  fake_element_class.new(10, "Plan a family game night", "Organize a fun game night with family members", true),
+  fake_element_class.new(11, "Reconnect with an old friend", "Reach out to an old friend and catch up", false)
+]
+
+career_slice = fake_slice_class.new(3, "Career", "#4d3d78ff", 30)
+career_slice.elements = [
+  fake_element_class.new(8, "Learn new skill", "Complete online course in relevant professional skill", false),
+  fake_element_class.new(9, "Network monthly", "Attend one networking event per month", true),
+  fake_element_class.new(10, "Update resume", "Revise and modernize resume with recent accomplishments", false),
+  fake_element_class.new(11, "Seek mentorship", "Connect with industry mentor for career guidance", false),
+  fake_element_class.new(12, "Improve public speaking", "Join a public speaking group to enhance skills", false),
+  fake_element_class.new(13, "Attend industry conference", "Participate in an annual industry event", true),
+  fake_element_class.new(14, "Build portfolio", "Create a portfolio showcasing your work", false),
+  fake_element_class.new(15, "Set career goals", "Define short-term and long-term career objectives", false)
+]
+
+hobbies_slice = fake_slice_class.new(4, "Hobbies and Interests", "#f7dc6f", 80)
+hobbies_slice.elements = [
+  fake_element_class.new(16, "Photography Project", "Complete a monthly photography challenge", false),
+  fake_element_class.new(17, "Learn Guitar", "Practice guitar for 30 minutes daily", true),
+  fake_element_class.new(18, "Gardening", "Spend time tending to your garden weekly", false),
+  fake_element_class.new(19, "Cooking new recipes", "Experiment with a new recipe every week", true),
+  fake_element_class.new(20, "Join a book club", "Participate in discussions about books", false),
+  fake_element_class.new(21, "Start painting", "Create a painting every month", false),
+  fake_element_class.new(22, "Explore hiking trails", "Visit a new hiking trail every weekend", true),
+  fake_element_class.new(23, "Learn a new language", "Dedicate time to learning a foreign language", false)
+]
+
+finances_slice = fake_slice_class.new(5, "Financial Health", "#bb8fce", 38)
+finances_slice.elements = [
+  fake_element_class.new(24, "Budget tracking", "Review and update monthly budget", true),
+  fake_element_class.new(25, "Emergency fund", "Save $500 monthly for emergency fund", false),
+  fake_element_class.new(26, "Investment research", "Research and evaluate investment options", false),
+  fake_element_class.new(27, "Track expenses", "Record daily expenses to identify spending patterns", true),
+  fake_element_class.new(28, "Pay off debt", "Focus on reducing credit card debt", false),
+  fake_element_class.new(29, "Increase savings", "Set aside 20% of income for savings", false),
+  fake_element_class.new(30, "Review insurance policies", "Ensure adequate coverage for health and assets", true),
+  fake_element_class.new(31, "Plan for retirement", "Contribute to a retirement fund regularly", false)
+]
+
+self_slice = fake_slice_class.new(6, "Self Development", "#43b845ff", 59)
+self_slice.elements = [
+  fake_element_class.new(32, "Mud Track Racing", "Get down and dirty!", true),
+  fake_element_class.new(33, "Engine Building", "Build and customize your own engine", false),
+  fake_element_class.new(34, "Local Exploration", "Research and explore local attractions", false),
+  fake_element_class.new(35, "Meditation practice", "Spend 10 minutes daily meditating", true),
+  fake_element_class.new(36, "Read self-help books", "Complete one self-help book per month", false),
+  fake_element_class.new(37, "Take online courses", "Enroll in courses to learn new skills", false),
+  fake_element_class.new(38, "Write a journal", "Reflect on daily experiences in a journal", true),
+  fake_element_class.new(39, "Attend personal growth workshops", "Participate in seminars for self-improvement", false)
+]
+
+
+
+romantic_slice = fake_slice_class.new(7, "Romantic Relationships", "#4ecdc4", 60)
+romantic_slice.elements = [
+  fake_element_class.new(18, "Plan romantic getaway", "Organize a weekend trip with your partner", false),
+  fake_element_class.new(19, "Write love notes", "Leave thoughtful notes for your partner", true),
+  fake_element_class.new(20, "Cook dinner together", "Prepare a meal together to bond", false),
+  fake_element_class.new(21, "Watch a movie together", "Pick a movie and enjoy a cozy night in", false),
+  fake_element_class.new(22, "Take a walk together", "Go for a relaxing walk and talk about your day", true),
+  fake_element_class.new(23, "Surprise with a gift", "Give your partner a small, thoughtful gift", false)
+]
+
+
+physical_environment_slice = fake_slice_class.new(8, "Physical Environment", "#cd4ecbff", 60)
+physical_environment_slice.elements = [
+  fake_element_class.new(18, "Declutter living space", "Organize and remove unnecessary items from your home", false),
+  fake_element_class.new(19, "Create a cozy reading nook", "Set up a comfortable space for reading and relaxation", true),
+  fake_element_class.new(20, "Incorporate plants", "Add indoor plants to improve air quality and aesthetics", false),
+  fake_element_class.new(21, "Enhance lighting", "Upgrade lighting fixtures for better ambiance", false),
+  fake_element_class.new(22, "Take a walk together", "Go for a relaxing walk and talk about your day", true),
+  fake_element_class.new(23, "Surprise with a gift", "Give your partner a small, thoughtful gift", false)
+]
+
+personal_growth_slice = fake_slice_class.new(9, "Personal Growth", "#ff9f43", 50)
+personal_growth_slice.elements = [
+  fake_element_class.new(24, "Read self-improvement book", "Complete a book on personal development", false),
+  fake_element_class.new(25, "Practice mindfulness", "Spend 10 minutes daily on mindfulness exercises", true),
+  fake_element_class.new(26, "Set personal goals", "Define and track progress on personal growth goals", false),
+  fake_element_class.new(42, "Attend a workshop", "Participate in a personal growth workshop or seminar", false),
+  fake_element_class.new(43, "Develop a new habit", "Focus on building a positive habit for 30 days", false),
+  fake_element_class.new(44, "Write a gratitude journal", "List three things you're grateful for daily", true),
+  fake_element_class.new(45, "Learn a new skill", "Dedicate time to learning a new skill or hobby", false),
+  fake_element_class.new(46, "Seek feedback", "Ask for constructive feedback from a mentor or peer", false)
+]
+
+spirituality_slice = fake_slice_class.new(10, "Spirituality", "#6a89cc", 40)
+spirituality_slice.elements = [
+  fake_element_class.new(27, "Meditate daily", "Spend 15 minutes meditating each day", true),
+  fake_element_class.new(28, "Attend spiritual gathering", "Participate in a weekly spiritual or religious event", false),
+  fake_element_class.new(29, "Reflect on values", "Journal about personal values and their meaning", false),
+  fake_element_class.new(47, "Read spiritual texts", "Read a chapter from a spiritual or religious book", false),
+  fake_element_class.new(48, "Practice gratitude", "Express gratitude for three things daily", true),
+  fake_element_class.new(49, "Connect with nature", "Spend time outdoors to feel connected to the world", false),
+  fake_element_class.new(50, "Volunteer for a cause", "Help a cause that aligns with your spiritual values", false),
+  fake_element_class.new(51, "Create a vision board", "Visualize your spiritual goals and aspirations", false)
+]
+
+community_slice = fake_slice_class.new(11, "Community", "#78e08f", 35)
+community_slice.elements = [
+  fake_element_class.new(30, "Volunteer monthly", "Contribute time to a local charity or cause", false),
+  fake_element_class.new(31, "Join a civic group", "Participate in a community or civic organization", false),
+  fake_element_class.new(32, "Organize a neighborhood event", "Plan a gathering to connect with neighbors", false),
+  fake_element_class.new(52, "Support a local business", "Shop or promote a small local business", true),
+  fake_element_class.new(53, "Attend town meetings", "Participate in local government or town hall meetings", false),
+  fake_element_class.new(54, "Mentor someone", "Offer guidance to someone in your community", false),
+  fake_element_class.new(55, "Clean a public space", "Organize or join a cleanup event for a park or street", false),
+  fake_element_class.new(56, "Donate to a cause", "Contribute to a charity or community project", true)
+]
+
+creativity_slice = fake_slice_class.new(12, "Creativity", "#e55039", 70)
+creativity_slice.elements = [
+  fake_element_class.new(33, "Paint weekly", "Create a new painting or artwork each week", false),
+  fake_element_class.new(34, "Write a poem", "Compose a poem or short story", true),
+  fake_element_class.new(35, "Learn a new instrument", "Dedicate time to learning a musical instrument", false),
+  fake_element_class.new(57, "Design a craft project", "Complete a DIY craft project", false),
+  fake_element_class.new(58, "Take a photography walk", "Capture creative photos during a walk", true),
+  fake_element_class.new(59, "Experiment with cooking", "Try creating a new recipe or dish", false),
+  fake_element_class.new(60, "Join an art class", "Enroll in a class to improve your artistic skills", false),
+  fake_element_class.new(61, "Write a screenplay", "Draft a short screenplay or script", false)
+]
+
+time_management_slice = fake_slice_class.new(13, "Time Management", "#60a3bc", 55)
+time_management_slice.elements = [
+  fake_element_class.new(36, "Plan daily schedule", "Create a daily plan to organize tasks", true),
+  fake_element_class.new(37, "Limit distractions", "Identify and reduce time-wasting activities", false),
+  fake_element_class.new(38, "Review weekly goals", "Evaluate progress on weekly objectives", false),
+  fake_element_class.new(62, "Use a time tracker", "Track how you spend your time daily", false),
+  fake_element_class.new(63, "Prioritize tasks", "Use a priority matrix to organize tasks", true),
+  fake_element_class.new(64, "Set time limits", "Allocate specific time blocks for tasks", false),
+  fake_element_class.new(65, "Delegate tasks", "Assign tasks to others when possible", false),
+  fake_element_class.new(66, "Take regular breaks", "Incorporate short breaks into your work schedule", true)
+]
+
+parenting_slice = fake_slice_class.new(14, "Parenting", "#fa983a", 65)
+parenting_slice.elements = [
+  fake_element_class.new(39, "Help with homework", "Assist children with their school assignments", true),
+  fake_element_class.new(40, "Plan family outings", "Organize fun and educational activities for the family", false),
+  fake_element_class.new(41, "Have one-on-one time", "Spend quality time individually with each child", false),
+  fake_element_class.new(67, "Read bedtime stories", "Read a story to your children before bed", true),
+  fake_element_class.new(68, "Teach life skills", "Help children learn essential life skills", false),
+  fake_element_class.new(69, "Attend school events", "Participate in your children's school activities", false),
+  fake_element_class.new(70, "Create a family tradition", "Start a new family tradition or ritual", false),
+  fake_element_class.new(71, "Encourage hobbies", "Support your children in pursuing their interests", true)
+]
+
+@pie.slices += [personal_growth_slice, spirituality_slice, community_slice, creativity_slice, time_management_slice, parenting_slice]
+
+# @pie.slices = [health_slice, friends_and_family_slice, career_slice, hobbies_slice, finances_slice, self_slice, physical_environment_slice, romantic_slice]
+
+# Helper method to simulate truncate
+def truncate(text, length: 30)
+  text.length > length ? text[0...length] + "..." : text
+end
+
+# Remove mock radial_pie_chart - use the actual helper with interactive_sliders: true
+%>
+
+<style>
+/* .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-size: 14px;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 600,
+  'GRAD' 0,
+  'opsz' 20
+} */
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Force navigation to display correctly on this page */
+body > .main-nav {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  width: 64px !important;
+  min-width: 64px !important;
+  background: #f7f7fa !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  padding-top: 32px !important;
+  z-index: 100 !important;
+  transition: width 0.2s !important;
+  box-sizing: border-box !important;
+}
+
+:root {
+  --lightgray: #b1b1b1ff;
+  --lightergray: #e9ecef;
+}
+
+/* Category Selection Styles */
+.category-selection-container {
+  text-align: center;
+  margin: 0px auto;
+  max-width: 800px;
+  /* padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); */
+}
+
+.category-selection-container h3 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 18px;
+}
+
+.category-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  /* gap: 15px; */
+  align-items: center;
+  justify-content: center;
+}
+
+.category-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 3px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.category-checkbox:hover {
+  background-color: rgba(0, 124, 186, 0.1);
+}
+
+.category-checkbox input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.category-checkbox .color-block {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  margin-right: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: none;
+}
+
+
+
+
+.category-checkbox .checkmark {
+  margin-right: 8px;
+}
+
+/* Disable hover effects on pie slices when interactive sliders are present */
+.radial-pie-chart .clickable-slice,
+.radial-pie-chart .slice-hover-area {
+  pointer-events: none !important;
+}
+
+.pie-container {
+  display: flex;
+  gap: 60px;
+  /* align-items: flex-start; */
+  justify-content: center;
+  margin: 40px 40px;
+}
+  
+
+.pie-title-editable {
+  outline: none;
+  border: 1px solid transparent;
+  padding: 5px 15px;
+  border-radius: var(--text-input-border-radius);
+  cursor: text;
+  transition: border-color 0.2s ease;
+  
+  /* Center the element and make it auto-width */
+  display: inline-block;
+  margin: 0 auto;
+  text-align: center;
+  width: auto;
+}
+
+/* Wrap the h1 in a container to center it */
+.pie-title-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 1000;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip,
+.tooltip-container .pie-title-editable:focus + .tooltip,
+.show-tooltip .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.pie-title-editable:hover:not(.editing) {
+  border-color: var(--focus);
+}
+
+.pie-title-editable.editing {
+  border-color: var(--focus);
+}
+
+.pie-title-editable:empty:before {
+  content: attr(placeholder);
+  color: #999;
+  font-style: italic;
+}
+
+
+
+  .pie-legend-left,
+  .pie-legend-right {
+    flex: 1;
+    min-width: 0;
+    /* max-width: 300px; */
+    min-width: 150px;
+    display:none;
+  }
+  
+  .slice-container {
+    margin-bottom: 25px;
+    border-radius: 0px;
+    overflow: hidden;
+  }
+  
+  .slice-link {
+    font-size: 18px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+  }
+  
+  .slice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+  }
+
+  
+
+  .slice-header-container {
+    padding: 0 10px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+    border-radius: var(--text-input-border-radius);
+    transition: all 0.2s ease;
+  }
+
+  /* Remove CSS hover - let JavaScript handle all hover effects */
+
+  .slice-header-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .slice-percentage {
+    font-size: 13px;
+    font-weight: normal;
+    color: var(--lightgray);
+  }
+  
+
+
+
+/* wraps the whole elements list */
+  .elements-container {
+    padding-left: 7px;
+    /* background: lightgray; */
+    margin-bottom: 15px;
+  }
+  
+
+  /* Style for individual elements */
+  .element-row {
+  /* background: lightblue; */
+  display: flex; 
+  align-items: center; 
+  padding: 3px 0;
+}
+
+.element-list-view {
+  padding-left: 0px;
+}
+
+
+
+/* Style for completed elements */
+.element-completed-list-view {
+  font-weight: normal;
+  color: var(--lightgray); 
+}
+
+/* left margin when no check mark */
+.check-mark-space {
+  margin-right: 0px;
+}
+
+
+.elements-list {
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+}
+
+
+  .no-elements {
+    color: var(--lightgray);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+  }
+  
+
+
+  #pie-section {
+    flex-shrink: 0;
+  }
+  
+  .pie-chart-container {
+    text-align: center;
+  }
+
+
+  .progress-bar-container {
+    background: var(--lightergray); /* #e9ecef; */
+    margin-top: 0px;
+    margin-bottom: 5px;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+
+
+/* ============ Modal styles ============== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.colors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.color-picker {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  z-index: 2;
+}
+.color-square {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.1s ease;
+}
+
+.color-square:hover {
+  transform: scale(1.1);
+}
+
+.color-label {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Style the color input when supported */
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 4px;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.save-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.colors-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #6c757d;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.colors-link:hover {
+  background-color: #f8f9fa;
+}
+
+.bottom-actions {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 20px 40px;
+}
+
+
+
+
+
+.material-symbols-outlined.palette {
+  font-size: 24px;
+  vertical-align: middle;
+}
+</style>
+
+<div class="pie-title-container">
+  <div class="tooltip-container">
+    <div class="tooltip">Name your Focus Wheel</div>
+    <h1 contenteditable="true" 
+        id="pie-name-input"
+        data-field="name" 
+        data-original="<%= @pie.name %>"
+        data-type="pie"
+        class="pie-title-editable"
+        placeholder="Enter your Focus Wheel name">
+      <%= @pie.name %>
+    </h1>
+  </div>
+</div>
+
+<!-- Category Selection Interface -->
+<div class="category-selection-container">
+  <h3>Select Life Areas to Include:</h3>
+  <div class="category-checkboxes">
+    <label class="category-checkbox">
+      <input type="checkbox" id="health_checkbox" value="health" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #ff6b6b;"></div>
+      Health
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="friends_family_checkbox" value="friends_family" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #253da7ff;"></div>
+      Friends and Family
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="career_checkbox" value="career" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #4d3d78ff;"></div>
+      Career
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="hobbies_checkbox" value="hobbies" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #f7dc6f;"></div>
+      Hobbies and Interests
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="finances_checkbox" value="finances" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #bb8fce;"></div>
+      Financial Health
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="self_checkbox" value="self" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #43b845ff;"></div>
+      Self Development
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="physical_environment_checkbox" value="physical_environment" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #cd4ecbff;"></div>
+      Physical Environment
+    </label>
+    
+    <label class="category-checkbox">
+      <input type="checkbox" id="romantic_checkbox" value="romantic" onchange="updateWheelCategories()">
+      <div class="color-block" style="background-color: #4ecdc4;"></div>
+      Romantic Relationships
+    </label>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Three-column flex container -->
+<div class="pie-container">
+  
+  <!-- Left Legend Section -->
+  <div class="pie-legend-left" >
+    <div>
+      <% @pie.slices.each_with_index do |slice, index| %>
+        <% if index < (@pie.slices.count / 2.0).ceil %>
+          <div class="slice-container" data-slice-id="<%= slice.id %>">
+
+
+            <!-- Slice Header -->
+            <div class="slice-link">
+            <div class="slice-header-container">
+              <div class="slice-header">
+                <div class="slice-header-left">
+                  <div>
+                    <strong><%= truncate(slice.name, length: 35) %></strong>
+                    <div id="slice-<%= slice.id %>-stats"></div>
+                  </div>
+                </div>
+                <div id="slice-<%= slice.id %>-percentage">
+                  <div class="slice-percentage percentage">
+                    <%= slice.percentage %>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-bar-container">
+                  <div class="progress-bar" style="background: <%= slice.color %>; width: <%= slice.percentage %>%;"></div>
+              </div>
+
+            </div><!-- end slice-header-container -->
+            </div>
+            
+            <!-- Elements List -->
+            <div class="elements-container">
+              <div id="slice-<%= slice.id %>-elements-list" class="elements-list">
+                <% if slice.elements.any? %>
+                  <% slice.elements.each do |element| %>
+                    <div class="element-row">
+                      <div class="element-list-view <%= element.completed? ? 'element-completed-list-view' : '' %>">
+                        <% if element.completed? %>
+                          <span class="material-symbols-outlined check-mark">check_circle</span>
+                        <% else %>
+                          <span class="check-mark-space"></span>
+                        <% end %>
+                        <%= element.name %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <div id="slice-<%= slice.id %>-no-elements" class="no-elements">
+                    No elements yet.
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Pie Chart Section (Center) -->
+  <div id="pie-section">
+    <div id="pie-chart">
+      <div class="pie-chart-container">
+        <%= radial_pie_chart(@pie, size: 350, pinwheel: false, curved_labels: true, interactive_sliders: true) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Legend Section -->
+  <div class="pie-legend-right" >
+    <div>
+      <% @pie.slices.each_with_index do |slice, index| %>
+        <% if index >= (@pie.slices.count / 2.0).ceil %>
+          <div class="slice-container" data-slice-id="<%= slice.id %>">
+          
+          
+
+            <!-- Slice Header -->
+            <div class="slice-link">
+            <div class="slice-header-container">
+              <div class="slice-header">
+                <div class="slice-header-left">
+                  <div>
+                    <strong><%= truncate(slice.name, length: 35) %></strong>
+                    <div id="slice-<%= slice.id %>-stats"></div>
+                  </div>
+                </div>
+                <div id="slice-<%= slice.id %>-percentage">
+                  <div class="slice-percentage percentage">
+                    <%= slice.percentage %>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="progress-bar-container">
+                  <div class="progress-bar" style="background: <%= slice.color %>; width: <%= slice.percentage %>%;"></div>
+              </div>
+
+            </div><!-- end slice-header-container -->
+            </div>
+
+
+
+                    <!-- Elements List -->
+                    <div class="elements-container">
+                      <div id="slice-<%= slice.id %>-elements-list" class="elements-list">
+                        <% if slice.elements.any? %>
+                          <% slice.elements.each do |element| %>
+                            <div class="element-row">
+                              <div class="element-list-view <%= element.completed? ? 'element-completed-list-view' : '' %>">
+                                <% if element.completed? %>
+                                  <span class="material-symbols-outlined check-mark">check_circle</span>
+                                <% else %>
+                                  <span class="check-mark-space"></span>
+                                <% end %>
+                                <%= element.name %>
+                              </div>
+                            </div>
+                          <% end %>
+                        <% else %>
+                          <div id="slice-<%= slice.id %>-no-elements" class="no-elements">
+                            No elements yet.
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- Bottom Actions -->
+<div class="bottom-actions">
+<a href="#" class="back-to-wheel-link">← Back to my Wheels</a>  
+
+
+
+<!-- Color Palette Modal -->
+  
+  <a href="#" class="colors-link" onclick="openColorsModal(); return false;">
+    <span class="material-symbols-outlined palette">settings</span>
+  </a>
+
+
+
+
+<a href="#" class="delete-slice-link">Delete Slice (Preview)</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- Colors Modal -->
+<!-- Colors Modal -->
+<div id="colors-modal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2><%= @pie.name %></h2>
+    </div>
+    
+    <div class="modal-body">
+      <div class="colors-list">
+        <% @pie.slices.each do |slice| %>
+          <div class="color-item" data-slice-id="<%= slice.id %>">
+            <input type="color" 
+                   class="color-picker" 
+                   value="<%= slice.color %>" 
+                   data-original-color="<%= slice.color %>"
+                   onchange="updateColorPreview(this)">
+            <div class="color-square" style="background-color: <%= slice.color %>;"></div>
+            <span class="color-label"><%= slice.name %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button type="button" class="cancel-btn" onclick="cancelColorChanges()">Cancel</button>
+      <button type="button" class="save-btn" onclick="saveColors()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Store original slice data
+const originalSlices = [
+  { id: 1, name: "Health", color: "#ff6b6b", percentage: 45, key: "health" },
+  { id: 2, name: "Friends and Family", color: "#253da7ff", percentage: 60, key: "friends_family" },
+  { id: 3, name: "Career", color: "#4d3d78ff", percentage: 30, key: "career" },
+  { id: 4, name: "Hobbies and Interests", color: "#f7dc6f", percentage: 80, key: "hobbies" },
+  { id: 5, name: "Financial Health", color: "#bb8fce", percentage: 38, key: "finances" },
+  { id: 6, name: "Self Development", color: "#43b845ff", percentage: 59, key: "self" },
+  { id: 7, name: "Physical Environment", color: "#cd4ecbff", percentage: 60, key: "physical_environment" },
+  { id: 8, name: "Romantic Relationships", color: "#4ecdc4", percentage: 60, key: "romantic" }
+];
+
+// Function to initialize category checkboxes - check only first 8
+function initializeCategorySelection() {
+  // Check only the first 8 categories by default
+  const firstEightKeys = originalSlices.slice(0, 8).map(slice => slice.key);
+  
+  document.querySelectorAll('.category-checkbox input[type="checkbox"]').forEach(checkbox => {
+    if (firstEightKeys.includes(checkbox.value)) {
+      checkbox.checked = true;
+    } else {
+      checkbox.checked = false;
+    }
+  });
+}
+
+// Function to update wheel based on selected categories
+function updateWheelCategories() {
+  console.log('Updating wheel categories...');
+  
+  // Get checked categories
+  const checkedCategories = [];
+  document.querySelectorAll('.category-checkbox input[type="checkbox"]:checked').forEach(checkbox => {
+    checkedCategories.push(checkbox.value);
+  });
+  
+  console.log('Checked categories:', checkedCategories);
+  
+  // Filter slices based on checked categories
+  const selectedSlices = originalSlices.filter(slice => 
+    checkedCategories.includes(slice.key)
+  );
+  
+  console.log('Selected slices:', selectedSlices);
+  
+  // Update the pie data
+  updatePieData(selectedSlices);
+  
+  // Regenerate the pie chart
+  regeneratePieChart(selectedSlices);
+}
+
+// Function to update the pie data structure
+function updatePieData(selectedSlices) {
+  // Update the global pie object if it exists
+  if (window.pieData) {
+    window.pieData.slices = selectedSlices;
+  }
+}
+
+// Function to regenerate the pie chart SVG
+function regeneratePieChart(selectedSlices) {
+  const pieChartContainer = document.querySelector('.pie-chart-container');
+  if (!pieChartContainer) {
+    console.log('Pie chart container not found');
+    return;
+  }
+  
+  // Generate new SVG
+  const newSvg = generatePieSVG(selectedSlices);
+  pieChartContainer.innerHTML = newSvg;
+  
+  // Re-initialize interactive functionality
+  setTimeout(() => {
+    initializePieChart();
+  }, 100);
+}
+
+// Function to generate pie chart SVG
+function generatePieSVG(slices) {
+  if (slices.length === 0) {
+    return '<div style="text-align: center; padding: 50px; color: #999;">Select at least one category to display the wheel</div>';
+  }
+  
+  const size = 350;
+  const center = size / 2;
+  const outerRadius = center - 20;
+  const labelRadius = outerRadius + 12;
+  const labelRadiusOffsetHorizontal = -4;
+  const labelRadiusOffsetVertical = -1;
+  const showCurvedLabels = true; // Enable curved labels
+  
+  // Choose viewBox based on curved label option
+  const viewBox = showCurvedLabels ? `-10 -10 ${size + 20} ${size + 20}` : `15 15 ${size - 30} ${size - 30}`;
+  
+  let svgContent = `
+    <svg width="${size}" height="${size}" class="radial-pie-chart" viewBox="${viewBox}">
+      <defs>
+  `;
+  
+  // Add text paths for curved labels
+  if (showCurvedLabels) {
+    const anglePerSlice = 360 / slices.length;
+    slices.forEach((slice, index) => {
+      const startAngle = index * anglePerSlice - 90; // Start from top
+      const endAngle = startAngle + anglePerSlice;
+      
+      // Create text path for this slice
+      const textPath = createTextPath(center + labelRadiusOffsetHorizontal, center + labelRadiusOffsetVertical, labelRadius, startAngle, endAngle, index);
+      svgContent += textPath;
+    });
+  }
+  
+  svgContent += `</defs>`;
+  
+  // Calculate angles for each slice
+  const anglePerSlice = 360 / slices.length;
+  let currentAngle = -90; // Start from top
+  
+  slices.forEach((slice, index) => {
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + anglePerSlice;
+    
+    // Calculate slice path based on percentage
+    const currentRadius = outerRadius * (slice.percentage / 100.0);
+    const startRad = startAngle * Math.PI / 180;
+    const endRad = endAngle * Math.PI / 180;
+    
+    const x2 = center + currentRadius * Math.cos(startRad);
+    const y2 = center + currentRadius * Math.sin(startRad);
+    const x3 = center + currentRadius * Math.cos(endRad);
+    const y3 = center + currentRadius * Math.sin(endRad);
+    
+    const largeArc = anglePerSlice > 180 ? 1 : 0;
+    const pathData = `M ${center},${center} L ${x2},${y2} A ${currentRadius},${currentRadius} 0 ${largeArc},1 ${x3},${y3} Z`;
+    
+    // Add slice path
+    svgContent += `
+      <path d="${pathData}" 
+            fill="${slice.color}" 
+            stroke="#fff" 
+            stroke-width="0" 
+            class="pie-slice clickable-slice" 
+            data-slice="${slice.name}" 
+            data-percentage="${slice.percentage}" 
+            data-slice-id="${slice.id}" 
+            data-slice-index="${index}"
+            style="cursor: pointer; transition: opacity 0.2s ease;" />
+    `;
+    
+    // Add divider line
+    const lineEndX = center + outerRadius * Math.cos(startRad);
+    const lineEndY = center + outerRadius * Math.sin(startRad);
+    svgContent += `
+      <line x1="${center}" y1="${center}" 
+            x2="${lineEndX}" y2="${lineEndY}" 
+            stroke="var(--pie-spoke)" 
+            stroke-width="${showCurvedLabels ? 2 : 1}" 
+            class="pie-divider" />
+    `;
+    
+    // Add interactive slider handle if enabled
+    const midAngle = startAngle + (anglePerSlice / 2);
+    const midAngleRad = midAngle * Math.PI / 180;
+    const handleX = center + currentRadius * Math.cos(midAngleRad);
+    const handleY = center + currentRadius * Math.sin(midAngleRad);
+    
+    svgContent += `
+      <g class="slider-handle" data-slice-id="${slice.id}" data-slice-index="${index}">
+        <circle cx="${handleX}" cy="${handleY}" r="8" 
+                fill="white" stroke="${slice.color}" stroke-width="3" 
+                class="handle-outer" 
+                style="cursor: grab; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />
+        <circle cx="${handleX}" cy="${handleY}" r="4" 
+                fill="${slice.color}" class="handle-inner" />
+      </g>
+    `;
+    
+    currentAngle += anglePerSlice;
+  });
+  
+  // Add curved text labels
+  if (showCurvedLabels) {
+    slices.forEach((slice, index) => {
+      svgContent += `
+        <text class="slice-label" style="font-size: 12px; font-weight: 500; fill: #333;">
+          <textPath href="#textPath${index}" startOffset="50%" text-anchor="middle">
+            ${slice.name}
+          </textPath>
+        </text>
+      `;
+    });
+  }
+  
+  // Add outer circle
+  svgContent += `
+    <circle cx="${center}" cy="${center}" r="${outerRadius}" 
+            fill="none" stroke="var(--pie-circumference)" 
+            stroke-width="${showCurvedLabels ? 2 : 1}" class="pie-outer-border" />
+  `;
+  
+  svgContent += '</svg>';
+  
+  return svgContent;
+}
+
+// Function to create text path for curved labels
+function createTextPath(centerX, centerY, radius, startAngle, endAngle, index) {
+  // Add padding to prevent text from going too close to slice edges
+  const padding = 3;
+  const textStartAngle = startAngle + padding;
+  const textEndAngle = endAngle - padding;
+  
+  // Convert to radians
+  const startRad = textStartAngle * Math.PI / 180;
+  const endRad = textEndAngle * Math.PI / 180;
+  
+  // Calculate arc points using separate x and y centers
+  const startX = centerX + radius * Math.cos(startRad);
+  const startY = centerY + radius * Math.sin(startRad);
+  const endX = centerX + radius * Math.cos(endRad);
+  const endY = centerY + radius * Math.sin(endRad);
+  
+  // Determine if this is a large arc
+  const arcAngle = textEndAngle - textStartAngle;
+  const largeArc = arcAngle > 180 ? 1 : 0;
+  
+  // Check if text would be upside down - adjust for your coordinate system
+  const midAngle = (startAngle + endAngle) / 2;
+  // Since start_angle can be negative (starts at -90), normalize properly
+  const normalizedMid = ((midAngle % 360) + 360) % 360;
+  const upsideDown = normalizedMid > 135 && normalizedMid < 225;
+  
+  // Create path - reverse direction for upside-down text
+  let pathData;
+  if (upsideDown) {
+    pathData = `M ${endX},${endY} A ${radius},${radius} 0 ${largeArc},0 ${startX},${startY}`;
+  } else {
+    pathData = `M ${startX},${startY} A ${radius},${radius} 0 ${largeArc},1 ${endX},${endY}`;
+  }
+  
+  return `<path id="textPath${index}" d="${pathData}" fill="none" stroke="none" />`;
+}
+
+// Function to initialize slice hover and click functionality
+function initializeSliceInteractions() {
+  console.log('Initializing slice interactions...');
+  
+  // Target the slice-link elements (which wrap the slice-header-container)
+  const sliceLinks = document.querySelectorAll('.slice-link');
+  
+  console.log('Found slice links:', sliceLinks.length);
+  
+  sliceLinks.forEach(function(sliceLink) {
+    // Check if already initialized
+    if (sliceLink.hasAttribute('data-slice-listeners-attached')) {
+      console.log('Slice link already has listeners attached, skipping');
+      return;
+    }
+    
+    // Mark as initialized
+    sliceLink.setAttribute('data-slice-listeners-attached', 'true');
+    
+    // Find the slice-header-container inside this link
+    const headerContainer = sliceLink.querySelector('.slice-header-container');
+    
+    if (headerContainer) {
+      // Add hover effects using direct style properties
+      sliceLink.addEventListener('mouseenter', function() {
+        console.log('Mouseenter event triggered on slice link');
+        headerContainer.style.border = '1px solid var(--focus)';
+        headerContainer.style.backgroundColor = 'rgba(0, 124, 186, 0.05)';
+        headerContainer.style.cursor = 'pointer';
+      });
+      
+      sliceLink.addEventListener('mouseleave', function() {
+        console.log('Mouseleave event triggered on slice link');
+        headerContainer.style.border = '1px solid transparent';
+        headerContainer.style.backgroundColor = '';
+        headerContainer.style.cursor = '';
+      });
+      
+      sliceLink.addEventListener('click', function(e) {
+        console.log('Click event triggered on slice link');
+        // Let the default link behavior handle navigation
+      });
+      
+      console.log('Added hover effects to slice link');
+    } else {
+      console.log('No header container found inside slice link');
+    }
+  });
+  
+  console.log('Slice interactions initialized for', sliceLinks.length, 'slice links');
+}
+
+// Function to initialize pie name editing functionality
+function initializePieNameEditing() {
+  // Handle contenteditable pie name - be more specific and flexible
+  const pieNameElement = document.querySelector('#pie-name-input');
+  
+  if (pieNameElement && !pieNameElement.hasAttribute('data-listeners-attached')) {
+    pieNameElement.setAttribute('data-listeners-attached', 'true');
+    let originalValue = pieNameElement.dataset.original || pieNameElement.innerText.trim();
+    
+    // Auto-focus and show tooltip on page load
+    setTimeout(() => {
+      pieNameElement.focus();
+      const tooltipContainer = pieNameElement.closest('.tooltip-container');
+      if (tooltipContainer) {
+        tooltipContainer.classList.add('show-tooltip');
+        // Hide tooltip after 3 seconds
+        setTimeout(() => {
+          tooltipContainer.classList.remove('show-tooltip');
+        }, 3000);
+      }
+      
+      // Select all text for easy editing
+      const range = document.createRange();
+      range.selectNodeContents(pieNameElement);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }, 100);
+    
+    // Handle focus
+    function handleFocus() {
+      this.classList.add('editing');
+    }
+    
+    // Handle blur - save changes and create new pie
+    function handleBlur() {
+      this.classList.remove('editing');
+      let newValue = this.innerText.trim();
+      
+      // Hide tooltip when editing is done
+      const tooltipContainer = this.closest('.tooltip-container');
+      if (tooltipContainer) {
+        tooltipContainer.classList.remove('show-tooltip');
+      }
+      
+      if (newValue && newValue !== originalValue && newValue !== 'Life Balance Preview') {
+        createNewPie(newValue);
+      } else if (newValue === '') {
+        // Don't allow empty pie name - restore original
+        this.innerText = originalValue;
+      }
+    }
+    
+    // Handle Enter key
+    function handleKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.blur();
+      }
+      
+      if (e.key === 'Escape') {
+        this.innerText = originalValue;
+        this.blur();
+      }
+    }
+    
+    // Add event listeners
+    pieNameElement.addEventListener('focus', handleFocus);
+    pieNameElement.addEventListener('blur', handleBlur);
+    pieNameElement.addEventListener('keydown', handleKeydown);
+  }
+}
+
+// Function to create a new pie with fabricated data
+function createNewPie(pieName) {
+  console.log('Creating new pie with name:', pieName);
+  
+  // Show loading indicator
+  const pieNameElement = document.querySelector('#pie-name-input');
+  if (pieNameElement) {
+    pieNameElement.style.opacity = '0.6';
+    pieNameElement.contentEditable = 'false';
+  }
+  
+  // Prepare the pie data with fabricated slices
+  const pieData = {
+    name: pieName,
+    slices_attributes: [
+      {
+        name: "Health",
+        color: "#ff6b6b",
+        percentage: 25,
+        elements_attributes: [
+          { name: "Exercise 30 min daily", objective: "Complete a 30-minute workout routine every day", completed: false },
+          { name: "Drink 8 glasses of water", objective: "Consume at least 64 ounces of water daily", completed: true },
+          { name: "Get 8 hours of sleep", objective: "Maintain consistent sleep schedule with 8 hours nightly", completed: false },
+          { name: "Eat 5 servings vegetables", objective: "Include 5 servings of vegetables in daily meals", completed: false }
+        ]
+      },
+      {
+        name: "Relationships",
+        color: "#4ecdc4",
+        percentage: 20,
+        elements_attributes: [
+          { name: "Call family weekly", objective: "Schedule regular weekly calls with family members", completed: true },
+          { name: "Date night monthly", objective: "Plan monthly date activities with partner", completed: false },
+          { name: "Friend meetup bi-weekly", objective: "Organize social gatherings with friends every two weeks", completed: false }
+        ]
+      },
+      {
+        name: "Career Growth",
+        color: "#45b7d1",
+        percentage: 30,
+        elements_attributes: [
+          { name: "Learn new skill", objective: "Complete online course in relevant professional skill", completed: false },
+          { name: "Network monthly", objective: "Attend one networking event per month", completed: true },
+          { name: "Update resume", objective: "Revise and modernize resume with recent accomplishments", completed: false },
+          { name: "Seek mentorship", objective: "Connect with industry mentor for career guidance", completed: false }
+        ]
+      },
+      {
+        name: "Personal Interests",
+        color: "#f7dc6f",
+        percentage: 15,
+        elements_attributes: [
+          { name: "Read 2 books monthly", objective: "Complete reading two books each month", completed: false },
+          { name: "Learn guitar", objective: "Practice guitar for 30 minutes daily", completed: true },
+          { name: "Photography project", objective: "Complete monthly photography challenge", completed: false }
+        ]
+      },
+      {
+        name: "Financial Health",
+        color: "#bb8fce",
+        percentage: 10,
+        elements_attributes: [
+          { name: "Budget tracking", objective: "Review and update monthly budget", completed: true },
+          { name: "Emergency fund", objective: "Save $500 monthly for emergency fund", completed: false },
+          { name: "Investment research", objective: "Research and evaluate investment options", completed: false }
+        ]
+      }
+    ]
+  };
+  
+  // Create form data
+  const formData = new FormData();
+  
+  // Add pie name
+  formData.append('pie[name]', pieData.name);
+  
+  // Add slices and their elements
+  pieData.slices_attributes.forEach((slice, sliceIndex) => {
+    formData.append(`pie[slices_attributes][${sliceIndex}][name]`, slice.name);
+    formData.append(`pie[slices_attributes][${sliceIndex}][color]`, slice.color);
+    formData.append(`pie[slices_attributes][${sliceIndex}][percentage]`, slice.percentage);
+    
+    slice.elements_attributes.forEach((element, elementIndex) => {
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][name]`, element.name);
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][objective]`, element.objective);
+      formData.append(`pie[slices_attributes][${sliceIndex}][elements_attributes][${elementIndex}][completed]`, element.completed);
+    });
+  });
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  // Submit the form
+  fetch('/pies', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers.get('content-type'));
+    
+    if (response.ok) {
+      return response.json();
+    } else {
+      return response.text().then(text => {
+        console.log('Error response body:', text);
+        throw new Error('Network response was not ok: ' + response.status + ' - ' + text);
+      });
+    }
+  })
+  .then(data => {
+    console.log('Pie created successfully:', data);
+    // Navigate to the new pie's show page
+    if (data.id) {
+      window.location.href = `/pies/${data.id}`;
+    } else {
+      // Fallback: redirect to pies index
+      window.location.href = '/pies';
+    }
+  })
+  .catch(error => {
+    console.error('Error creating pie:', error);
+    alert('Failed to create Focus Wheel. Please try again. Error: ' + error.message);
+    
+    // Restore the input
+    if (pieNameElement) {
+      pieNameElement.style.opacity = '1';
+      pieNameElement.contentEditable = 'true';
+      pieNameElement.focus();
+    }
+  });
+}
+
+function savePieField(element, newValue) {
+  const fieldName = element.dataset.field || 'name';
+  
+  // Get pie ID from URL or data attribute
+  let pieId = element.dataset.pieId;
+  if (!pieId) {
+    const urlParts = window.location.pathname.split('/');
+    const pieIndex = urlParts.indexOf('pies');
+    if (pieIndex !== -1 && urlParts[pieIndex + 1]) {
+      pieId = urlParts[pieIndex + 1];
+    }
+  }
+  
+  if (!pieId) {
+    alert('Could not save - missing pie ID');
+    return;
+  }
+  
+  const url = '/pies/' + pieId;
+  const formData = new FormData();
+  
+  formData.append('_method', 'PATCH');
+  formData.append('pie[' + fieldName + ']', newValue);
+  
+  // Add CSRF token
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (csrfToken) {
+    formData.append('authenticity_token', csrfToken.getAttribute('content'));
+  }
+  
+  // Show saving indicator
+  element.style.opacity = '0.6';
+  
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(function(response) {
+    if (response.ok) {
+      // Update the original value for future comparisons
+      element.dataset.original = newValue;
+      
+      // Update the page title if it matches the pie name
+      if (document.title.includes('Pie') || document.title.includes('Balanced')) {
+        document.title = newValue + ' - Radial Pie App';
+      }
+      
+      return response.text();
+    }
+    throw new Error('Network response was not ok: ' + response.status);
+  })
+  .catch(function(error) {
+    alert('Failed to save pie name. Please try again.');
+    // Restore original value on error
+    element.innerText = element.dataset.original || originalValue;
+  })
+  .finally(function() {
+    element.style.opacity = '1';
+  });
+}
+
+// Function to initialize pie chart slice interactivity
+function initializePieChart() {
+  console.log('Initializing pie chart interactions...');
+  
+  const pieChart = document.getElementById('pie-chart');
+  if (!pieChart) {
+    console.log('No pie chart element found');
+    return;
+  }
+  
+  console.log('Pie chart element found, looking for SVG elements...');
+  
+  // Find all SVG elements in the pie chart
+  const svgElements = pieChart.querySelectorAll('svg');
+  console.log('Found SVG elements:', svgElements.length);
+  
+  if (svgElements.length === 0) {
+    console.log('No SVG elements found, trying again in 500ms...');
+    setTimeout(initializePieChart, 500);
+    return;
+  }
+  
+  svgElements.forEach(function(svg, svgIndex) {
+    console.log('Processing SVG element', svgIndex);
+    
+    // Find all path elements (pie slices) specifically
+    const pathElements = svg.querySelectorAll('path');
+    console.log('Found path elements (pie slices):', pathElements.length);
+    
+    pathElements.forEach(function(path, pathIndex) {
+      // Check if path already has event listeners
+      if (path.hasAttribute('data-pie-listeners-attached')) {
+        console.log('Path', pathIndex, 'already has listeners, skipping');
+        return;
+      }
+      
+      // Mark as having listeners attached
+      path.setAttribute('data-pie-listeners-attached', 'true');
+      
+      console.log('Adding listeners to path element', pathIndex);
+      
+      // Skip hover effects since we have interactive sliders
+      // The drag handles provide the main interaction
+      
+      // Add click functionality
+      path.addEventListener('click', function(e) {
+        console.log('🎯 PATH CLICKED:', pathIndex);
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Get all slice containers and their details for debugging
+        const sliceContainers = document.querySelectorAll('.slice-container');
+        console.log('📊 Available slice containers:', sliceContainers.length);
+        
+        // Debug: show all slice containers and their slice names
+        sliceContainers.forEach((container, index) => {
+          const sliceLink = container.querySelector('.slice-link');
+          const sliceName = sliceLink ? sliceLink.textContent.trim().split('\n')[0] : 'No link found';
+          console.log(`  Container ${index}: "${sliceName}" -> ${sliceLink ? sliceLink.href : 'no href'}`);
+        });
+        
+        // Debug: show all SVG paths and see if we can get any identifying info
+        const allPaths = Array.from(document.querySelectorAll('#pie-chart svg path'));
+        console.log('🥧 All SVG paths:', allPaths.length);
+        allPaths.forEach((p, index) => {
+          const pathData = p.getAttribute('d');
+          console.log(`  Path ${index}: d="${pathData ? pathData.substring(0, 50) + '...' : 'no d attribute'}"`);
+        });
+        
+        // Try multiple strategies to find the correct slice
+        let targetLink = null;
+        
+        // Strategy 1: Direct index matching
+        console.log('🎯 Trying direct index mapping - clicked path:', pathIndex, 'total containers:', sliceContainers.length);
+        if (sliceContainers[pathIndex]) {
+          const sliceLink = sliceContainers[pathIndex].querySelector('.slice-link');
+          if (sliceLink) {
+            console.log('✅ Found slice link by direct index:', sliceLink.href);
+            targetLink = sliceLink;
+          }
+        }
+        
+        // Strategy 2: Try reverse index (sometimes SVG is in reverse order)
+        if (!targetLink) {
+          const reverseIndex = sliceContainers.length - 1 - pathIndex;
+          console.log('🔄 Trying reverse index mapping:', reverseIndex);
+          if (sliceContainers[reverseIndex]) {
+            const sliceLink = sliceContainers[reverseIndex].querySelector('.slice-link');
+            if (sliceLink) {
+              console.log('✅ Found slice link by reverse index:', sliceLink.href);
+              targetLink = sliceLink;
+            }
+          }
+        }
+        
+        // Strategy 3: For now, let's cycle through all slices based on path index
+        if (!targetLink && sliceContainers.length > 0) {
+          const adjustedIndex = pathIndex % sliceContainers.length;
+          console.log('🔄 Using modulo adjustment:', adjustedIndex);
+          const sliceLink = sliceContainers[adjustedIndex].querySelector('.slice-link');
+          if (sliceLink) {
+            console.log('✅ Found slice link by adjusted index:', sliceLink.href);
+            targetLink = sliceLink;
+          }
+        }
+        
+        if (targetLink) {
+          console.log('🚀 Navigating to:', targetLink.href);
+          window.location.href = targetLink.href;
+        } else {
+          console.log('❌ Could not find any slice links to navigate to');
+        }
+      });
+      
+      // Test if the element is actually interactive by adding a temporary visual change
+      path.style.transition = 'all 0.2s ease';
+      
+      console.log('✅ Successfully added listeners to path', pathIndex);
+    });
+    
+    console.log('Finished processing SVG', svgIndex, '- added listeners to', pathElements.length, 'paths');
+  });
+  
+  console.log('🎉 Pie chart initialization complete');
+  
+  // Initialize drag functionality for interactive sliders
+  initializeDragHandles();
+}
+
+// Function to initialize drag functionality for slider handles
+function initializeDragHandles() {
+  console.log('Initializing drag handles...');
+  
+  let isDragging = false;
+  let currentHandle = null;
+  
+  const center = 175; // Half of 350px size
+  const outerRadius = 155; // center - 20
+  
+  // Get current slice data from the originalSlices array
+  const checkedCategories = [];
+  document.querySelectorAll('.category-checkbox input[type="checkbox"]:checked').forEach(checkbox => {
+    checkedCategories.push(checkbox.value);
+  });
+  
+  const currentSlices = originalSlices.filter(slice => 
+    checkedCategories.includes(slice.key)
+  );
+  
+  const sliceAngle = 360.0 / currentSlices.length;
+
+  // Clean up any existing event listeners
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', handleMouseUp);
+
+  // Initialize drag functionality for each handle
+  document.querySelectorAll('.slider-handle').forEach(function(handle) {
+    // Remove existing listeners if any
+    const newHandle = handle.cloneNode(true);
+    handle.parentNode.replaceChild(newHandle, handle);
+    
+    const sliceIndex = parseInt(newHandle.dataset.sliceIndex);
+
+    newHandle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isDragging = true;
+      currentHandle = newHandle;
+      newHandle.style.cursor = 'grabbing';
+
+      // Add global mouse events
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+  });
+
+  function handleMouseMove(e) {
+    if (!isDragging || !currentHandle) return;
+
+    const sliceIndex = parseInt(currentHandle.dataset.sliceIndex);
+    const rect = document.querySelector('.radial-pie-chart').getBoundingClientRect();
+
+    // Get mouse position relative to SVG
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Convert to SVG coordinates (account for viewBox if any)
+    const svgMouseX = (mouseX / rect.width) * 350;
+    const svgMouseY = (mouseY / rect.height) * 350;
+
+    // Calculate distance from center
+    const deltaX = svgMouseX - center;
+    const deltaY = svgMouseY - center;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    // Convert to percentage (0-100)
+    let percentage = Math.round((distance / outerRadius) * 100);
+
+    // Snap to 10% increments
+    percentage = Math.round(percentage / 10) * 10;
+
+    // Clamp between 0 and 100
+    percentage = Math.max(0, Math.min(100, percentage));
+
+    // Update the slice data
+    currentSlices[sliceIndex].percentage = percentage;
+
+    // Update the visual representation
+    updateSliceVisual(sliceIndex, percentage);
+    updateHandlePosition(sliceIndex, percentage);
+  }
+
+  function handleMouseUp() {
+    if (currentHandle) {
+      currentHandle.style.cursor = 'grab';
+      currentHandle = null;
+    }
+    isDragging = false;
+
+    // Remove global mouse events
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }
+
+  function updateSliceVisual(sliceIndex, percentage) {
+    const slice = document.querySelector('.pie-slice[data-slice-index="' + sliceIndex + '"]');
+    if (!slice) return;
+
+    // Calculate slice angles
+    const startAngle = sliceIndex * sliceAngle - 90;
+    const currentRadius = outerRadius * (percentage / 100.0);
+
+    // Recalculate path
+    const startRad = startAngle * Math.PI / 180;
+    const endRad = (startAngle + sliceAngle) * Math.PI / 180;
+
+    const x2 = center + currentRadius * Math.cos(startRad);
+    const y2 = center + currentRadius * Math.sin(startRad);
+    const x3 = center + currentRadius * Math.cos(endRad);
+    const y3 = center + currentRadius * Math.sin(endRad);
+
+    const largeArc = sliceAngle > 180 ? 1 : 0;
+    const pathData = `M ${center},${center} L ${x2},${y2} A ${currentRadius},${currentRadius} 0 ${largeArc},1 ${x3},${y3} Z`;
+
+    slice.setAttribute('d', pathData);
+    slice.setAttribute('data-percentage', percentage);
+  }
+
+  function updateHandlePosition(sliceIndex, percentage) {
+    const handle = document.querySelector('.slider-handle[data-slice-index="' + sliceIndex + '"]');
+    if (!handle) return;
+
+    // Calculate new handle position
+    const startAngle = sliceIndex * sliceAngle - 90;
+    const midAngle = startAngle + (sliceAngle / 2);
+    const currentRadius = outerRadius * (percentage / 100.0);
+    const midAngleRad = midAngle * Math.PI / 180;
+
+    const handleX = center + currentRadius * Math.cos(midAngleRad);
+    const handleY = center + currentRadius * Math.sin(midAngleRad);
+
+    // Update both circles in the handle
+    const outerCircle = handle.querySelector('.handle-outer');
+    const innerCircle = handle.querySelector('.handle-inner');
+
+    if (outerCircle) {
+      outerCircle.setAttribute('cx', handleX);
+      outerCircle.setAttribute('cy', handleY);
+    }
+    if (innerCircle) {
+      innerCircle.setAttribute('cx', handleX);
+      innerCircle.setAttribute('cy', handleY);
+    }
+  }
+  
+  console.log('Initialized drag handles for', currentSlices.length, 'slices');
+}
+
+// Initialize immediately if DOM is already ready
+if (document.readyState === 'loading') {
+  console.log('Document still loading, waiting for DOMContentLoaded');
+} else {
+  console.log('Document ready, initializing immediately');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+  initializeCategorySelection(); // Set first 8 as checked
+  updateWheelCategories(); // Initialize with selected categories
+}
+
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOMContentLoaded event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+  initializeCategorySelection(); // Set first 8 as checked
+  updateWheelCategories(); // Initialize with selected categories
+});
+
+// Initialize on Turbo events
+document.addEventListener('turbo:load', function() {
+  console.log('turbo:load event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+  initializeCategorySelection(); // Set first 8 as checked
+  updateWheelCategories();
+});
+
+document.addEventListener('turbo:render', function() {
+  console.log('turbo:render event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+  initializeCategorySelection(); // Set first 8 as checked
+  updateWheelCategories();
+});
+
+// Also try turbo:frame-load in case it's in a frame
+document.addEventListener('turbo:frame-load', function() {
+  console.log('turbo:frame-load event fired');
+  initializePieNameEditing();
+  initializePieChart();
+  initializeSliceInteractions();
+  initializeCategorySelection(); // Set first 8 as checked
+  updateWheelCategories();
+});
+
+// ============ Modal functionality ============
+function openColorsModal() {
+  const modal = document.getElementById('colors-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
+}
+
+function closeColorsModal() {
+  const modal = document.getElementById('colors-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function updateColorPreview(colorInput) {
+  // Update the visual color square when color picker changes
+  const colorSquare = colorInput.nextElementSibling;
+  if (colorSquare) {
+    colorSquare.style.backgroundColor = colorInput.value;
+  }
+}
+
+function cancelColorChanges() {
+  // Reset all colors to their original values
+  document.querySelectorAll('.color-picker').forEach(function(input) {
+    const originalColor = input.dataset.originalColor;
+    input.value = originalColor;
+    const colorSquare = input.nextElementSibling;
+    if (colorSquare) {
+      colorSquare.style.backgroundColor = originalColor;
+    }
+  });
+  closeColorsModal();
+}
+
+function saveColors() {
+  const colorChanges = [];
+  
+  // Collect all color changes
+  document.querySelectorAll('.color-picker').forEach(function(input) {
+    const colorItem = input.closest('.color-item');
+    if (colorItem) {
+      const sliceId = colorItem.dataset.sliceId;
+      const newColor = input.value;
+      const originalColor = input.dataset.originalColor;
+      
+      if (newColor !== originalColor) {
+        colorChanges.push({
+          sliceId: sliceId,
+          color: newColor
+        });
+      }
+    }
+  });
+  
+  if (colorChanges.length === 0) {
+    closeColorsModal();
+    return;
+  }
+  
+  // Get pie ID for color saving
+  let pieId;
+  const urlParts = window.location.pathname.split('/');
+  const pieIndex = urlParts.indexOf('pies');
+  if (pieIndex !== -1 && urlParts[pieIndex + 1]) {
+    pieId = urlParts[pieIndex + 1];
+  }
+  
+  if (!pieId) {
+    alert('Could not save colors - missing pie ID');
+    return;
+  }
+  
+  // Save colors via AJAX
+  Promise.all(colorChanges.map(function(change) {
+    const formData = new FormData();
+    formData.append('_method', 'PATCH');
+    formData.append('slice[color]', change.color);
+    
+    // Add CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+      formData.append('authenticity_token', csrfToken.getAttribute('content'));
+    }
+    
+    return fetch('/pies/' + pieId + '/slices/' + change.sliceId, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+  }))
+  .then(function() {
+    // Update original colors for future comparisons
+    document.querySelectorAll('.color-picker').forEach(function(input) {
+      input.dataset.originalColor = input.value;
+    });
+    
+    // Refresh the page to show updated colors in the pie chart
+    window.location.reload();
+  })
+  .catch(function(error) {
+    alert('Failed to save colors. Please try again.');
+  });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'colors-modal') {
+    closeColorsModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('colors-modal');
+    if (modal && modal.style.display === 'flex') {
+      cancelColorChanges();
+    }
+  }
+});
+</script>

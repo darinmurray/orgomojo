@@ -1,0 +1,177 @@
+<style>
+  .landing-page {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  }
+
+  .landing-page h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+
+  .login-background {
+    min-height: 100vh;
+    width: 100vw;
+    background: url('https://images.unsplash.com/photo-1552508744-1696d4464960?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 60px;
+    width: 100%;
+    max-width: 400px;
+    padding: 0 20px;
+  }
+
+  .login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px 24px;
+    background-color: white;
+    color: #3c4043;
+    text-decoration: none;
+    border-radius: 50px;
+    border: 1px solid #dadce0;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 24px;
+  }
+
+  .login-btn:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: #3c4043;
+  }
+
+  .login-btn:active {
+    background-color: #f1f3f4;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-btn-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-btn-text {
+    flex: 1;
+    text-align: left;
+  }
+
+  /* Disabled state for placeholder buttons */
+  .login-btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .google-icon {
+    background-image: url(https://auth-cdn.oaistatic.com/assets/google-logo-NePEveMl.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .microsoft-icon {
+    background-image: url(https://auth-cdn.oaistatic.com/assets/microsoft-logo-BUXxQnXH.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .apple-icon {
+    background-image: url(https://auth-cdn.oaistatic.com/assets/apple-logo-vertically-balanced-rwLdlt8P.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .phone-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Responsive design */
+  @media (max-width: 480px) {
+    .login-container {
+      max-width: 350px;
+      padding: 0 16px;
+    }
+    
+    .login-btn {
+      padding: 14px 20px;
+      font-size: 15px;
+    }
+  }
+</style>
+
+<div class="login-background">
+  <div class="landing-page">
+    <div class="login-container">
+      <!-- Google Sign In (Active) -->
+      <%= link_to "/auth/google_oauth2", method: :post, class: "login-btn" do %>
+        <div class="login-btn-icon">
+          <div class="google-icon"></div>
+        </div>
+        <div class="login-btn-text">Continue with Google</div>
+      <% end %>
+
+      <!-- Microsoft Sign In (Placeholder) -->
+      <div class="login-btn disabled">
+        <div class="login-btn-icon">
+          <div class="microsoft-icon"></div>
+        </div>
+        <div class="login-btn-text">Continue with Microsoft Account</div>
+      </div>
+
+      <!-- Apple Sign In (Placeholder) -->
+      <div class="login-btn disabled">
+        <div class="login-btn-icon">
+          <div class="apple-icon"></div>
+        </div>
+        <div class="login-btn-text">Continue with Apple</div>
+      </div>
+
+      <!-- Phone Sign In (Placeholder) -->
+      <div class="login-btn disabled">
+        <div class="login-btn-icon">
+          <div class="phone-icon">📞</div>
+        </div>
+        <div class="login-btn-text">Continue with phone</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+/* https://plus.unsplash.com/premium_photo-1673002094158-7138ef263807?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */
+
+/* https://plus.unsplash.com/premium_photo-1674834298045-e405bc99076b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */
+

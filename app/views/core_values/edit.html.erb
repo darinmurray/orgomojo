@@ -1,0 +1,136 @@
+<% content_for :title, "Edit Core Value" %>
+
+<div class="page-container">
+  <div class="page-header">
+    <div class="breadcrumb" style="margin-bottom: 16px;">
+      <%= link_to "Core Values", core_values_path, style: "color: #007cba; text-decoration: none;" %> 
+      <span style="color: #ccc; margin: 0 8px;">></span>
+      <%= link_to @core_value.name, core_value_path(@core_value), style: "color: #007cba; text-decoration: none;" %>
+      <span style="color: #ccc; margin: 0 8px;">></span>
+      <span style="color: #666;">Edit</span>
+    </div>
+    
+    <h1 style="margin: 0; color: #333; font-size: 2.5em;">Edit Core Value</h1>
+    <p class="page-description" style="color: #666; font-size: 1.1em; margin: 8px 0 0 0; line-height: 1.4;">
+      Update your core value details and examples.
+    </p>
+  </div>
+
+  <div class="form-container" style="background: white; border-radius: 12px; padding: 32px; margin-top: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e0e7ef;">
+    <%= form_with model: @core_value, local: true, html: { class: "core-value-form" } do |form| %>
+      <% if @core_value.errors.any? %>
+        <div class="error-messages" style="background: #f8d7da; color: #721c24; padding: 16px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #f5c6cb;">
+          <h4 style="margin: 0 0 8px 0;">Please fix the following errors:</h4>
+          <ul style="margin: 0; padding-left: 20px;">
+            <% @core_value.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <%= form.label :name, style: "display: block; margin-bottom: 8px; font-weight: 600; color: #333;" %>
+        <%= form.text_field :name, 
+            placeholder: "e.g., Integrity, Compassion, Growth",
+            style: "width: 100%; padding: 12px 16px; border: 2px solid #e0e7ef; border-radius: 8px; font-size: 1em; transition: border-color 0.2s;",
+            onfocus: "this.style.borderColor='#007cba'",
+            onblur: "this.style.borderColor='#e0e7ef'" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <%= form.label :description, style: "display: block; margin-bottom: 8px; font-weight: 600; color: #333;" %>
+        <%= form.text_area :description, 
+            placeholder: "Describe what this core value means to you and how it influences your life...",
+            rows: 4,
+            style: "width: 100%; padding: 12px 16px; border: 2px solid #e0e7ef; border-radius: 8px; font-size: 1em; resize: vertical; transition: border-color 0.2s; font-family: inherit;",
+            onfocus: "this.style.borderColor='#007cba'",
+            onblur: "this.style.borderColor='#e0e7ef'" %>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 32px;">
+        <%= form.label :examples, "Examples (one per line)", style: "display: block; margin-bottom: 8px; font-weight: 600; color: #333;" %>
+        <%= text_area_tag "core_value[examples_text]", 
+            (@core_value.examples || []).join("\n"),
+            placeholder: "Being honest even when it's difficult\nStanding up for what's right\nKeeping promises and commitments",
+            rows: 6,
+            style: "width: 100%; padding: 12px 16px; border: 2px solid #e0e7ef; border-radius: 8px; font-size: 1em; resize: vertical; transition: border-color 0.2s; font-family: inherit;",
+            onfocus: "this.style.borderColor='#007cba'",
+            onblur: "this.style.borderColor='#e0e7ef'" %>
+        <small style="color: #666; font-size: 0.9em; margin-top: 4px; display: block;">
+          Each line will be saved as a separate example. Leave blank to remove all examples.
+        </small>
+      </div>
+
+      <div class="form-actions" style="display: flex; gap: 12px; justify-content: flex-end;">
+        <%= link_to "Cancel", @core_value, 
+            style: "background: #6c757d; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; transition: all 0.2s;",
+            onmouseover: "this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(108,117,125,0.3)'",
+            onmouseout: "this.style.transform='translateY(0)'; this.style.boxShadow='none'" %>
+        <%= form.submit "Update Core Value", 
+            style: "background: #007cba; color: white; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 1em; transition: all 0.2s;",
+            onmouseover: "this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0,124,186,0.3)'",
+            onmouseout: "this.style.transform='translateY(0)'; this.style.boxShadow='none'" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .page-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  input:focus, textarea:focus {
+    outline: none;
+  }
+  
+  @media (max-width: 768px) {
+    .page-container {
+      padding: 16px;
+    }
+    
+    .form-container {
+      padding: 24px !important;
+    }
+    
+    .form-actions {
+      flex-direction: column !important;
+    }
+    
+    .form-actions a, .form-actions input {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle the examples text area conversion
+  const form = document.querySelector('.core-value-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      const examplesTextArea = document.querySelector('textarea[name="core_value[examples_text]"]');
+      const examplesText = examplesTextArea.value.trim();
+      
+      // Remove the examples_text field before submission
+      examplesTextArea.remove();
+      
+      // Convert lines to individual hidden inputs for the examples array
+      if (examplesText) {
+        const lines = examplesText.split('\n').filter(line => line.trim() !== '');
+        lines.forEach(function(line) {
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'core_value[examples][]';
+          hiddenInput.value = line.trim();
+          form.appendChild(hiddenInput);
+        });
+      }
+    });
+  }
+});
+</script>

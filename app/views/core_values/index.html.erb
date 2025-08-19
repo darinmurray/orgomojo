@@ -1,0 +1,2273 @@
+<% content_for :title, "My Core Values" %>
+
+<div class="page-container">
+  <!-- Flash Messages -->
+  <% if notice %>
+    <div class="flash-notice">
+      <%= notice %>
+    </div>
+  <% end %>
+  
+  <% if alert %>
+    <div class="flash-alert">
+      <%= alert %>
+    </div>
+  <% end %>
+
+  <div class="page-header">
+    <h1> <span class="material-symbols-outlined">explore</span>Core Values</h1>
+    <span class="page-description">
+      Fundamental principles that guide my decisions and actions. 
+    </span>
+  </div>
+
+  <!-- Browse All Core Values Grid -->
+  <div class="main-content-layout">
+    <!-- Left Side: User Values Card -->
+    <div class="user-values-card">
+      <div class="card-header">
+        <h3 class="card-title">My Core Values</h3>
+      </div>
+      <div class="card-content">
+        <% if @user_core_values.any? %>
+          <ul class="values-list sortable-list">
+            <% @user_core_values.each_with_index do |user_core_value, index| %>
+              <li class="value-item" 
+                  draggable="true"
+                  data-user-core-value-id="<%= user_core_value.id %>" 
+                  data-core-value-id="<%= user_core_value.core_value.id %>"
+                  data-importance-level="<%= index + 1 %>">
+                <div class="value-item-header">
+                  <span class="drag-handle">⋮⋮</span>
+                  <span class="checkmark">✓</span>
+                  <span class="value-name clickable" 
+                        onclick="toggleValueDetails(this)"
+                        data-description="<%= user_core_value.core_value.description %>"
+                        data-examples="<%= user_core_value.core_value.examples.join('|') if user_core_value.core_value.examples.any? %>">
+                    <%= user_core_value.core_value.name %>
+                  </span>
+                  <span class="remove-icon" title="Remove from your values" onclick="removeValueFromCard(event, this)">
+                    <span class="material-symbols-outlined">remove_circle</span>
+                  </span>
+                </div>
+                <div class="value-details" style="display: none;">
+                  <% if user_core_value.core_value.description.present? %>
+                    <div class="details-description">
+                      <%= user_core_value.core_value.description %>
+                    </div>
+                  <% end %>
+                  <% if user_core_value.core_value.examples.any? %>
+                    <div class="details-examples">
+                      <ul>
+                        <% user_core_value.core_value.examples.each do |example| %>
+                          <li><%= example %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="empty-state">No values selected yet. Browse and select values that resonate with you.</p>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Right Side: Values Grid -->
+    <div class="browse-values-grid">
+
+
+    <div class="values-grid-container">
+      <% @all_core_values.each do |core_value| %>
+        <% is_already_added = @user_core_values.any? { |ucv| ucv.core_value_id == core_value.id } %>
+        <% unless is_already_added %>
+          <div class="browse-value-item" 
+               data-value-id="<%= core_value.id %>"
+               data-value-name="<%= core_value.name %>"
+               data-value-description="<%= core_value.description %>"
+               data-value-examples="<%= core_value.examples.join('|') if core_value.examples.any? %>"
+               onclick="selectCoreValue(this)">
+            <span class="value-name"><%= core_value.name %></span>
+            <span class="add-value-indicator" title="Add to your values" onclick="quickAddValueFromGrid(event, this)">
+              <span class="material-symbols-outlined">add_circle</span>
+            </span>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    
+    <!-- Core Value Details Section (initially hidden) -->
+    <div id="core-value-details">
+      <div class="details-header">
+        <h4 id="selected-value-name"></h4>
+        <button onclick="clearSelection()" class="close-btn">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <div id="selected-value-description"></div>
+      
+      <div id="selected-value-examples">
+        <h5 class="examples-title">Examples:</h5>
+        <ul id="examples-list"></ul>
+      </div>
+      
+      <div id="add-this-value-section">
+        <button id="quick-add-btn" onclick="quickAddValue()">
+          Add This Value to My Collection
+        </button>
+      </div>
+    </div>
+    </div> <!-- Close browse-values-grid -->
+  </div> <!-- Close main-content-layout -->
+
+
+<!-- Quick Search Section -->
+<div class="quick-search-section">
+    <div class="search-input-wrapper">
+        <label for="quick-search-input" class="search-label">What about…</label>
+        <input type="text" 
+                     id="quick-search-input" 
+                     placeholder="Type to find values (e.g., honesty, creativity, family...)"
+                     class="quick-search-input"
+                     autocomplete="off">
+        
+        <!-- AI Analysis Result -->
+        <div id="core-value-analysis" class="analysis-result-container" style="display: none;">
+          <div id="analysis-content">
+            <!-- Analysis content will be inserted here -->
+          </div>
+          <div id="add-value-button-container" style="display: none;">
+            <button id="add-new-value-btn" class="add-new-value-btn" onclick="createNewCoreValue()">
+              <span class="material-symbols-outlined">add_circle</span>
+              Add This Value
+            </button>
+          </div>
+        </div>
+    </div>
+</div>
+
+
+  <!-- Add New Value Section -->
+  <!--div class="add-value-section">    
+    <%#= form_with url: add_to_user_core_values_path, method: :post, remote: true, class: "add-value-form" do |form| %>
+      <div class="search-input-container">
+        <%#= form.text_field :core_value_search, 
+            placeholder: "Start typing...",
+            list: "core-values-datalist",
+            class: "search-input",
+            autocomplete: "off" %>
+        <datalist id="core-values-datalist">
+          <%# @available_core_values.each do |core_value| %>
+            <option value="<%#= core_value.name %>" data-id="<%#= core_value.id %>">
+          <%# end %>
+        </datalist>
+        <%#= form.hidden_field :core_value_id %>
+      </div>
+      
+      <div>
+        <%#= form.submit "Add Value", 
+            class: "add-value-btn",
+            disabled: true,
+            id: "add-value-btn" %>
+      </div>
+    <% #end %>
+  </div -->
+
+  <!-- User's Values List -->
+
+<style>
+  .page-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .page-header {
+margin-bottom: 20px;
+text-align: center;
+  }
+  .page-header h1 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 2.5em;
+  }
+  
+  .page-description {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.4;
+
+  }
+  
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s;
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,124,186,0.3);
+  }
+  
+  .add-value-form input:focus {
+    outline: none;
+    border-color: #007cba;
+  }
+  
+  /* Main Content Layout */
+  .main-content-layout {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+    align-items: center;
+    /* min-height: calc(100vh - 200px); */
+  }
+  
+  /* User Values Card */
+  .user-values-card {
+    flex: 0 0 300px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+  }
+  
+  .user-values-card .card-header {
+    padding: 20px 20px 0 20px;
+  }
+  
+  .user-values-card .card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: 600;
+  }
+  
+  .user-values-card .card-content {
+    padding: 16px 20px 20px 20px;
+  }
+  
+  .values-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .value-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    /* border-bottom: 1px solid #f0f0f0; */
+    position: relative;
+    flex-direction: column;
+  }
+  
+  .value-item:last-child {
+    border-bottom: none;
+  }
+  
+  .value-item:hover .remove-icon {
+    opacity: 1;
+  }
+  
+  .value-item-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .drag-handle {
+    color: #ccc;
+    font-size: 14px;
+    margin-right: 6px;
+    cursor: grab;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+  
+  .drag-handle:hover {
+    color: #007cba;
+  }
+  
+  .value-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+  
+  .value-item.drag-over {
+    border-top: 2px solid #007cba;
+  }
+  
+  .sortable-list {
+    position: relative;
+  }
+  
+  .value-item .checkmark {
+    color: #28a745;
+    font-weight: bold;
+    margin-right: 8px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  
+  .value-item .value-name {
+    color: #333;
+    font-size: 14px;
+    flex: 1;
+  }
+  
+  .value-item .value-name.clickable {
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .value-item .value-name.clickable:hover {
+    color: #007cba;
+  }
+  
+  .value-item .remove-icon {
+    color: #dc3545;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  
+  .value-item .remove-icon .material-symbols-outlined {
+    font-size: 16px;
+  }
+  
+  .value-item .remove-icon:hover {
+    color: #c82333;
+  }
+  
+  .value-details {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #007cba;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .value-details .details-description {
+    color: #555;
+    margin-bottom: 8px;
+  }
+  
+  .value-details .details-examples {
+    color: #666;
+  }
+  
+  .value-details .details-examples ul {
+    margin: 4px 0 0 0;
+    padding-left: 16px;
+  }
+  
+  .value-details .details-examples li {
+    margin: 2px 0;
+    font-size: 12px;
+  }
+  
+  /* Animation for sliding details */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .empty-state {
+    color: #666;
+    font-style: italic;
+    font-size: 14px;
+    text-align: center;
+    margin: 20px 0;
+    line-height: 1.4;
+  }
+  
+  /* Browse Values Grid Container */
+  .browse-values-grid {
+    flex: 1;
+  }
+  
+  /* Browse Values Grid Styles */
+  .values-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 3px;
+  }
+  
+  .browse-value-item {
+    /* background: #f8f9fa; */
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    position: relative;
+    /* min-height: 30px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .browse-value-item:hover {
+    border-color: var(--focus);
+    /* background: #e3f2fd; */
+    /* transform: translateY(-1px); */
+  }
+  
+  .browse-value-item.selected {
+    border-color: #007cba;
+    background: #e3f2fd;
+    box-shadow: 0 2px 8px rgba(0,124,186,0.2);
+  }
+  
+  .browse-value-item.already-added {
+    background: #e8f5e8 !important;
+    border-color: #c3e6cb !important;
+    box-shadow: none !important;
+  }
+  
+  /* Ensure already-added items never show selected styling */
+  .browse-value-item.already-added.selected {
+    background: #e8f5e8 !important;
+    border-color: #c3e6cb !important;
+    box-shadow: none !important;
+  }
+  
+  .browse-value-item.already-added:hover {
+    border-color: #28a745;
+    background: #d4edda;
+  }
+  
+  /* Flash Messages */
+  .flash-notice {
+    background: #d4edda;
+    color: #155724;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .flash-alert {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+  }
+  
+  /* Browse Values Grid */
+  .browse-values-grid {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    /* margin: 32px 0; */
+    /* box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e7ef; */
+  }
+  
+  .browse-intro-text {
+    margin: 0 0 20px 0;
+    color: #007cba;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .value-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95em;
+  }
+  
+  .already-added-indicator {
+    color: #28a745;
+    font-size: 12px;
+    margin-right: 6px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .already-added-indicator .material-symbols-outlined {
+    font-size: 16px;
+  }
+  
+  /* Add Value Indicator */
+  .add-value-indicator {
+    color: #ccc;
+    font-size: 12px;
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+  }
+  
+  .add-value-indicator .material-symbols-outlined {
+    font-size: 16px;
+    transition: color 0.2s ease;
+  }
+  
+  .browse-value-item:hover .add-value-indicator {
+    opacity: 1;
+  }
+  
+  .browse-value-item.selected .add-value-indicator {
+    opacity: 1;
+  }
+  
+  .add-value-indicator:hover {
+    color: #28a745 !important;
+  }
+  
+  .add-value-indicator:hover .material-symbols-outlined {
+    color: #28a745;
+  }
+  
+  /* Remove Value Indicator */
+  .remove-value-indicator {
+    color: #dc3545;
+    font-size: 12px;
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+  }
+  
+  .remove-value-indicator .material-symbols-outlined {
+    font-size: 16px;
+    transition: color 0.2s ease;
+  }
+  
+  .browse-value-item:hover .remove-value-indicator {
+    opacity: 1;
+  }
+  
+  .browse-value-item.selected .remove-value-indicator {
+    opacity: 1;
+  }
+  
+  .remove-value-indicator:hover {
+    color: #dc3545 !important;
+  }
+  
+  .remove-value-indicator:hover .material-symbols-outlined {
+    color: #dc3545;
+  }
+  
+  /* Core Value Details */
+  #core-value-details {
+    display: none;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007cba;
+    margin-top: 20px;
+  }
+  
+  .details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  
+  #selected-value-name {
+    margin: 0;
+    color: #007cba;
+    font-size: 1.3em;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: auto;
+  }
+  
+  .close-btn .material-symbols-outlined {
+    font-size: 20px;
+  }
+  
+  #selected-value-description {
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  #selected-value-examples {
+    display: none;
+  }
+  
+  .examples-title {
+    margin: 0 0 8px 0;
+    color: #444;
+    font-size: 1em;
+  }
+  
+  #examples-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #666;
+  }
+  
+  #add-this-value-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  #quick-add-btn {
+    background: #007cba;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  /* Add Value Section */
+  .add-value-section {
+    background: white;
+    border-radius: 12px;
+    /* padding: 24px;
+    margin: 32px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e7ef; */
+  }
+  
+  .add-value-form {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  
+  .search-input-container {
+    /* flex: 1; */
+  }
+  
+  .search-input {
+    padding: 12px 16px;
+    border: 2px solid #e0e7ef;
+    border-radius: 8px;
+    font-size: 1em;
+  }
+  
+  .add-value-btn {
+    background: #007cba;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    white-space: nowrap;
+  }
+  
+  /* User Values Section */
+  .user-values-title {
+    margin: 0 0 24px 0;
+    color: #333;
+    font-size: 1.8em;
+  }
+  
+  .value-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e7ef;
+  }
+  
+  .value-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0px;
+  }
+  
+  .value-title-container {
+    flex: 1;
+  }
+  
+  .value-title {
+    margin: 0 0 8px 0;
+    color: #007cba;
+    font-size: 1.5em;
+  }
+  
+  .value-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .action-link {
+    text-decoration: none;
+  }
+  
+  .action-icon {
+    cursor: pointer;
+  }
+  
+  .view-icon {
+    color: #666;
+  }
+  
+  .remove-icon {
+    color: #dc3545;
+  }
+  
+  .value-description {
+    color: #666;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    line-height: 1.5;
+  }
+  
+  .personal-notes {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #007cba;
+  }
+  
+  .personal-notes-title {
+    margin: 0 0 0px 0;
+    color: #007cba;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .personal-notes-text {
+    margin-top: 0;
+    color: #666;
+    font-style: italic;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+  
+  .empty-state .material-symbols-outlined {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+  
+  .empty-state-title {
+    margin-bottom: 12px;
+    color: #666;
+  }
+  
+  .empty-state-text {
+    margin-bottom: 24px;
+  }
+  
+  /* Browse Section */
+  .browse-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid #e0e7ef;
+  }
+  
+  .browse-section-title {
+    margin: 0 0 16px 0;
+    color: #666;
+  }
+  
+  .manage-link {
+    color: #007cba;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  /* Quick Search Section */
+  .quick-search-section {
+    background: white;
+    /* border-radius: 12px;
+    padding: 24px;
+    margin: 32px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e0e7ef; */
+  }
+  
+  .search-input-wrapper {
+    text-align: center;
+  }
+  
+  .search-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+    color: #007cba;
+    font-weight: 600;
+  }
+  
+  .quick-search-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 16px 20px;
+    border: 2px solid #e0e7ef;
+    border-radius: 12px;
+    font-size: 1.1em;
+    text-align: center;
+    transition: border-color 0.3s ease;
+  }
+  
+  .quick-search-input:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 3px rgba(0,124,186,0.1);
+  }
+  
+  /* Search highlighting */
+  .browse-value-item.search-highlight {
+    background: #fff3cd !important;
+    border-color: #ffc107 !important;
+    box-shadow: 0 2px 8px rgba(255,193,7,0.3) !important;
+    transform: scale(1.02);
+  }
+  
+  .browse-value-item.search-exact-match {
+    background: #d4edda !important;
+    border-color: #28a745 !important;
+    box-shadow: 0 2px 8px rgba(40,167,69,0.3) !important;
+    transform: scale(1.05);
+  }
+  
+  /* Analysis Result Styles */
+  .analysis-result-container {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e7ef;
+    background: #f8f9fa;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .analysis-result {
+    color: #333;
+    line-height: 1.5;
+    font-size: 0.95em;
+  }
+  
+  .analysis-loading {
+    color: #007cba;
+    font-style: italic;
+    text-align: center;
+  }
+  
+  .analysis-error {
+    color: #dc3545;
+    font-style: italic;
+    text-align: center;
+  }
+  
+  /* Add New Value Button */
+  .add-new-value-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px auto 0 auto;
+    transition: all 0.2s ease;
+  }
+  
+  .add-new-value-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+  }
+  
+  .add-new-value-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .add-new-value-btn .material-symbols-outlined {
+    font-size: 18px;
+  }
+  
+  #add-value-button-container {
+    margin-top: 12px;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .main-content-layout {
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .user-values-card {
+      flex: none;
+      position: static;
+    }
+    
+    .page-container {
+      padding: 16px;
+    }
+    
+    .values-grid-container {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    
+    .browse-value-item {
+      padding: 10px 8px;
+      font-size: 0.9em;
+    }
+    
+    .value-card {
+      padding: 20px !important;
+    }
+    
+    .value-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+    
+    .value-actions {
+      margin-top: 12px;
+    }
+    
+    .add-value-form {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    
+    .add-value-form > div {
+      min-width: auto !important;
+    }
+  }
+</style>
+
+<script>
+// Core Value Selection Functions
+let selectedCoreValueId = null;
+
+function selectCoreValue(element) {
+  // Don't allow selection of already-added items
+  if (element.classList.contains('already-added')) {
+    return;
+  }
+  
+  // Remove previous selection and any already-added highlighting
+  document.querySelectorAll('.browse-value-item').forEach(item => {
+    item.classList.remove('selected', 'already-added');
+  });
+  
+  // Add selection to clicked item
+  element.classList.add('selected');
+  
+  // Get data from element
+  const valueId = element.getAttribute('data-value-id');
+  const valueName = element.getAttribute('data-value-name');
+  const valueDescription = element.getAttribute('data-value-description');
+  const valueExamples = element.getAttribute('data-value-examples');
+  
+  selectedCoreValueId = valueId;
+  
+  // Update details section
+  document.getElementById('selected-value-name').textContent = valueName;
+  document.getElementById('selected-value-description').textContent = valueDescription || 'No description available.';
+  
+  // Handle examples
+  const examplesSection = document.getElementById('selected-value-examples');
+  const examplesList = document.getElementById('examples-list');
+  
+  if (valueExamples && valueExamples.trim() !== '') {
+    const examples = valueExamples.split('|');
+    examplesList.innerHTML = '';
+    examples.forEach(example => {
+      if (example.trim()) {
+        const li = document.createElement('li');
+        li.textContent = example.trim();
+        li.style.marginBottom = '4px';
+        examplesList.appendChild(li);
+      }
+    });
+    examplesSection.style.display = 'block';
+  } else {
+    examplesSection.style.display = 'none';
+  }
+  
+  // Check if already added and update button
+  const quickAddBtn = document.getElementById('quick-add-btn');
+  const isAlreadyAdded = element.querySelector('.already-added-indicator');
+  
+  if (isAlreadyAdded) {
+    quickAddBtn.textContent = 'Already in Your Collection';
+    quickAddBtn.disabled = true;
+    quickAddBtn.style.background = '#6c757d';
+    quickAddBtn.style.cursor = 'not-allowed';
+  } else {
+    quickAddBtn.textContent = 'Add This Value to My Collection';
+    quickAddBtn.disabled = false;
+    quickAddBtn.style.background = '#007cba';
+    quickAddBtn.style.cursor = 'pointer';
+  }
+  
+  // Show details section
+  document.getElementById('core-value-details').style.display = 'block';
+  
+  // Scroll to details section smoothly
+  document.getElementById('core-value-details').scrollIntoView({ 
+    behavior: 'smooth', 
+    block: 'nearest' 
+  });
+}
+
+function clearSelection() {
+  // Remove selection and already-added from all items
+  document.querySelectorAll('.browse-value-item').forEach(item => {
+    item.classList.remove('selected', 'already-added');
+    // Also remove any search highlight states that might be interfering
+    item.classList.remove('search-highlight', 'search-exact-match');
+  });
+  
+  // Hide details section
+  document.getElementById('core-value-details').style.display = 'none';
+  selectedCoreValueId = null;
+}
+
+function quickAddValue() {
+  if (!selectedCoreValueId) {
+    alert('Please select a core value first.');
+    return;
+  }
+  
+  // Find the search input and set the value
+  const searchInput = document.querySelector('input[name="core_value_search"]');
+  const hiddenIdInput = document.querySelector('input[name="core_value_id"]');
+  const selectedElement = document.querySelector(`[data-value-id="${selectedCoreValueId}"]`);
+  const valueName = selectedElement.getAttribute('data-value-name');
+  
+  if (searchInput && hiddenIdInput) {
+    searchInput.value = valueName;
+    hiddenIdInput.value = selectedCoreValueId;
+    
+    // Enable the add button
+    const addButton = document.getElementById('add-value-btn');
+    addButton.disabled = false;
+    addButton.style.opacity = '1';
+    addButton.style.cursor = 'pointer';
+    searchInput.style.borderColor = '#28a745';
+    
+    // Scroll to the add form
+    document.querySelector('.add-value-section').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'center' 
+    });
+    
+    // Clear the selection
+    clearSelection();
+    
+    // Show a hint message
+    showFlashMessage('Value selected! Click "Add Value" below to add it to your collection.', 'notice');
+  }
+}
+
+// Quick Search Functionality
+function initializeQuickSearch() {
+  const quickSearchInput = document.getElementById('quick-search-input');
+  if (!quickSearchInput) return;
+  
+  // Debounce timer for AI analysis
+  let analysisTimeout = null;
+
+  // Define semantic matches - words that mean similar things
+  const semanticMatches = {
+    'honest': ['honesty', 'truthfulness', 'integrity', 'authenticity'],
+    'honesty': ['honest', 'truthfulness', 'integrity', 'authenticity', 'trustworthy'],
+    'truthfulness': ['honesty', 'honest', 'integrity', 'authenticity'],
+    'truth': ['honesty', 'truthfulness', 'integrity'],
+    'integrity': ['honesty', 'truthfulness', 'authenticity', 'moral'],
+    'authentic': ['authenticity', 'honesty', 'genuine', 'real'],
+    'authenticity': ['authentic', 'honesty', 'genuine', 'real', 'integrity'],
+    'genuine': ['authenticity', 'authentic', 'real', 'honesty'],
+    'family': ['love', 'relationships', 'connection', 'loyalty'],
+    'love': ['compassion', 'kindness', 'family', 'relationships'],
+    'compassion': ['kindness', 'empathy', 'love', 'caring'],
+    'kindness': ['compassion', 'empathy', 'love', 'caring'],
+    'empathy': ['compassion', 'kindness', 'understanding'],
+    'growth': ['learning', 'development', 'improvement', 'progress'],
+    'learning': ['growth', 'education', 'development', 'knowledge'],
+    'development': ['growth', 'learning', 'improvement', 'progress'],
+    'creativity': ['innovation', 'imagination', 'artistic', 'originality'],
+    'innovation': ['creativity', 'imagination', 'originality'],
+    'freedom': ['independence', 'liberty', 'autonomy'],
+    'independence': ['freedom', 'autonomy', 'self-reliance'],
+    'autonomy': ['independence', 'freedom', 'self-determination'],
+    'adventure': ['exploration', 'discovery', 'excitement'],
+    'exploration': ['adventure', 'discovery', 'curiosity'],
+    'success': ['achievement', 'accomplishment', 'excellence'],
+    'achievement': ['success', 'accomplishment', 'excellence'],
+    'excellence': ['quality', 'perfection', 'mastery', 'success'],
+    'quality': ['excellence', 'perfection', 'standards'],
+    'justice': ['fairness', 'equality', 'righteousness'],
+    'fairness': ['justice', 'equality', 'balance'],
+    'equality': ['fairness', 'justice', 'balance'],
+    'balance': ['harmony', 'stability', 'equilibrium'],
+    'harmony': ['balance', 'peace', 'unity'],
+    'peace': ['tranquility', 'serenity', 'calm', 'harmony'],
+    'wisdom': ['knowledge', 'insight', 'understanding'],
+    'knowledge': ['wisdom', 'learning', 'education'],
+    'courage': ['bravery', 'boldness', 'fearlessness', 'brave'],
+    'brave': ['courage', 'boldness', 'fearlessness'],
+    'bravery': ['courage', 'boldness', 'fearlessness'],
+    'responsibility': ['accountability', 'duty', 'obligation'],
+    'accountability': ['responsibility', 'duty', 'ownership'],
+    'respect': ['dignity', 'honor', 'appreciation'],
+    'dignity': ['respect', 'honor', 'pride'],
+    'honor': ['respect', 'dignity', 'integrity'],
+    'loyalty': ['faithfulness', 'devotion', 'commitment'],
+    'commitment': ['dedication', 'loyalty', 'perseverance'],
+    'dedication': ['commitment', 'devotion', 'perseverance'],
+    'perseverance': ['persistence', 'determination', 'commitment'],
+    'determination': ['perseverance', 'persistence', 'resolve'],
+    'optimism': ['positivity', 'hope', 'cheerfulness'],
+    'positivity': ['optimism', 'hope', 'cheerfulness'],
+    'hope': ['optimism', 'faith', 'positivity'],
+    'faith': ['belief', 'trust', 'hope'],
+    'trust': ['faith', 'belief', 'confidence'],
+    'confidence': ['self-assurance', 'belief', 'trust'],
+    'humility': ['modesty', 'humbleness', 'simplicity'],
+    'modesty': ['humility', 'humbleness', 'simplicity'],
+    'simplicity': ['minimalism', 'clarity', 'humility'],
+    'gratitude': ['appreciation', 'thankfulness'],
+    'appreciation': ['gratitude', 'thankfulness', 'respect'],
+    'service': ['helping', 'contribution', 'giving'],
+    'helping': ['service', 'assistance', 'support'],
+    'support': ['helping', 'assistance', 'encouragement'],
+    'leadership': ['guidance', 'direction', 'influence'],
+    'guidance': ['leadership', 'mentoring', 'direction'],
+    'teamwork': ['collaboration', 'cooperation', 'unity'],
+    'collaboration': ['teamwork', 'cooperation', 'partnership'],
+    'cooperation': ['collaboration', 'teamwork', 'partnership']
+  };
+  
+  function findSemanticMatches(searchTerm, valueName) {
+    const normalizedSearch = searchTerm.toLowerCase().trim();
+    const normalizedValue = valueName.toLowerCase().trim();
+    
+    // Direct partial match
+    if (normalizedValue.includes(normalizedSearch) || normalizedSearch.includes(normalizedValue)) {
+      return 'exact';
+    }
+    
+    // Check semantic matches
+    const searchWords = normalizedSearch.split(/\s+/);
+    for (const word of searchWords) {
+      if (semanticMatches[word]) {
+        for (const synonym of semanticMatches[word]) {
+          if (normalizedValue.includes(synonym)) {
+            return 'semantic';
+          }
+        }
+      }
+    }
+    
+    // Check reverse semantic matches (if value name has synonyms of search term)
+    if (semanticMatches[normalizedValue]) {
+      for (const synonym of semanticMatches[normalizedValue]) {
+        if (normalizedSearch.includes(synonym)) {
+          return 'semantic';
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  function highlightMatchingValues(searchTerm) {
+    const allValueItems = document.querySelectorAll('.browse-value-item');
+    
+    // Clear previous highlights. ``
+    allValueItems.forEach(item => {
+      item.classList.remove('search-highlight', 'search-exact-match');
+    });
+    
+    if (!searchTerm || searchTerm.length < 2) {
+      return;
+    }
+    
+    allValueItems.forEach(item => {
+      const valueName = item.getAttribute('data-value-name');
+      if (!valueName) return;
+      
+      const matchType = findSemanticMatches(searchTerm, valueName);
+      if (matchType === 'exact') {
+        item.classList.add('search-exact-match');
+      } else if (matchType === 'semantic') {
+        item.classList.add('search-highlight');
+      }
+    });
+  }
+  
+  // Add event listener for real-time search
+  quickSearchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value;
+    
+    // Immediate highlighting (no delay needed for visual feedback)
+    highlightMatchingValues(searchTerm);
+    
+    // Clear previous analysis timeout
+    if (analysisTimeout) {
+      clearTimeout(analysisTimeout);
+    }
+    
+    // Set new timeout for AI analysis (1 second delay)
+    analysisTimeout = setTimeout(() => {
+      analyzeIfCoreValue(searchTerm);
+    }, 1000);
+  });
+  
+  // Also trigger on paste
+  quickSearchInput.addEventListener('paste', function(e) {
+    setTimeout(() => {
+      const searchTerm = e.target.value;
+      highlightMatchingValues(searchTerm);
+      
+      // Clear previous analysis timeout
+      if (analysisTimeout) {
+        clearTimeout(analysisTimeout);
+      }
+      
+      // Set new timeout for AI analysis (1 second delay)
+      analysisTimeout = setTimeout(() => {
+        analyzeIfCoreValue(searchTerm);
+      }, 1000);
+    }, 10);
+  });
+  
+  // Clear highlights and analysis when input is cleared
+  quickSearchInput.addEventListener('blur', function() {
+    if (!this.value.trim()) {
+      const allValueItems = document.querySelectorAll('.browse-value-item');
+      allValueItems.forEach(item => {
+        item.classList.remove('search-highlight', 'search-exact-match');
+      });
+      clearAnalysisResult();
+    }
+  });
+  
+  // Function to analyze if input is a core value
+  function analyzeIfCoreValue(searchTerm) {
+    const analysisResult = document.getElementById('core-value-analysis');
+    const analysisContent = document.getElementById('analysis-content');
+    const buttonContainer = document.getElementById('add-value-button-container');
+    
+    if (!searchTerm || searchTerm.length < 3) {
+      clearAnalysisResult();
+      return;
+    }
+    
+    // Show loading state
+    if (analysisResult && analysisContent) {
+      analysisContent.innerHTML = '<div class="analysis-loading">Analyzing...</div>';
+      analysisResult.style.display = 'block';
+      buttonContainer.style.display = 'none';
+    }
+    
+    // Make AJAX call to analyze the core value
+    fetch('/ai_text_rewriter/analyze_core_value', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ candidate: searchTerm })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && analysisResult && analysisContent) {
+        analysisContent.innerHTML = `<div class="analysis-result">${data.analysis}</div>`;
+        analysisResult.style.display = 'block';
+        
+        // Show "Add This Value" button if it's a legitimate core value
+        if (data.is_core_value && buttonContainer) {
+          // Store the candidate in a data attribute for later use
+          buttonContainer.setAttribute('data-candidate', searchTerm);
+          buttonContainer.style.display = 'block';
+        } else {
+          buttonContainer.style.display = 'none';
+        }
+      } else if (analysisResult && analysisContent) {
+        analysisContent.innerHTML = '<div class="analysis-error">Could not analyze this input.</div>';
+        analysisResult.style.display = 'block';
+        buttonContainer.style.display = 'none';
+      }
+    })
+    .catch(error => {
+      console.error('Error analyzing core value:', error);
+      if (analysisResult && analysisContent) {
+        analysisContent.innerHTML = '<div class="analysis-error">Error analyzing input.</div>';
+        analysisResult.style.display = 'block';
+        buttonContainer.style.display = 'none';
+      }
+    });
+  }
+}
+
+// Global function to update user values section
+function updateUserValuesSection(coreValue) {
+  const userValuesSection = document.querySelector('.user-values-section');
+  const valuesGrid = document.querySelector('.values-grid');
+  const emptyState = document.querySelector('.empty-state');
+  const userValuesTitle = document.querySelector('.user-values-title');
+  
+  if (!userValuesSection) return;
+  
+  // Hide empty state if it exists
+  if (emptyState) {
+    emptyState.style.display = 'none';
+  }
+  
+  // Show or create values grid
+  if (!valuesGrid) {
+    const newValuesGrid = document.createElement('div');
+    newValuesGrid.className = 'values-grid';
+    
+    // Insert after title or create title if it doesn't exist
+    if (userValuesTitle) {
+      userValuesTitle.insertAdjacentElement('afterend', newValuesGrid);
+    } else {
+      const newTitle = document.createElement('h2');
+      newTitle.className = 'user-values-title';
+      newTitle.textContent = 'Your Values (1)';
+      userValuesSection.appendChild(newTitle);
+      userValuesSection.appendChild(newValuesGrid);
+    }
+    valuesGrid = newValuesGrid;
+  }
+  
+  // Update the counter in the title
+  if (userValuesTitle) {
+    const currentCount = (userValuesTitle.textContent.match(/\((\d+)\)/) || [0, 0])[1];
+    const newCount = parseInt(currentCount) + 1;
+    userValuesTitle.textContent = `Your Values (${newCount})`;
+  }
+  
+  // Create new value card
+  const newValueCard = document.createElement('div');
+  newValueCard.className = 'value-card user-value-card';
+  newValueCard.setAttribute('data-core-value-id', coreValue.id);
+  newValueCard.setAttribute('data-user-core-value-id', coreValue.user_core_value_id);
+  newValueCard.innerHTML = `
+    <div class="value-header">
+      <div class="value-title-container">
+        <h3 class="value-title">${coreValue.name}</h3>
+      </div>
+      
+      <div class="value-actions">
+        <a href="/core_values/${coreValue.id}" class="action-link">
+          <span class="material-symbols-outlined action-icon view-icon" title="View Details">visibility</span>
+        </a>
+        <a href="/user_core_values/${coreValue.user_core_value_id}" 
+           data-turbo-method="delete"
+           data-turbo-confirm="Are you sure you want to remove '${coreValue.name}' from your values?"
+           class="action-link">
+          <span class="material-symbols-outlined action-icon remove-icon" title="Remove">remove_circle</span>
+        </a>
+      </div>
+    </div>
+    
+    ${coreValue.description ? `<span class="value-description">${coreValue.description}</span>` : ''}
+  `;
+  
+  // Add the new card to the values grid
+  const valuesGridElement = document.querySelector('.values-grid');
+  if (valuesGridElement) {
+    valuesGridElement.appendChild(newValueCard);
+  }
+}
+
+// Drag and Drop Functionality
+let draggedElement = null;
+
+function initializeDragAndDrop() {
+  const sortableList = document.querySelector('.sortable-list');
+  if (!sortableList) return;
+  
+  sortableList.addEventListener('dragstart', handleDragStart);
+  sortableList.addEventListener('dragover', handleDragOver);
+  sortableList.addEventListener('dragenter', handleDragEnter);
+  sortableList.addEventListener('dragleave', handleDragLeave);
+  sortableList.addEventListener('drop', handleDrop);
+  sortableList.addEventListener('dragend', handleDragEnd);
+}
+
+function handleDragStart(e) {
+  if (e.target.classList.contains('value-item')) {
+    draggedElement = e.target;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.outerHTML);
+  }
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragEnter(e) {
+  if (e.target.classList.contains('value-item') && e.target !== draggedElement) {
+    e.target.classList.add('drag-over');
+  }
+}
+
+function handleDragLeave(e) {
+  if (e.target.classList.contains('value-item')) {
+    e.target.classList.remove('drag-over');
+  }
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  const dropTarget = e.target.closest('.value-item');
+  if (dropTarget && dropTarget !== draggedElement) {
+    const list = dropTarget.parentNode;
+    const draggedIndex = Array.from(list.children).indexOf(draggedElement);
+    const targetIndex = Array.from(list.children).indexOf(dropTarget);
+    
+    if (draggedIndex < targetIndex) {
+      dropTarget.parentNode.insertBefore(draggedElement, dropTarget.nextSibling);
+    } else {
+      dropTarget.parentNode.insertBefore(draggedElement, dropTarget);
+    }
+    
+    // Update importance levels and save to server
+    updateImportanceLevels();
+  }
+  
+  return false;
+}
+
+function handleDragEnd(e) {
+  // Clean up
+  document.querySelectorAll('.value-item').forEach(item => {
+    item.classList.remove('dragging', 'drag-over');
+  });
+  draggedElement = null;
+}
+
+function updateImportanceLevels() {
+  const valueItems = document.querySelectorAll('.value-item');
+  const updates = [];
+  
+  valueItems.forEach((item, index) => {
+    const userCoreValueId = item.getAttribute('data-user-core-value-id');
+    const newImportanceLevel = index + 1;
+    
+    // Update the data attribute
+    item.setAttribute('data-importance-level', newImportanceLevel);
+    
+    updates.push({
+      id: userCoreValueId,
+      importance_level: newImportanceLevel
+    });
+  });
+  
+  // Send updates to server
+  saveImportanceLevels(updates);
+}
+
+function saveImportanceLevels(updates) {
+  fetch('/user_core_values/update_importance_levels', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ updates: updates })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Optionally show a subtle success message
+      console.log('Importance levels updated successfully');
+    } else {
+      showFlashMessage('Failed to save order changes', 'alert');
+    }
+  })
+  .catch(error => {
+    console.error('Error updating importance levels:', error);
+    showFlashMessage('Error saving order changes', 'alert');
+  });
+}
+
+// Function to toggle value details in card
+function toggleValueDetails(element) {
+  // Prevent event bubbling
+  event.stopPropagation();
+  
+  const valueItem = element.closest('.value-item');
+  const detailsSection = valueItem.querySelector('.value-details');
+  
+  if (!detailsSection) return;
+  
+  // Toggle current details without closing others
+  if (detailsSection.style.display === 'none' || detailsSection.style.display === '') {
+    detailsSection.style.display = 'block';
+    // Add a subtle slide animation
+    detailsSection.style.animation = 'slideDown 0.2s ease-out';
+  } else {
+    detailsSection.style.display = 'none';
+  }
+}
+
+// Function to remove value from card list
+function removeValueFromCard(event, element) {
+  // Prevent event bubbling
+  event.stopPropagation();
+  
+  const valueItem = element.closest('.value-item');
+  const userCoreValueId = valueItem.getAttribute('data-user-core-value-id');
+  const coreValueId = valueItem.getAttribute('data-core-value-id');
+  const valueName = valueItem.querySelector('.value-name').textContent;
+  
+  if (!userCoreValueId || !coreValueId) {
+    showFlashMessage('Error: Could not get value information.', 'alert');
+    return;
+  }
+  
+  // Show loading state
+  const originalIcon = element.querySelector('.material-symbols-outlined');
+  const originalText = originalIcon.textContent;
+  originalIcon.textContent = 'hourglass_empty';
+  element.style.color = '#007cba';
+  element.style.pointerEvents = 'none';
+  
+  // Make AJAX request to remove the value
+  fetch(`/user_core_values/${userCoreValueId}`, {
+    method: 'DELETE',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success message
+      showFlashMessage(data.message, 'notice');
+      
+      // Remove the item from the card list
+      valueItem.remove();
+      
+      // Update the card title counter
+      updateCardCounter();
+      
+      // Add the value back to the main grid
+      addValueBackToGrid(coreValueId, valueName);
+      
+      // Remove from the bottom user values section
+      removeFromUserValuesSection(coreValueId);
+      
+    } else {
+      // Show error message
+      showFlashMessage(data.message || 'Failed to remove value', 'alert');
+      
+      // Reset the icon
+      originalIcon.textContent = originalText;
+      element.style.color = '#dc3545';
+      element.style.pointerEvents = 'auto';
+    }
+  })
+  .catch(error => {
+    console.error('Error removing value:', error);
+    showFlashMessage('An error occurred while removing the value.', 'alert');
+    
+    // Reset the icon
+    originalIcon.textContent = originalText;
+    element.style.color = '#dc3545';
+    element.style.pointerEvents = 'auto';
+  });
+}
+
+// Function to update card counter
+function updateCardCounter() {
+  const cardTitle = document.querySelector('.user-values-card .card-title');
+  const valuesList = document.querySelector('.values-list');
+  
+  if (cardTitle) {
+    const count = valuesList ? valuesList.children.length : 0;
+    cardTitle.textContent = `My Core Values`;
+  }
+  
+  // Show empty state if no values
+  if (valuesList && valuesList.children.length === 0) {
+    const cardContent = document.querySelector('.user-values-card .card-content');
+    cardContent.innerHTML = '<p class="empty-state">No values selected yet. Browse and select values that resonate with you.</p>';
+  }
+}
+
+// Function to add value to card list
+function addValueToCard(coreValue) {
+  const valuesList = document.querySelector('.values-list');
+  const cardContent = document.querySelector('.user-values-card .card-content');
+  
+  // If there's an empty state, remove it and create the list
+  if (!valuesList) {
+    cardContent.innerHTML = '<ul class="values-list"></ul>';
+  }
+  
+  const list = document.querySelector('.values-list');
+  
+  // Create new list item
+  const newItem = document.createElement('li');
+  newItem.className = 'value-item';
+  newItem.draggable = true;
+  newItem.setAttribute('data-user-core-value-id', coreValue.user_core_value_id);
+  newItem.setAttribute('data-core-value-id', coreValue.id);
+  
+  // Calculate importance level (position in list + 1)
+  const currentItems = list.children.length;
+  newItem.setAttribute('data-importance-level', currentItems + 1);
+  
+  newItem.innerHTML = `
+    <div class="value-item-header">
+      <span class="drag-handle">⋮⋮</span>
+      <span class="checkmark">✓</span>
+      <span class="value-name clickable" onclick="toggleValueDetails(this)" data-description="${coreValue.description || ''}" data-examples="${coreValue.examples ? coreValue.examples.join('|') : ''}">
+        ${coreValue.name}
+      </span>
+      <span class="remove-icon" title="Remove from your values" onclick="removeValueFromCard(event, this)">
+        <span class="material-symbols-outlined">remove_circle</span>
+      </span>
+    </div>
+    <div class="value-details" style="display: none;">
+      ${coreValue.description ? `<div class="details-description">${coreValue.description}</div>` : ''}
+      ${coreValue.examples && coreValue.examples.length > 0 ? `
+        <div class="details-examples">
+          <ul>
+            ${coreValue.examples.map(example => `<li>${example}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  
+  // Insert in alphabetical order
+  const existingItems = Array.from(list.children);
+  let inserted = false;
+  
+  for (let i = 0; i < existingItems.length; i++) {
+    const existingName = existingItems[i].querySelector('.value-name').textContent;
+    if (coreValue.name.toLowerCase() < existingName.toLowerCase()) {
+      list.insertBefore(newItem, existingItems[i]);
+      inserted = true;
+      break;
+    }
+  }
+  
+  if (!inserted) {
+    list.appendChild(newItem);
+  }
+}
+
+// Function to add value back to main grid
+function addValueBackToGrid(coreValueId, valueName) {
+  // Find the values grid container
+  const valuesGridContainer = document.querySelector('.values-grid-container');
+  if (!valuesGridContainer) return;
+  
+  // Create new value item
+  const newValueItem = document.createElement('div');
+  newValueItem.className = 'browse-value-item';
+  newValueItem.setAttribute('data-value-id', coreValueId);
+  newValueItem.setAttribute('data-value-name', valueName);
+  newValueItem.onclick = function() { selectCoreValue(this); };
+  
+  newValueItem.innerHTML = `
+    <span class="value-name">${valueName}</span>
+    <span class="add-value-indicator" title="Add to your values" onclick="quickAddValueFromGrid(event, this)">
+      <span class="material-symbols-outlined">add_circle</span>
+    </span>
+  `;
+  
+  // Insert in alphabetical order
+  const existingItems = Array.from(valuesGridContainer.children);
+  let inserted = false;
+  
+  for (let i = 0; i < existingItems.length; i++) {
+    const existingName = existingItems[i].querySelector('.value-name').textContent;
+    if (valueName.toLowerCase() < existingName.toLowerCase()) {
+      valuesGridContainer.insertBefore(newValueItem, existingItems[i]);
+      inserted = true;
+      break;
+    }
+  }
+  
+  if (!inserted) {
+    valuesGridContainer.appendChild(newValueItem);
+  }
+}
+
+// Function to remove value from user values section
+function removeFromUserValuesSection(coreValueId) {
+  // Find and remove the value card
+  const userValueCards = document.querySelectorAll('.user-value-card');
+  userValueCards.forEach(card => {
+    if (card.getAttribute('data-core-value-id') == coreValueId) {
+      card.remove();
+    }
+  });
+  
+  // Update the counter in the title
+  const userValuesTitle = document.querySelector('.user-values-section h2');
+  if (userValuesTitle) {
+    const currentCount = (userValuesTitle.textContent.match(/\((\d+)\)/) || [0, 1])[1];
+    const newCount = Math.max(0, parseInt(currentCount) - 1);
+    userValuesTitle.textContent = `Your Values (${newCount})`;
+  }
+}
+
+// Global function to add value directly from grid
+function quickAddValueFromGrid(event, element) {
+  // Prevent the parent selectCoreValue from being triggered
+  event.stopPropagation();
+  
+  const valueItem = element.closest('.browse-value-item');
+  const valueId = valueItem.getAttribute('data-value-id');
+  const valueName = valueItem.getAttribute('data-value-name');
+  
+  if (!valueId || !valueName) {
+    showFlashMessage('Error: Could not get value information.', 'alert');
+    return;
+  }
+  
+  // Show loading state on the plus icon
+  const originalIcon = element.querySelector('.material-symbols-outlined');
+  const originalText = originalIcon.textContent;
+  originalIcon.textContent = 'hourglass_empty';
+  element.style.color = '#007cba';
+  element.style.pointerEvents = 'none';
+  
+  // Create form data for the request
+  const formData = new FormData();
+  formData.append('core_value_id', valueId);
+  formData.append('core_value_search', valueName);
+  
+  // Make AJAX request to add the value
+  fetch('/core_values/add_to_user', {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success message
+      showFlashMessage(data.message, 'notice');
+      
+      // Remove the entire item from the grid since it's now selected
+      valueItem.remove();
+      
+      // Add the value to the card list
+      addValueToCard(data.core_value);
+      
+      // Clear any selection state
+      clearSelection();
+      
+      // Update the user values section
+      updateUserValuesSection(data.core_value);
+      
+    } else {
+      // Show error message
+      showFlashMessage(data.message || 'Failed to add value', 'alert');
+      
+      // Reset the plus icon
+      originalIcon.textContent = originalText;
+      element.style.color = '#ccc';
+      element.style.pointerEvents = 'auto';
+    }
+  })
+  .catch(error => {
+    console.error('Error adding value:', error);
+    showFlashMessage('An error occurred while adding the value.', 'alert');
+    
+    // Reset the plus icon
+    originalIcon.textContent = originalText;
+    element.style.color = '#ccc';
+    element.style.pointerEvents = 'auto';
+  });
+}
+
+// Global function to remove value from grid
+function removeValueFromGrid(event, element) {
+  // Prevent the parent selectCoreValue from being triggered
+  event.stopPropagation();
+  
+  const valueItem = element.closest('.browse-value-item');
+  const valueId = valueItem.getAttribute('data-value-id');
+  const valueName = valueItem.getAttribute('data-value-name');
+  
+  if (!valueId || !valueName) {
+    showFlashMessage('Error: Could not get value information.', 'alert');
+    return;
+  }
+  
+  // Show loading state on the minus icon
+  const originalIcon = element.querySelector('.material-symbols-outlined');
+  const originalText = originalIcon.textContent;
+  originalIcon.textContent = 'hourglass_empty';
+  element.style.color = '#007cba';
+  element.style.pointerEvents = 'none';
+  
+  // Find the user_core_value_id from the user values section
+  const userValueCards = document.querySelectorAll('.user-value-card');
+  let userCoreValueId = null;
+  
+  userValueCards.forEach(card => {
+    if (card.getAttribute('data-core-value-id') == valueId) {
+      userCoreValueId = card.getAttribute('data-user-core-value-id');
+    }
+  });
+  
+  if (!userCoreValueId) {
+    showFlashMessage('Error: Could not find value in your collection.', 'alert');
+    // Reset the minus icon
+    originalIcon.textContent = originalText;
+    element.style.color = '#28a745';
+    element.style.pointerEvents = 'auto';
+    return;
+  }
+  
+  // Make AJAX request to remove the value
+  fetch(`/user_core_values/${userCoreValueId}`, {
+    method: 'DELETE',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success message
+      showFlashMessage(data.message, 'notice');
+      
+      // Remove the minus icon and checkmark
+      element.remove();
+      const checkmark = valueItem.querySelector('.already-added-indicator');
+      if (checkmark) {
+        checkmark.remove();
+      }
+      
+      // Remove the already-added class
+      valueItem.classList.remove('already-added');
+      
+      // Add the plus icon back
+      const addIndicator = document.createElement('span');
+      addIndicator.className = 'add-value-indicator';
+      addIndicator.title = 'Add to your values';
+      addIndicator.onclick = function(e) { quickAddValueFromGrid(e, this); };
+      addIndicator.innerHTML = '<span class="material-symbols-outlined">add_circle</span>';
+      
+      // Insert the plus icon after the value name
+      const valueName = valueItem.querySelector('.value-name');
+      valueItem.appendChild(addIndicator);
+      
+      // Remove from user values section
+      removeFromUserValuesSection(valueId);
+      
+    } else {
+      // Show error message
+      showFlashMessage(data.message || 'Failed to remove value', 'alert');
+      
+      // Reset the minus icon
+      originalIcon.textContent = originalText;
+      element.style.color = '#28a745';
+      element.style.pointerEvents = 'auto';
+    }
+  })
+  .catch(error => {
+    console.error('Error removing value:', error);
+    showFlashMessage('An error occurred while removing the value.', 'alert');
+    
+    // Reset the minus icon
+    originalIcon.textContent = originalText;
+    element.style.color = '#28a745';
+    element.style.pointerEvents = 'auto';
+  });
+}
+
+// Global function to clear analysis result
+function clearAnalysisResult() {
+  const analysisResult = document.getElementById('core-value-analysis');
+  const analysisContent = document.getElementById('analysis-content');
+  const buttonContainer = document.getElementById('add-value-button-container');
+  
+  if (analysisResult) {
+    analysisResult.style.display = 'none';
+  }
+  if (analysisContent) {
+    analysisContent.innerHTML = '';
+  }
+  if (buttonContainer) {
+    buttonContainer.style.display = 'none';
+    buttonContainer.removeAttribute('data-candidate');
+  }
+}
+
+// Global function to show flash messages
+function showFlashMessage(message, type = 'notice') {
+  // Remove existing flash messages
+  const existingFlash = document.querySelector('.dynamic-flash-message');
+  if (existingFlash) {
+    existingFlash.remove();
+  }
+  
+  // Create new flash message
+  const flashDiv = document.createElement('div');
+  flashDiv.className = 'dynamic-flash-message';
+  
+  // Set up styling for smooth animation
+  if (type === 'notice') {
+    flashDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+      background: #d4edda;
+      color: #155724;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid #c3e6cb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      font-weight: 600;
+      min-width: 300px;
+      text-align: center;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      opacity: 0;
+    `;
+  } else {
+    flashDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid #f5c6cb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      font-weight: 600;
+      min-width: 300px;
+      text-align: center;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      opacity: 0;
+    `;
+  }
+  
+  flashDiv.textContent = message;
+  
+  // Add to body (not page container to avoid layout shift)
+  document.body.appendChild(flashDiv);
+  
+  // Trigger animation after a brief delay
+  setTimeout(() => {
+    flashDiv.style.transform = 'translateX(-50%) translateY(0)';
+    flashDiv.style.opacity = '1';
+  }, 10);
+  
+  // Auto-remove after 4 seconds with fade out
+  setTimeout(() => {
+    flashDiv.style.transform = 'translateX(-50%) translateY(-100%)';
+    flashDiv.style.opacity = '0';
+    
+    // Remove from DOM after animation completes
+    setTimeout(() => {
+      if (flashDiv.parentNode) {
+        flashDiv.remove();
+      }
+    }, 300);
+  }, 4000);
+}
+
+// Global function to create a new core value
+function createNewCoreValue() {
+  const buttonContainer = document.getElementById('add-value-button-container');
+  const candidate = buttonContainer.getAttribute('data-candidate');
+  const addButton = document.getElementById('add-new-value-btn');
+  
+  if (!candidate) {
+    alert('No core value candidate found.');
+    return;
+  }
+  
+  // Show loading state
+  addButton.disabled = true;
+  addButton.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Creating...';
+  
+  // Make AJAX call to create the core value
+  fetch('/ai_text_rewriter/create_core_value', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ candidate: candidate })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success message
+      showFlashMessage(data.message, 'notice');
+      
+      // Clear the search input and analysis
+      const searchInput = document.getElementById('quick-search-input');
+      if (searchInput) {
+        searchInput.value = '';
+      }
+      clearAnalysisResult();
+      
+      // Refresh the page to show the new value
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      // Show error message
+      showFlashMessage(data.error || 'Failed to create core value', 'alert');
+      
+      // Reset button state
+      addButton.disabled = false;
+      addButton.innerHTML = '<span class="material-symbols-outlined">add_circle</span> Add This Value';
+    }
+  })
+  .catch(error => {
+    console.error('Error creating core value:', error);
+    showFlashMessage('An error occurred while creating the core value.', 'alert');
+    
+    // Reset button state
+    addButton.disabled = false;
+    addButton.innerHTML = '<span class="material-symbols-outlined">add_circle</span> Add This Value';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize quick search functionality
+  initializeQuickSearch();
+  
+  const searchInput = document.querySelector('input[name="core_value_search"]');
+  const hiddenIdInput = document.querySelector('input[name="core_value_id"]');
+  const addButton = document.getElementById('add-value-btn');
+  const datalist = document.getElementById('core-values-datalist');
+  
+  if (searchInput && hiddenIdInput && addButton && datalist) {
+    // Function to find core value ID by name
+    function findCoreValueId(name) {
+      const options = datalist.querySelectorAll('option');
+      for (let option of options) {
+        if (option.value === name) {
+          return option.getAttribute('data-id');
+        }
+      }
+      return null;
+    }
+    
+    // Function to check if input matches a valid option
+    function validateInput() {
+      const value = searchInput.value.trim();
+      const coreValueId = findCoreValueId(value);
+      
+      if (coreValueId && value.length > 0) {
+        hiddenIdInput.value = coreValueId;
+        addButton.disabled = false;
+        addButton.style.opacity = '1';
+        addButton.style.cursor = 'pointer';
+        searchInput.style.borderColor = '#28a745';
+      } else {
+        hiddenIdInput.value = '';
+        addButton.disabled = true;
+        addButton.style.opacity = '0.6';
+        addButton.style.cursor = 'not-allowed';
+        searchInput.style.borderColor = value.length > 0 ? '#dc3545' : '#e0e7ef';
+      }
+    }
+    
+    // Function to reset the form
+    function resetForm() {
+      searchInput.value = '';
+      hiddenIdInput.value = '';
+      addButton.disabled = true;
+      addButton.style.opacity = '0.6';
+      addButton.style.cursor = 'not-allowed';
+      addButton.textContent = 'Add Value';
+      searchInput.style.borderColor = '#e0e7ef';
+      
+      // Reset importance level to default
+      const importanceInput = document.querySelector('input[name="importance_level"]');
+      if (importanceInput) {
+        importanceInput.value = 5;
+      }
+    }
+    
+    // Function to remove core value from datalist
+    function removeFromDatalist(coreValueId) {
+      const option = datalist.querySelector(`option[data-id="${coreValueId}"]`);
+      if (option) {
+        option.remove();
+      }
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', validateInput);
+    searchInput.addEventListener('change', validateInput);
+    
+    // Handle form submission with AJAX
+    const form = document.querySelector('.add-value-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!hiddenIdInput.value) {
+          alert('Please select a valid core value from the list.');
+          return false;
+        }
+        
+        // Show loading state
+        addButton.disabled = true;
+        addButton.style.opacity = '0.6';
+        addButton.textContent = 'Adding...';
+        
+        // Get form data
+        const formData = new FormData(form);
+        
+        // Make AJAX request
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Show success message
+            showFlashMessage(data.message, 'notice');
+            
+            // Remove the added value from the datalist
+            removeFromDatalist(data.core_value_id);
+            
+            // Reset the form
+            resetForm();
+            
+            // Refresh the page to show the new value (simple approach)
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            // Show error message
+            showFlashMessage(data.message, 'alert');
+            
+            // Reset button state
+            addButton.disabled = false;
+            addButton.style.opacity = '1';
+            addButton.textContent = 'Add Value';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showFlashMessage('An error occurred. Please try again.', 'alert');
+          
+          // Reset button state
+          addButton.disabled = false;
+          addButton.style.opacity = '1';
+          addButton.textContent = 'Add Value';
+        });
+      });
+    }
+    
+    // Check if this is a page load after adding a value and reset if so
+    const flashNotice = document.querySelector('.flash-notice, .flash-alert');
+    const hasSuccessMessage = flashNotice && flashNotice.textContent.includes('has been added');
+    
+    if (hasSuccessMessage) {
+      resetForm();
+    } else {
+      // If no success message, just validate the current state
+      validateInput();
+    }
+  }
+});
+
+// Initialize drag and drop functionality when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeDragAndDrop();
+});
+</script>

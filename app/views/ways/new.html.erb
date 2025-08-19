@@ -1,0 +1,216 @@
+<div class="way-form-container">
+  <div class="form-header">
+    <h1>Add New Way</h1>
+    <% if @six_human_need %>
+      <h2>For: <%= @six_human_need.name %></h2>
+      <p class="need-description"><%= @six_human_need.description %></p>
+    <% end %>
+  </div>
+
+  <%= form_with model: @way, local: true, class: "way-form" do |form| %>
+    <% if @way.errors.any? %>
+      <div class="error-messages">
+        <h3><%= pluralize(@way.errors.count, "error") %> prohibited this way from being saved:</h3>
+        <ul>
+          <% @way.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <% if @six_human_need %>
+      <%= form.hidden_field :six_human_need_id, value: @six_human_need.id %>
+    <% end %>
+
+    <div class="form-group">
+      <%= form.label :six_human_need_id, "Human Need", class: "form-label" %>
+      <% if @six_human_need %>
+        <%= form.hidden_field :six_human_need_id, value: @six_human_need.id %>
+        <div class="selected-need">
+          <strong><%= @six_human_need.name %></strong>
+          <p class="help-text"><%= @six_human_need.description %></p>
+        </div>
+      <% else %>
+        <%= form.collection_select :six_human_need_id, SixHumanNeed.ordered, :id, :name, 
+            { prompt: "Select a human need" }, 
+            { class: "form-select" } %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :description, "Your Way", class: "form-label" %>
+      <p class="help-text">Describe a specific way you meet this human need (10-500 characters)</p>
+      <%= form.text_area :description, 
+          class: "form-textarea", 
+          rows: 5, 
+          placeholder: "Example: I meet my need for certainty by maintaining a consistent morning routine that includes meditation, exercise, and planning my day..." %>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Save Way", class: "save-btn" %>
+      <%= link_to "Cancel", ways_path, class: "cancel-btn" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.way-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.form-header h1 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.form-header h2 {
+  color: #007cba;
+  margin-bottom: 12px;
+}
+
+.need-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.way-form {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.help-text {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #007cba;
+  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.selected-need {
+  background: #f0f8ff;
+  border: 1px solid #007cba;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.selected-need strong {
+  color: #007cba;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #007cba;
+  box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.save-btn {
+  background: #007cba;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background: #005a85;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+  text-decoration: none;
+  padding: 12px 32px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+}
+
+.error-messages {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c44;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.error-messages h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.error-messages ul {
+  margin: 0;
+  padding-left: 20px;
+}
+</style>

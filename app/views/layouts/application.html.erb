@@ -1,0 +1,431 @@
+<!-- app/views/layouts/application.html.erb -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Radial Pie App</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+
+<style>
+  body {
+    padding-left: 64px;
+    transition: padding-left 0.2s; /* Add smooth transition */
+  }
+  body.nav-expanded {
+    padding-left: 180px; /* Push content right when expanded */
+  }
+  /* Ensure sidebar is isolated from page flex contexts */
+  body > .main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 64px;
+    min-width: 64px;
+    background: #f7f7fa;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding-top: 32px;
+    z-index: 100;
+    transition: width 0.2s;
+    box-sizing: border-box;
+  }
+  body > .main-nav.expanded {
+    width: 180px;
+    min-width: 180px;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 0;
+    padding-left: 20px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .nav:hover {
+    background: #e0e7ef;
+  }
+  .nav.menu-toggle {
+    margin-bottom: 8px;
+  }
+  .nav .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 0;
+    margin-left: 0;
+  }
+  .nav-label {
+    display: none;
+    margin-left: 12px;
+    white-space: nowrap;
+    font-size: 1em;
+  }
+  .main-nav.expanded .nav-label {
+    display: inline;
+  }
+
+
+
+    .dropdown-menu { display: none; }
+    .dropdown-menu.show { display: block !important; }
+    .dropdown-item:hover { background: #f5f5f5; }
+
+
+
+
+</style>
+
+
+
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  </head>
+
+
+<body class="<%= 'landing-page' if controller_name == 'dashboard' && !user_signed_in? %>">
+
+
+
+
+
+
+<div class="main-nav">
+  <div class="nav menu-toggle">
+    <span class="icon-container"><span class="material-symbols-outlined menu-icon" title="Open Menu">menu_open</span>
+    <span class="material-symbols-outlined menu-open-icon" title="Close Menu" style="display:none;">arrow_menu_close</span></span>
+  </div>
+  <%= link_to root_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Dashboard">dashboard</span></span>
+      <span class="nav-label">Dashboard</span>
+    </div>
+  <% end %>
+  <% if current_user&.pies&.any? %>
+    <%= link_to pie_path(current_user.pies.first), style: "text-decoration: none; color: inherit;" do %>
+      <div class="nav">
+        <span class="icon-container"><span class="material-symbols-outlined" title="Pie Charts">clock_loader_10</span></span>
+        <span class="nav-label">My Life</span>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Pie Charts">clock_loader_10</span></span>
+      <span class="nav-label">Pies</span>
+    </div>
+  <% end %>
+  <%= link_to storyline_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Storyline">graph_5</span></span>
+      <span class="nav-label">Storyline</span>
+    </div>
+  <% end %>
+  <%= link_to core_values_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Values">sentiment_satisfied</span></span>
+      <span class="nav-label">Values</span>
+    </div>
+  <% end %>
+  <%= link_to ways_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="6 Human Needs">cognition</span></span>
+      <span class="nav-label">6 Human Needs</span>
+    </div>
+  <% end %>
+  <div class="nav">
+    <span class="icon-container"><span class="material-symbols-outlined" title="Goals">flag</span></span>
+    <span class="nav-label">Goals</span>
+  </div>
+  <%= link_to edit_user_registration_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Settings">settings</span></span>
+      <span class="nav-label">Settings</span>
+    </div>
+  <% end %>
+</div>
+
+
+
+
+
+
+
+<% if user_signed_in? %>
+  <div class="logged-in-header" >
+
+<span class="back-link">
+<%= link_to 'javascript:history.back()', class: " " do %>
+  <span class="material-symbols-outlined back-button">keyboard_backspace</span>
+<% end %>
+
+
+
+
+
+</span>
+  <%#= link_to "← Back to Life Balance Wheel", pie_path(@pie), class: "back-link" %>
+  <div class="dropdown" style="position: relative;">
+    <span class="material-symbols-outlined vertical-meatball" style="cursor: pointer;">more_vert</span>
+    <div class="dropdown-menu" style="display: none; position: absolute; right: 0; background: white; border: 1px solid #ccc; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 1000;">
+
+      <%= button_to "Sign Out", sign_out_path, method: :delete, 
+          class: "dropdown-item", 
+          style: "display: block; width: 100%; text-align: left; background: none; border: none; padding: 8px 16px; color: #333; cursor: pointer;",
+          onmouseover: "this.style.background='#f5f5f5'",
+          onmouseout: "this.style.background='none'" %>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+// Global variables - check if already declared to avoid redeclaration errors
+if (typeof navExpanded === 'undefined') {
+  // Check localStorage for saved nav state, default to false if not found
+  var navExpanded = localStorage.getItem('navExpanded') === 'true';
+}
+window.PIE_ID = <%= @pie&.id || 'null' %>;
+window.SLICE_ID = <%= @slice&.id || 'null' %>;
+
+// Navigation functions
+if (typeof expandNav === 'undefined') {
+  window.expandNav = function(expand) {
+    const mainNav = document.querySelector('.main-nav');
+    if (!mainNav) return;
+    if (expand) {
+      mainNav.style.width = '180px';
+      mainNav.querySelectorAll('.nav-label').forEach(l => l.style.display = 'inline');
+      document.querySelector('.menu-icon').style.display = 'none';
+      document.querySelector('.menu-open-icon').style.display = 'inline';
+      mainNav.classList.add('expanded');
+      document.body.classList.add('nav-expanded');
+    } else {
+      mainNav.style.width = '64px';
+      mainNav.querySelectorAll('.nav-label').forEach(l => l.style.display = 'none');
+      document.querySelector('.menu-icon').style.display = 'inline';
+      document.querySelector('.menu-open-icon').style.display = 'none';
+      mainNav.classList.remove('expanded');
+      document.body.classList.remove('nav-expanded');
+    }
+  };
+}
+
+// Modal function
+window.showTangibilityModal = function(elementId, originalText) {
+  console.log('[Tangibility Modal] PIE_ID:', window.PIE_ID, 'SLICE_ID:', window.SLICE_ID, 'elementId:', elementId);
+  var modal = document.getElementById('tangibility-modal');
+  if (modal) {
+    modal.setAttribute('data-element-id', elementId);
+  }
+  var contentBlock = document.getElementById('tangibility-modal-content-block');
+  var modalBtns = document.getElementById('tangible-modal-buttons');
+  var useAiBtn = document.getElementById('use-ai-btn');
+  var keepOriginalBtn = document.getElementById('keep-original-btn');
+  if (!modal || !contentBlock || !modalBtns || !useAiBtn || !keepOriginalBtn) return;
+  
+  // Show loading state
+  contentBlock.innerHTML = `<div style='margin:30px 0;text-align:center;'><span>Thinking...</span></div>`;
+  modalBtns.style.display = 'none';
+  modal.style.display = 'flex';
+  
+  // Call backend for analysis
+  fetch(`/pies/${window.PIE_ID}/slices/${window.SLICE_ID}/elements/${elementId}/make_tangible`, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ objective: originalText })
+  })
+  .then(resp => resp.json())
+  .then(data => {
+    var origText = originalText;
+    var aiText = data.tangible_objective || '';
+    var aiReason = data.tangibility_reasoning || "This is tangible because it is a specific, measurable action that can be clearly observed and tracked.";
+    
+    contentBlock.innerHTML =
+      `<h3 style='margin-top:0;margin-bottom:12px;font-size:1.2em;color:#007cba;'>AI Analysis: Intangible</h3>` +
+      `<div style='margin-bottom:18px;'><b>'${origText}'</b> is intangible as it refers to a state of being or mindset, rather than a specific outcome that can be easily measured or quantified.</div>` +
+      `<h3 style='margin-top:18px;margin-bottom:12px;font-size:1.2em;color:#007cba;'>A more tangible result</h3>` +
+      `<div style='margin-bottom:10px;'><b>'${aiText}'</b> is tangible because ${aiReason.replace(/^['"]|['"]$/g, '')}</div>`;
+    modalBtns.style.display = 'flex';
+    
+    // Use This button
+    useAiBtn.onclick = function() {
+      var modal = document.getElementById('tangibility-modal');
+      var eid = modal ? modal.getAttribute('data-element-id') : null;
+      var el = eid ? document.querySelector(`.element-item[data-element-id='${eid}'] .element-name`) : null;
+      if (el) {
+        var cleanText = aiText.replace(/^['"]+|['"]+$/g, '');
+        el.innerText = cleanText;
+        if (typeof saveField === 'function') {
+          saveField(el, cleanText, true);
+        }
+      }
+      modal.style.display = 'none';
+    };
+    
+    // Keep Mine button
+    keepOriginalBtn.onclick = function() {
+      modal.style.display = 'none';
+    };
+  })
+  .catch(() => {
+    contentBlock.innerHTML = `<div style='margin:30px 0;text-align:center;'><span>Error loading analysis</span></div>`;
+    modalBtns.style.display = 'none';
+  });
+}
+
+// Function to initialize navigation toggle
+function initializeNavToggle() {
+  const toggle = document.querySelector('.menu-toggle');
+  
+  // Initialize nav state from localStorage or default to collapsed
+  const savedNavState = localStorage.getItem('navExpanded') === 'true';
+  navExpanded = savedNavState;
+  expandNav(navExpanded);
+  
+  // Remove any existing listeners to prevent duplicates
+  if (toggle && !toggle.dataset.listenerAttached) {
+    toggle.dataset.listenerAttached = 'true';
+    
+    // Single event listener that handles all clicks within the toggle area
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Toggle the state
+      navExpanded = !navExpanded;
+      
+      // Save the state to localStorage
+      localStorage.setItem('navExpanded', navExpanded.toString());
+      
+      // Apply the visual changes
+      expandNav(navExpanded);
+      
+      console.log('Nav toggled:', navExpanded); // Debug log
+    });
+  }
+}
+
+// DOM ready event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  initializeNavToggle();
+  
+  // Dropdown functionality
+  document.addEventListener('click', function(e) {
+    // Toggle dropdown when clicking the meatball icon
+    if (e.target.classList.contains('vertical-meatball')) {
+      const menu = e.target.nextElementSibling;
+      const isShown = menu.classList.toggle('show');
+      menu.style.display = isShown ? 'block' : 'none';
+      e.stopPropagation();
+      return;
+    }
+    // Hide dropdown if clicking outside
+    document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+      menu.classList.remove('show');
+      menu.style.display = 'none';
+    });
+  });
+  
+  // Prevent dropdown from closing when clicking inside
+  document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
+    menu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+});
+
+// Turbo event listeners to reinitialize after navigation
+document.addEventListener('turbo:load', function() {
+  initializeNavToggle();
+});
+
+document.addEventListener('turbo:render', function() {
+  initializeNavToggle();
+});
+</script>
+
+
+
+
+
+
+
+    <% if current_user.photo.present? %>
+      <%= image_tag current_user.photo, alt: "Profile photo", class: "user-photo-header", style: "margin-left: 0px;" %>
+    <% end %>
+  </div>
+
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+    <%= yield %>
+
+    <!-- Tangibility Modal (global, always present) -->
+
+    <div id="tangibility-modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);justify-content:center;align-items:center;">
+      <div class="modal-content" style="background:#fff;border-radius:10px;padding:32px 28px 24px 28px;max-width:500px;box-shadow:0 4px 24px rgba(0,0,0,0.18);margin:auto;text-align:left;position:relative;">
+        <button class="close-modal" onclick="document.getElementById('tangibility-modal').style.display='none'" style="position:absolute;top:10px;right:16px;font-size:1.5em;color:#888;background:none;border:none;cursor:pointer;">&times;</button>
+        <div id="tangibility-modal-content-block">
+          <!-- Populated by JS -->
+        </div>
+        <div id="tangible-modal-buttons" style="display:none;margin-top:18px;justify-content:center;gap:12px;">
+          <button id="use-ai-btn" style="padding:8px 18px;background:#007cba;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:1em;margin-right:10px;">Use This</button>
+          <button id="keep-original-btn" style="padding:8px 18px;background:#eee;color:#333;border:none;border-radius:5px;cursor:pointer;font-size:1em;">Keep Mine</button>
+        </div>
+      </div>
+    </div>
+
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+

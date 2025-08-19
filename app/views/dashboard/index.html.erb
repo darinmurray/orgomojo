@@ -1,0 +1,113 @@
+
+<style>
+.dashboard-content .pies-list-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.pie-list-item {
+  border-radius: 8px;
+  display: flex;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+}
+.pie-chart-preview {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+.pie-chart-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.pie-chart-link {
+  /* Add any specific styles for the pie name link here if needed */
+}
+
+  .pie-chart-link {
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+    font-size: 18px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .pie-chart-link:hover {
+    /* text-decoration: underline; */
+    border-bottom: 1px solid var(--focus);
+  }
+  .pie-chart-link:visited {
+    color: inherit;
+  }
+  .pie-chart-link:focus {
+  font-size: 18px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+
+
+.pie-list-actions {
+  margin-top: 15px;
+}
+.pie-list-actions .show-link {
+  margin-right: 10px;
+  color: #007cba;
+}
+.pie-list-actions .delete-link {
+  color: #dc3545;
+}
+.create-new-wheel-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #007cba;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+</style>
+
+<div class="dashboard">
+  <h1>Welcome, <%= @user.firstname %>!</h1>
+  
+  <div class="dashboard-content">
+    <% if @pies&.any? %>
+      <h2>Focus Wheels</h2>
+      <div class="pies-list-container">
+
+        <% @pies.each do |pie| %>
+                    <div class="pie-list-item">
+
+                      <%= link_to pie_path(pie), class: "pie-chart-preview" do %>
+                        <div >
+                          <%= radial_pie_chart(pie, size: 100) %>
+                        </div>
+                      <% end %>
+
+                      <div class="pie-chart-info">
+                        <%= link_to pie.name, pie_path(pie), class: "pie-chart-link" %>
+
+
+                          <!-- div class="pie-list-actions">
+                            <%#= link_to 'Delete', pie_path(pie), method: :delete, confirm: 'Are you sure?', class: "delete-link" %>
+                          </div -->
+                      </div>
+
+
+                    </div>
+        <% end %>
+
+      </div>
+    <% else %>
+      <h2>Get Started</h2>
+      <p>You don't have any pies yet. Create your first one!</p>
+    <% end %>
+    
+    <%= link_to "Create New Wheel", new_pie_path, class: "create-new-wheel-link" %>
+  </div>
+</div>

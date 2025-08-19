@@ -1,0 +1,778 @@
+<!-- app/views/slices/show.html.erb -->
+<style>
+
+  :root {
+    --slice-color: <%= @slice.color %>;
+  }
+
+
+
+
+
+
+  #slice-page-container {
+    padding-top: 0px;
+    padding: 0px 20px;
+    border-radius: 8px;
+  }
+  .slice-header {
+    display: flex;
+    background: #ffffffff;
+    padding-top: 20px;
+    padding-left: 0px;
+    padding-right: 20px;
+    border-radius: 8px;
+    margin-bottom: 50px;
+  }
+
+#slice-body-container {
+    padding: 0 40px;
+    /* background: #f8f9fa; */
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+
+  .slice-title-row {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .slice-title {
+    margin: 0;
+  }
+
+  .slice-percentage {
+    margin-left: auto;
+    font-size: 32px;
+    font-weight: bold;
+    color: #007cba;
+  }
+
+  .slice-objective {
+    margin-left: 0px;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: normal;
+    color: color: var(--darkgray);;
+  }
+
+  /* Tangibility Modal Styles */
+  #tangibility-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.35);
+    justify-content: center;
+    align-items: center;
+  }
+  #tangibility-modal .modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 32px 28px 24px 28px;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    margin: auto;
+    text-align: left;
+    position: relative;
+  }
+  #tangibility-modal .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+    color: #007cba;
+  }
+  #tangibility-modal .modal-content p {
+    margin-bottom: 0;
+    color: #222;
+    font-size: 1em;
+  }
+  #tangibility-modal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 1.5em;
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .progress-bar-container {
+    background:  var(--lightergray);
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .element-item {
+    /* border-radius: 8px; */
+    margin-bottom: 30px;
+    /* cursor: move; */
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+
+  .element-item.completed {
+    /* nice green #f8fff8; */
+    border: 0px solid #ddd;
+
+  }
+
+  .element-item.incomplete {
+    /* background: var(--hilighteryellow); */
+    background: none;
+  }
+
+  .element-item.editing {
+    background: #f0f8ff;
+    border: 2px solid #007cba;
+  }
+
+  .element-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .element-item.drag-over-top {
+    border-top: 3px solid var(--slice-color);
+  }
+
+  .element-item.drag-over-bottom {
+    border-bottom: 3px solid var(--slice-color);
+  }
+
+  .drag-handle {
+    color: var(--lightgray);
+    cursor: grab;
+    margin-right: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .drag-handle:hover {
+    background: var(--lightergray);
+    color: var(--darkgray);
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .element-top-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .element-form {
+    margin: 0;
+  }
+
+  .element-checkbox {
+    margin-right: 15px;
+    transform: scale(1.5);
+  }
+
+  .element-name {
+    /* color: var(--darkestgray); */
+    font-size: 20px;
+    flex: 1;
+    padding: 4px;
+    border-radius: var(--text-input-border-radius);
+    cursor: text;
+    border: 1px solid transparent;
+  }
+
+  .element-name:hover {
+        border: 1px solid var(--focus);
+    /* background: #f8f9fa; */
+  }
+
+  .element-name.editing {
+    background: white;
+    border: 1px solid var(--editing-border);
+    border-radius: var(--text-input-border-radius) !important; /* Force border-radius to apply */
+    outline: none;
+  }
+
+    .element-name.completed {
+      /* text-decoration: line-through; */
+      color: var(--darkestgray);
+      font-weight: none;
+    }
+  .element-name.incomplete {
+    /* text-decoration: line-through; */
+    color: var(darkestgray);
+    font-weight: bold;
+  }
+
+  .element-objective {
+    margin-left: 35px;
+    color: color: var(--lightgray);;
+    font-size: 14px;
+    font-style: italic;
+    padding: 4px;
+    border-radius: var(--text-input-border-radius);
+    cursor: text;
+    min-height: 20px;
+    border: 1px solid transparent;
+  }
+
+  .element-objective:hover {
+        border: 1px solid var(--focus);
+    /* background: #f8f9fa; */
+  }
+
+  .element-objective.editing {
+    border-radius: var(--text-input-border-radius, 6px);
+    border: 1px solid var(--editing-border);
+    outline: none;
+    font-style: normal;
+    border-radius: inherit;
+  }
+
+  .element-objective.empty {
+    color: #999;
+  }
+
+
+
+.objective-timeline {
+    margin-left: 0px;
+    font-size: 14px;
+    color: var(--lightgray);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+.objective-timeline.completed {
+display: none
+  }
+
+
+
+  .editable-time-needed, .editable-time-scale, .editable-cadence, .editable-deadline {
+    border: 1px solid transparent;
+  }
+
+  .editable-time-needed:hover,
+  .editable-deadline:hover {
+    border: 1px solid var(--focus);
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .editable-time-scale:hover,
+  .editable-cadence:hover {
+    border: 1px solid var(--focus);
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+
+  .editable-time-needed.editing,
+  .editable-deadline.editing {
+    border: 1px solid var(--editing-border);
+    background: white;
+    outline: none;
+  }
+
+  /* Hide cadence container for intangible elements */
+  .element-item[data-tangible="true"] .cadence-container {
+    display: none;
+  }
+
+  .add-element-form {
+    margin: 40px 0;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+
+  .element-input {
+    flex: 1;
+    margin-left:30px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: var(--text-input-border-radius);
+    min-width: 120px;
+  }
+
+  .element-input:first-child {
+    margin-left: 30px;
+    flex: 2;
+    min-width: 200px;
+  }
+
+  #new-element-name:hover {
+    border: 1px solid var(--focus);
+  }
+
+  .add-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--button-border-radius);
+    cursor: pointer;
+        margin-bottom: 3px;
+  }
+
+  .bottom-actions {
+  margin-top: 30px;
+  padding-top: 40px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end; /* or space-between/center, as needed */
+  gap: 32px;  /* Add spacing between the links/buttons */
+  border-top: 1px solid #ddd;
+  }
+
+/* for the trash cans and edit icons */
+.delete-link,
+.edit-link {
+  color: var(--lightgray);
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  }
+  
+    .delete-link.completed,
+.edit-link.completed {
+  color: var(--lightergray);
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 8px;
+  }
+  
+  .delete-slice-link,
+  .delete-slice-link:visited {
+    color: var(--lightgray);
+    text-decoration: none;
+    cursor: pointer;
+
+  }
+  .delete-slice-link:hover {
+   color: #dc3545;
+    text-decoration: underline;
+  }
+
+  .edit-link:hover {
+    color: #007cba;
+  }
+
+  .delete-link:hover {
+    color: #dc3545;
+  }
+
+
+
+  .back-link,
+  .back-to-wheel-link {
+    flex: 1;
+    color: var(--darkgray);
+    text-decoration: none;
+    margin-left: 10px;
+  }
+
+
+
+
+
+  .hidden {
+    display: none;
+  }
+
+
+  #pie-chart {
+display: flex;
+  }
+
+  #slice-info {
+    flex: 1;
+  }
+
+
+  input::placeholder {
+  color: var(--lightgray);
+  opacity: 1;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1.5px solid var(--lightergray);
+  border-radius: var(--text-input-border-radius);
+  outline: none;
+  /* background: #fafbfc; */
+  color: #222;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--focus);   /* Example accent color */
+  box-shadow: 0 0 0 2px #a259ec22;
+  background: #fff;
+}
+
+
+
+
+
+/* input[type="checkbox"] {
+  accent-color: #ffffffff; 
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  border: 1px solid var(--lightergray); 
+  border-radius: 2px; 
+
+}
+input[type="checkbox"]:focus {
+  width: 14px;
+  height: 14px;
+  outline-offset: 0px;
+    border-color: var(--focus); /
+
+} */
+
+
+/* input[type="checkbox"]:checked {
+  width: 14px;
+  height: 14px;
+} */
+
+
+
+
+
+
+
+
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--lightergray);
+  border-radius: 2px;
+  background: white;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background:  var(--slice-color);
+  border-color:  var(--slice-color);
+}
+
+input[type="checkbox"]:checked::before {
+  content: '✓'; /* Change the checkmark symbol */
+  position: absolute; /* Adjust position */
+  color: white; /* Change the color */
+  font-size: 14px; /* Adjust the size */
+  left: 0px; /* Adjust horizontal position */
+  bottom: -2px; /* Adjust vertical position */
+  font-weight: bold; /* Make it bold */
+}
+
+input[type="checkbox"]:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+
+#objective-settings {
+
+}
+#objective-settings span{
+padding-left:10px;
+}
+
+.element-preferences-container {
+   /* Initially hidden */
+   display: none;
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth slide-out effect */
+  transform: translateY(-10px); /* Start slightly above */
+  opacity: 0; /* Start invisible */
+}
+
+.element-preferences-container.visible {
+  display: flex; /* Make it visible */
+  transform: translateY(0); /* Slide into place */
+  opacity: 1; /* Fully visible */
+}
+
+.element-preferences-container {
+  display: flex;
+  gap: 10px;
+  border: 1px solid var(--lightgray);
+  width: fit-content;
+  padding: 7px 30px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: 0px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: inset 0px 3px 5px rgba(0, 0, 0, 0.05); /* Adds a slight gray shadow inside the top */
+}
+
+
+.meta-text {
+    font-size: 14px;
+    color: var(--lightgray);
+    margin-top: 0px;
+    font-style: italic;
+}
+
+
+
+.brain-icon {
+  /* font-size: 20px; */
+  color: var(--storyline-accent-color, #06b6d4);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.brain-icon:hover {
+  color: var(--focus);
+}
+
+.cadence-container {
+  border-bottom: 1px solid var(--lightgray);
+}
+</style>
+
+
+
+
+<div id="slice-page-container">
+  <div class="slice-header">
+
+    <div id="pie-chart">
+      <div class="pie-chart-container" style="text-align: center;">
+        <%= radial_pie_chart(@pie, size: 120, pinwheel: false) %>
+      </div>
+    </div>
+
+    <div id="slice-info">
+      <div class="slice-title-row">
+        <h1 class="slice-title" 
+            contenteditable="true" 
+            data-field="name" 
+            data-original="<%= @slice.name %>"
+            data-type="slice">
+          <%= @slice.name %>
+        </h1>
+        <div class="slice-percentage">
+          <%= @slice.percentage %>%
+        </div>
+        <div id="objective-settings">
+          <%= link_to '<span class="material-symbols-outlined">wand_shine</span>'.html_safe, edit_setting_path(current_user), class: "settings-link" %>
+        </div>
+      </div>
+
+      <div class="slice-objective <%= 'empty' unless @slice.objective.present? %>" 
+          contenteditable="true" 
+          data-field="objective" 
+          data-original="<%= @slice.objective %>"
+          data-type="slice">
+        <% if @slice.objective.present? %>
+          <%= @slice.objective %>
+        <% else %>
+          <em>Click to add objective...</em>
+        <% end %>
+      </div>
+
+      <div class="progress-bar-container">
+        <div class="progress-bar" style="background: <%= @slice.color %>; width: <%= @slice.percentage %>%;"></div>
+      </div>
+    </div>
+  </div><!--END of slice header-->
+
+  <div id="slice-body-container">
+
+    <div id="elements-list">
+      <% @elements.each do |element| %>
+        <div class="element-item <%= element.completed? ? 'completed' : 'incomplete' %>" 
+             data-element-id="<%= element.id %>" 
+             data-tangible="<%= element.tangible %>"
+             draggable="false">
+          
+          <div class="element-top-row">
+            <div class="drag-handle">
+              <span class="material-symbols-outlined">drag_indicator</span>
+            </div>
+            
+            <%= form_with model: [@pie, @slice, element], url: toggle_pie_slice_element_path(@pie, @slice, element), method: :patch, local: true, class: "element-form" do |f| %>
+              <%= f.check_box :completed, 
+                    checked: element.completed, 
+                    onchange: "this.form.submit();",
+                    class: "element-checkbox" %>
+            <% end %>
+            
+            <div class="element-name <%= element.completed? ? 'completed' : 'incomplete' %>" 
+                 contenteditable="true" 
+                 data-field="name" 
+                 data-original="<%= element.name %>">
+              <%= element.name.presence || 'Click to add name...' %>
+            </div>
+            
+            <div class="element-actions">
+              <span class="material-symbols-outlined ai-element-writer brain-icon element" id="element-name-<%= element.id %>">network_intelligence_update</span>
+            </div>
+          </div>
+
+          <div class="objective-timeline <%= element.completed? ? 'completed' : 'incomplete' %>"> 
+            <div class="element-timeline" style="margin-left: 42px;">
+              <span>I commit </span>
+              <span class="editable-time-needed" 
+                    contenteditable="true" 
+                    data-field="time_needed" 
+                    data-original="<%= element.time_needed || '' %>"
+                    style="min-width: 10px; display: inline-block; border-radius: 3px;">
+                <%= element.time_needed || 0 %>
+              </span>
+              <span class="editable-time-scale" 
+                    data-field="time_scale" 
+                    data-original="<%= element.time_scale || '' %>"
+                    style="min-width: 40px; display: inline-block; border-radius: 3px; cursor: pointer;">
+                <%= element.time_scale.present? ? element.time_scale : 'units' %>
+              </span>
+
+              <span class="cadence-container">
+                <span>every</span>
+                <span class="editable-cadence" 
+                      data-field="cadence" 
+                      data-original="<%= element.cadence || '' %>"
+                      style="min-width: 40px; display: inline-block; border-radius: 3px; cursor: pointer;">
+                  <%= element.cadence.present? ? element.cadence : 'units' %>
+                </span>
+              </span>
+
+              <span>to <%= element.cadence ? "implement" : 'complete' %> this by </span>
+              <span class="editable-deadline" 
+                    data-field="deadline" 
+                    data-original="<%= element.deadline&.strftime('%Y-%m-%d %H:%M') || '' %>"
+                    style="min-width: 100px; display: inline-block; border-radius: 3px; cursor: pointer;">
+                <%= element.deadline&.strftime('%b %d, %Y ') || '(pick a date)' %>
+              </span>
+            </div>
+          </div>
+
+          <div class="element-objective <%= 'empty' unless element.objective.present? %>" 
+               contenteditable="true" 
+               data-field="objective" 
+               data-original="<%= element.objective %>">
+            <% if element.objective.present? %>
+              <%= element.objective %>
+            <% else %>
+              <em>Click to add objective...</em>
+            <% end %>
+          </div>
+
+          <div class="element-preferences-container"> 
+            <span class="meta-text">Word Count:</span>
+            <div id="word-count-slider-container">
+              <span class="material-symbols-outlined slider-minus">remove</span>
+              <input type="range" id="word-count-slider-<%= element.id %>" min="5" max="40" value="15" step="1" />          
+              <span class="material-symbols-outlined slider-plus">add</span>
+            </div>
+            <span class="material-symbols-outlined ai-objective-writer brain-icon objective">network_intelligence_update</span>
+          </div>
+
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with model: [@pie, @slice, Element.new], local: false, class: "add-element-form", id: "add-element-form" do |f| %>
+      <div class="form-row">
+        <%= f.text_field :name, placeholder: "Add new element...", class: "element-input", id: "new-element-name" %>
+        <%= f.submit "Add Element", class: "add-button" %>
+      </div>
+    <% end %>
+
+  </div><!-- end of slice-body-container -->
+
+  <div class="bottom-actions">
+    <%= link_to "← Back to " + @pie.name, pie_path(@pie), class: "back-to-wheel-link" %>
+    <%= link_to "Delete Slice", [@pie, @slice], 
+          method: :delete, 
+          data: { 
+            confirm: "Are you sure you want to delete this slice? This will also delete all elements within it.",
+            turbo_method: :delete
+          },
+          class: "delete-slice-link" %>
+  </div>
+</div><!-- end of slice-page-container -->
+
+
+<script>
+// Only attach handler to .brain-icon.element, not .brain-icon.objective
+function handleBrainIconClick(icon) {
+  if (!icon.classList.contains('brain-icon') || !icon.classList.contains('element')) {
+    // Not the correct brain icon, ignore
+    return;
+  }
+  // Always get the element ID from the closest .element-item
+  const elementItem = icon.closest('.element-item');
+  if (!elementItem) {
+    alert('Could not find element item container.');
+    return;
+  }
+  const elementId = elementItem.getAttribute('data-element-id');
+  // Get the current name from the .element-name div
+  const nameDiv = elementItem.querySelector('.element-name');
+  const elementName = nameDiv ? nameDiv.innerText.trim() : '';
+  // Debug logging
+  console.log('[Tangibility Modal] Clicked brain icon:', {
+    elementId,
+    elementName,
+    elementItem,
+    icon
+  });
+  // Stricter check: elementId must be a non-empty, non-false, numeric string
+  if (!elementId || elementId === 'false' || isNaN(Number(elementId))) {
+    console.error('[Tangibility Modal] Invalid elementId:', elementId, 'from elementItem:', elementItem);
+    alert('Error: Element ID is missing or invalid. Please reload the page or contact support.');
+    return;
+  }
+  if (window.showTangibilityModal) {
+    window.showTangibilityModal(elementId, elementName);
+  } else {
+    alert('Tangibility modal function not found.');
+  }
+}
+
+// Attach a single event listener to all .brain-icon.element icons after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.brain-icon.element').forEach(function(icon) {
+    icon.addEventListener('click', function() {
+      handleBrainIconClick(this);
+    });
+  });
+});
+</script>
