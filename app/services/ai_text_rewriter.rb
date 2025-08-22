@@ -1,12 +1,18 @@
 # app/services/ai_text_rewriter.rb
 
 class AiTextRewriter
-  def initialize(client = OpenAI::Client.new)
-    @client = client
+  def initialize(client = nil)
+    @client = client || (ENV["OPENAI_API_KEY"].present? ? OpenAI::Client.new : nil)
+  end
+
+  def api_available?
+    @client.present?
   end
 
 
   def rewrite_element(text, slice_name)
+    return text unless api_available?
+    
     length = 9
     prompt = "Rewrite the text as an attainable element of #{slice_name}:\n\n#{text}. Make it concise and actionable. It should have a clear, tangible outcome. Use #{length} words or less. If it is already well written, only change the word length if necessary"
     response = @client.chat(
@@ -16,6 +22,9 @@ class AiTextRewriter
       }
     )
     response.dig("choices", 0, "message", "content")
+  rescue => e
+    Rails.logger.error "OpenAI API Error: #{e.message}"
+    text # Return original text if API fails
   end
 
 
