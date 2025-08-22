@@ -12,7 +12,7 @@ class AiTextRewriter
 
   def rewrite_element(text, slice_name)
     return text unless api_available?
-    
+
     length = 9
     prompt = "Rewrite the text as an attainable element of #{slice_name}:\n\n#{text}. Make it concise and actionable. It should have a clear, tangible outcome. Use #{length} words or less. If it is already well written, only change the word length if necessary"
     response = @client.chat(
