@@ -9,6 +9,5 @@ test:
   adapter: test
 
 production:
-  adapter: redis
-  url: <%= ENV["REDIS_URL"] %>
+  adapter: async
 
