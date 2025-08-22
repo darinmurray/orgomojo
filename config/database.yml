@@ -1,24 +1,26 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: <%= ENV.fetch("PGUSER", "dmurray") %>
-  password: <%= ENV.fetch("PGPASSWORD", "") %>
-  host: localhost
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  username: <%= ENV["PGUSER"] || "dmurray" %>
+  password: <%= ENV["PGPASSWORD"] %>
+  host: <%= ENV["PGHOST"] || "localhost" %>
   port: 5432
   pool: 5
 
+
 development:
   <<: *default
-  database: orgomojo_development
+  database: selfultimate_development
 
 test:
   <<: *default
-  database: orgomojo_test
+  database: selfultimate_test
 
+# production can stay minimal; Heroku will supply DATABASE_URL
 production:
   <<: *default
-  database: orgomojo_production
-
+  database: <%= ENV["DATABASE_URL"].presence || "selfultimate_production" %>
 
 
 
