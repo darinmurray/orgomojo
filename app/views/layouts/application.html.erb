@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Radial Pie App</title>
+  <title>selfultimate</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -87,8 +87,6 @@
 
 </style>
 
-
-
     
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -104,6 +102,8 @@
 
 
 
+
+<% if user_signed_in? %>
 
 
 <div class="main-nav">
@@ -166,7 +166,7 @@
 
 
 
-<% if user_signed_in? %>
+
   <div class="logged-in-header" >
 
 <span class="back-link">
