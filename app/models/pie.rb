@@ -4,6 +4,7 @@ class Pie < ApplicationRecord
   belongs_to :user
   has_many :slices, dependent: :destroy
   has_many :elements, through: :slices
+  has_many :settings_as_primary, class_name: 'Setting', foreign_key: 'primary_wheel'
 
   validates :name, presence: true
 

@@ -127,15 +127,10 @@
   <% else %>
     <div class="nav">
       <span class="icon-container"><span class="material-symbols-outlined" title="Pie Charts">clock_loader_10</span></span>
-      <span class="nav-label">Pies</span>
+      <span class="nav-label">Wheel Of Life</span>
     </div>
   <% end %>
-  <%= link_to storyline_path, style: "text-decoration: none; color: inherit;" do %>
-    <div class="nav">
-      <span class="icon-container"><span class="material-symbols-outlined" title="Storyline">graph_5</span></span>
-      <span class="nav-label">Storyline</span>
-    </div>
-  <% end %>
+
   <%= link_to core_values_path, style: "text-decoration: none; color: inherit;" do %>
     <div class="nav">
       <span class="icon-container"><span class="material-symbols-outlined" title="Values">balance</span></span>
@@ -148,10 +143,20 @@
       <span class="nav-label">6 Human Needs</span>
     </div>
   <% end %>
+  
   <div class="nav">
     <span class="icon-container"><span class="material-symbols-outlined" title="Goals">flag</span></span>
     <span class="nav-label">Goals</span>
   </div>
+
+    <%= link_to storyline_path, style: "text-decoration: none; color: inherit;" do %>
+    <div class="nav">
+      <span class="icon-container"><span class="material-symbols-outlined" title="Storyline">graph_5</span></span>
+      <span class="nav-label">Storyline</span>
+    </div>
+  <% end %>
+
+
   <%= link_to edit_user_registration_path, style: "text-decoration: none; color: inherit;" do %>
     <div class="nav">
       <span class="icon-container"><span class="material-symbols-outlined" title="Settings">settings</span></span>
@@ -221,7 +226,7 @@ if (typeof expandNav === 'undefined') {
     const mainNav = document.querySelector('.main-nav');
     if (!mainNav) return;
     if (expand) {
-      mainNav.style.width = '180px';
+      mainNav.style.width = '200px';
       mainNav.querySelectorAll('.nav-label').forEach(l => l.style.display = 'inline');
       document.querySelector('.menu-icon').style.display = 'none';
       document.querySelector('.menu-open-icon').style.display = 'inline';

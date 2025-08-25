@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_10_225654) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_25_153445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,6 +126,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_10_225654) do
     t.integer "task_outcome_length", default: 8
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "primary_wheel"
+    t.index ["primary_wheel"], name: "index_settings_on_primary_wheel"
     t.index ["user_id"], name: "index_settings_on_user_id"
   end
 
@@ -209,6 +211,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_10_225654) do
   add_foreign_key "life_goals", "life_categories"
   add_foreign_key "life_goals", "user_responses"
   add_foreign_key "pies", "users"
+  add_foreign_key "settings", "pies", column: "primary_wheel"
   add_foreign_key "settings", "users"
   add_foreign_key "slices", "pies"
   add_foreign_key "user_core_values", "core_values"

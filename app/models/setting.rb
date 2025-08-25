@@ -1,5 +1,6 @@
 class Setting < ApplicationRecord
   belongs_to :user
+  belongs_to :primary_wheel, class_name: 'Pie', optional: true
 
   validates :gender, presence: true
   validates :tone_1, presence: true
